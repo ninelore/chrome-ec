@@ -133,7 +133,7 @@ static uint32_t pd_src_chg_pdo[ARRAY_SIZE(pd_src_voltages_mv)];
 static uint8_t chg_pdo_cnt;
 
 const uint32_t pd_snk_pdo[] = {
-	PDO_FIXED(5000, 500, CHG_PDO_FIXED_FLAGS),
+	PDO_FIXED(5000, 3000, CHG_PDO_FIXED_FLAGS),
 	PDO_BATT(4750, 21000, 15000),
 	PDO_VAR(4750, 21000, 3000),
 };
