@@ -30,3 +30,14 @@
 	offset = <0x3F000>;
 	size = <0x1000>;
 };
+
+/ {
+	named-gpios {
+		/delete-node/  ec-jtag-tms;
+	};
+
+	tabletmode_interrupt: tabletmode-interrupt {
+		compatible = "cros,tabletmode-interrupt";
+		irq-gpios = <MCHP_GPIO_DECODE_150 GPIO_ACTIVE_LOW>;
+	};
+};
