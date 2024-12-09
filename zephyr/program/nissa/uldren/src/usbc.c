@@ -36,8 +36,6 @@ int board_set_active_charge_port(int port)
 
 	old_port = charge_manager_get_active_charge_port();
 
-	LOG_INF("New chg p%d", port);
-
 	/* Disable all ports. */
 	if (port == CHARGE_PORT_NONE) {
 		for (i = 0; i < CONFIG_USB_PD_PORT_MAX_COUNT; i++) {
