@@ -22,6 +22,11 @@ endif()
 
 if(DEFINED COREBOOT_SDK_ROOT_${ARCH})
   set(COREBOOT_SDK_ROOT "${COREBOOT_SDK_ROOT_${ARCH}}")
+  set(COREBOOT_SDK_ROOT_LIBSTDCXX "${COREBOOT_SDK_ROOT_libstdcxx_${ARCH}}")
+  set(COREBOOT_SDK_ROOT_PICOLIBC "${COREBOOT_SDK_ROOT_picolibc_${ARCH}}")
+else()
+  set(COREBOOT_SDK_ROOT_LIBSTDCXX "${COREBOOT_SDK_ROOT}")
+  set(COREBOOT_SDK_ROOT_PICOLIBC "${COREBOOT_SDK_ROOT}")
 endif()
 
 set(CC gcc)
@@ -37,7 +42,42 @@ set(CMAKE_RANLIB     "${TOOLCHAIN_HOME}/${CROSS_COMPILE}ranlib")
 set(CMAKE_READELF    "${TOOLCHAIN_HOME}/${CROSS_COMPILE}readelf")
 set(CMAKE_GCOV       "${TOOLCHAIN_HOME}/${CROSS_COMPILE}gcov")
 
+# Compiler version isn't set yet, infer it from the directory name
+file(GLOB GCC_DIR LIST_DIRECTORIES true "${COREBOOT_SDK_ROOT}/lib/gcc/${CROSS_COMPILE_TARGET}/[0-9][0-9].[0-9].[0-9]")
+get_filename_component(GCC_VERSION ${GCC_DIR} NAME)
+
+  ##########################################################################################################
+  # TODO(b/384559486) Fix this block
+if(CONFIG_REQUIRES_FULL_LIBCPP)
+  # Add system include paths
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include")
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/${CROSS_COMPILE_TARGET}")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/${CROSS_COMPILE_TARGET}")
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/libsupc++")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/libsupc++")
+
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/std")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_LIBSTDCXX}/${CROSS_COMPILE_TARGET}/include/std")
+endif()
+
 if(CONFIG_PICOLIBC AND NOT CONFIG_PICOLIBC_USE_MODULE)
+  # Move picolibc.specs files to a location that they can be found since zephyr adds the spec definition
+  configure_file(${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}/picolibc.specs ${COREBOOT_SDK_ROOT}/lib/gcc/${CROSS_COMPILE_TARGET}/${GCC_VERSION}/ COPYONLY)
+  configure_file(${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}/picolibcpp.specs ${COREBOOT_SDK_ROOT}/lib/gcc/${CROSS_COMPILE_TARGET}/${GCC_VERSION}/ COPYONLY)
+
+  # Add system include paths
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}")
+
+  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -isystem ${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}/include")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem ${COREBOOT_SDK_ROOT_PICOLIBC}/picolibc/coreboot-${CROSS_COMPILE_TARGET}/include")
+
+  # Place orphaned sections and disable the warning for them
+  set(CONFIG_LINKER_ORPHAN_SECTION_WARN n)
+  set(LINKER_ORPHAN_SECTION_PLACE y)
+  ##########################################################################################################
+
   # Add picolibc
   message(INFO "Setting TOOLCHAIN_HAS_PICOLIBC to support full build.")
   set(TOOLCHAIN_HAS_PICOLIBC ON CACHE BOOL "True if toolchain supports picolibc")
