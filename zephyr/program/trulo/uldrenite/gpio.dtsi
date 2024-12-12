@@ -14,7 +14,7 @@
 		/delete-node/ amp_mute_l;
 		/delete-node/ charger_vap_otg_en;
 		/delete-node/ ec_pmc_pd_int_odl;
-		/delete-node/ ec_pwr_btn_odl;
+		/delete-node/ gsc_ec_pwr_btn_odl;
 		/delete-node/ ec_tris_l;
 		/delete-node/ en_kb_bl;
 		/delete-node/ en_pp5000_pen_x;
@@ -41,10 +41,6 @@
 		gpio_ec_edp_bl_en_od: ec_edp_bl_en_od {
 			gpios = <&gpiod 3 GPIO_ODR_HIGH>;
 			enum-name = "GPIO_ENABLE_BACKLIGHT";
-		};
-		gpio_gsc_ec_pwr_btn_odl: gsc_ec_pwr_btn_odl {
-			gpios = <&gpio0 0 GPIO_INPUT_PULL_UP>;
-			enum-name = "GPIO_POWER_BUTTON_L";
 		};
 		gpio_imvp91_vrrdy_od: imvp91_vrrdy_od {
 			gpios = <&gpio4 3 GPIO_INPUT>;
