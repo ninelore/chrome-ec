@@ -1146,6 +1146,47 @@ config_brox() {
   esac
 }
 
+config_fatcat() {
+  readonly TRANSPORT="SPI"
+  readonly DEVICE="/dev/spidev0.0"
+
+  # Examine `cat /sys/kernel/debug/pinctrl/INTC1083:00/gpio-ranges` on a
+  # fatcat device to determine gpio number from pin number.
+
+  local gpiochip_dev_path="pci0000:00/INTC10BC:00/gpio"
+  local gpiobase
+  if ! gpiobase=$(get_sysfs_gpiochip_base "${gpiochip_dev_path}"); then
+    echo "Unable to find gpio chip base"
+    return "${EXIT_PRECONDITION}"
+  fi
+
+  readonly GPIO_CHIP="gpiochip${gpiobase}"
+
+  local model
+  model=$(cros_config / name)
+
+  # On fatcat, gpios are split across two base gpio banks:
+  # gpiochip512 and gpiochip560.
+  local gpiobase512=512
+  local gpiobase560=560
+
+  case "${model}" in
+    *)
+      # FPMCU FPS_RST_N(RST_ODL) is on GPP_C15 = 24 + (39 - 24) = 39
+      local gpionrst=39
+      readonly GPIO_NRST=$(( gpionrst + gpiobase512 ))
+
+      # FPMCU FPMCU_FW_UPDATE(BOOT0) is on GPP_E20 = 26 + (46 - 26) = 46
+      local gpioboot=46
+      readonly GPIO_BOOT0=$(( gpioboot + gpiobase560 ))
+
+      # FPMCU_PWREN(FP_PWR_EN) is on GPP_E19 = 26 + (45 - 26) = 45
+      local gpiopwren=45
+      readonly GPIO_PWREN=$(( gpiopwren + gpiobase560 ))
+      ;;
+  esac
+}
+
 main() {
   local filename="$1"
   local chip_type
