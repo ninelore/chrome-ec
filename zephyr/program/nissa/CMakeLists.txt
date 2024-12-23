@@ -387,3 +387,12 @@ if(DEFINED CONFIG_BOARD_INTEL_ISH_5_4_1)
 	project(orisa-ish)
 	add_subdirectory(orisa-ish)
 endif()
+if(DEFINED CONFIG_BOARD_DIRKS)
+	project(dirks)
+	zephyr_library_sources(
+			"src/led.c"
+			"dirks/src/hdmi.c"
+	)
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_USBC "dirks/src/usbc.c")
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_CHARGER "dirks/src/charger.c")
+endif()

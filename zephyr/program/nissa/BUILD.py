@@ -250,11 +250,17 @@ pujjoniru = register_nissa_project(
     chip="it8xxx2/it81302bx",
 )
 
+dirks = register_nissa_project(
+    project_name="dirks",
+    chip="it8xxx2/it81302bx",
+)
+
 # Note for reviews, do not let anyone edit these assertions, the addresses
 # must not change after the first RO release.
 assert_rw_fwid_DO_NOT_EDIT(project_name="anraggar", addr=0xBFFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="craask", addr=0x7FFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="craaskov", addr=0x7FFE0)
+assert_rw_fwid_DO_NOT_EDIT(project_name="dirks", addr=0xBFFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="orisa", addr=0x7FFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="orisa_ti", addr=0x7FFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="gothrax", addr=0xBFFE0)

@@ -353,3 +353,14 @@ if(CONFIG_TEST_NISSA_TELIKS)
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/teliks/src/keyboard_customization.c
     )
 endif()
+
+if(CONFIG_TEST_NISSA_DIRKS)
+    target_compile_definitions(app PRIVATE CHARGER_PRIMARY=0 CHARGER_SECONDARY=1)
+    target_sources(
+            app PRIVATE
+            src/dirks.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/charger.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/hdmi.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/usbc.c
+    )
+endif()
