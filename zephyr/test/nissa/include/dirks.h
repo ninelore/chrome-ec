@@ -16,4 +16,6 @@ enum led_color {
 	LED_COLOR_COUNT
 };
 
+void board_bj_init(void);
+
 #endif /* ZEPHYR_TEST_NISSA_INCLUDE_DIRKS_H_ */

@@ -7,8 +7,18 @@
 #include <it8xxx2_emul.dts>
 
 / {
-	aliases {
-		gpio-usb-c1-int-odl = &gpio_sb_1;
+	named-adc-channels {
+		compatible = "named-adc-channels";
+
+		adc_vbus: vbus {
+			enum-name = "ADC_VBUS";
+			io-channels = <&adc0 4>;
+		};
+	};
+
+	zephyr,user {
+		io-channels = <&adc0 15>;
+		io-channel-names = "PPVAR_PWR_IN_IMON";
 	};
 
 	named-gpios {
@@ -21,9 +31,11 @@
 		gpio_usb_c0_fault_l: usb_c0_fault_l {
 			gpios = <&gpiok 0 GPIO_INPUT_PULL_UP>;
 		};
-		gpio_sb_1: sb_1 {
-			gpios = <&gpioe 6 0>;
-			no-auto-init;
+		gpio_bj_adp_present: bj_adp_present {
+			gpios = <&gpioa 7 GPIO_INPUT>;
+		};
+		gpio_en_ppvar_bj_adp_od: en_ppvar_bj_adp_od {
+			gpios = <&gpioe 3 GPIO_OUTPUT>;
 		};
 	};
 
@@ -34,6 +46,11 @@
 			irq-pin = <&gpio_usb_c0_fault_l>;
 			flags = <GPIO_INT_EDGE_FALLING>;
 			handler = "syv682x_interrupt";
+		};
+		int_bj_adp_present: bj_adp_present {
+			irq-pin = <&gpio_bj_adp_present>;
+			flags = <GPIO_INT_EDGE_BOTH>;
+			handler = "adp_connect_interrupt";
 		};
 	};
 

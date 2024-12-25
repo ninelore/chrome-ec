@@ -42,6 +42,11 @@
 			flags = <GPIO_INT_EDGE_BOTH>;
 			handler = "button_interrupt";
 		};
+		int_bj_adp_present: bj_adp_present {
+			irq-pin = <&gpio_bj_adp_present>;
+			flags = <GPIO_INT_EDGE_BOTH>;
+			handler = "adp_connect_interrupt";
+		};
 	};
 
 	unused-pins {
@@ -186,6 +191,12 @@
 	 */
 	mul = <(715828 / 2)>;
 	div = <(589820 / 2)>;
+};
+
+&adc_vbus {
+	/* 113/1113 voltage divider */
+	mul = <1113>;
+	div = <113>;
 };
 
 &adc0 {

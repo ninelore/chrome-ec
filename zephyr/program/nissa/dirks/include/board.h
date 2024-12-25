@@ -13,4 +13,6 @@ enum charge_port {
 	CHARGE_PORT_BARRELJACK,
 };
 
+enum usbc_port { USBC_PORT_C0 = 0, USBC_PORT_COUNT };
+
 #endif /* __CROS_EC_NISSA_DIRKS_BOARD_H__ */

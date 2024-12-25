@@ -34,6 +34,11 @@
 		};
 	};
 
+	zephyr,user {
+		io-channels = <&adc0 15>;
+		io-channel-names = "PPVAR_PWR_IN_IMON";
+	};
+
 	named-gpios {
 		compatible = "named-gpios";
 

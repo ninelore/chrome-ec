@@ -3,6 +3,7 @@
  * found in the LICENSE file.
  */
 
+#include "adc.h"
 #include "board.h"
 #include "charge_state.h"
 #include "chipset.h"
@@ -36,7 +37,7 @@ static void board_init(void)
 }
 DECLARE_HOOK(HOOK_INIT, board_init, HOOK_PRIO_DEFAULT);
 
-int extpower_is_present(void)
+__override int extpower_is_present(void)
 {
 	/*
 	 * There's no battery, so running this method implies we have power.
@@ -145,8 +146,7 @@ int pd_snk_is_vbus_provided(int port)
 	return ppc_is_vbus_present(port);
 }
 
-void pd_set_input_current_limit(int port, uint32_t max_ma,
-				uint32_t supply_voltage)
+__override int board_get_vbus_voltage(int port)
 {
-	/* Need this to build */
+	return adc_read_channel(ADC_VBUS);
 }

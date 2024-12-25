@@ -404,6 +404,7 @@ if(DEFINED CONFIG_BOARD_DIRKS)
 	project(dirks)
 	zephyr_include_directories("dirks/include")
 	zephyr_library_sources(
+			"dirks/src/barrel_jack.c"
 			"dirks/src/led.c"
 			"dirks/src/hdmi.c"
 	)

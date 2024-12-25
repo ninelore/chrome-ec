@@ -201,6 +201,11 @@ config TEST_DISABLE_AP_PWRSEQ
 	  This is used to disable CONFIG_AP_PWRSEQ for testing purposes
 	  directly.
 
+config PLATFORM_EC_DEDICATED_CHARGE_PORT
+	bool "Dedicated charging port"
+	help
+	  Enable if there is a dedicated charging port on the system.
+
 module = NISSA
 module-str = Nissa board-specific code (unit tests)
 source "subsys/logging/Kconfig.template.log_config"
