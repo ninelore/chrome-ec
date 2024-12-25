@@ -369,6 +369,20 @@ if(DEFINED CONFIG_BOARD_TELITH)
 			"telith/src/keyboard_customization.c"
 	)
 endif()
+if(DEFINED CONFIG_BOARD_PUJJONIRU)
+	project(pujjoniru)
+	zephyr_include_directories("pujjoniru/include")
+	zephyr_library_sources(
+			"pujjoniru/src/board.c"
+			"pujjoniru/src/sub_board.c"
+			"pujjoniru/src/board_touchpanel.c"
+	)
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_USBC "pujjoniru/src/usbc.c")
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_CHARGER "pujjoniru/src/charger.c")
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_KEYBOARD_CUSTOMIZATION
+			"pujjoniru/src/keyboard_customization.c"
+	)
+endif()
 if(DEFINED CONFIG_BOARD_INTEL_ISH_5_4_1)
 	project(orisa-ish)
 	add_subdirectory(orisa-ish)

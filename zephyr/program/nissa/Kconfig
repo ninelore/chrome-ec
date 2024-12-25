@@ -198,6 +198,12 @@ config BOARD_TELITH
 	  Build Google Telith reference board. Telith has Intel TWL SoC
 	  with IT81302 EC.
 
+config BOARD_PUJJONIRU
+	bool "Google PUJJONIRU Board"
+	help
+	  Build Google PUJJONIRU reference board. PUJJONIRU has Intel TWL SoC
+	  with IT81302 EC.
+
 module = NISSA
 module-str = Nissa board-specific code
 source "subsys/logging/Kconfig.template.log_config"
