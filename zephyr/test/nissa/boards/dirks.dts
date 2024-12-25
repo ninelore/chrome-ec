@@ -2,6 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
+
+#include <dt-bindings/pwm/pwm.h>
 #include <it8xxx2_emul.dts>
 
 / {
@@ -59,6 +61,63 @@
 		port0-muxes {
 			virtual_mux_0: virtual-mux-0 {
 				compatible = "cros-ec,usbc-mux-virtual";
+			};
+		};
+	};
+
+	led-pwms {
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		pwm1: pwm@1 {
+			compatible = "cros,pwm-mock";
+			reg = <1 1>;
+			#pwm-cells = <3>;
+		};
+		pwm2: pwm@2 {
+			compatible = "cros,pwm-mock";
+			reg = <2 1>;
+			#pwm-cells = <3>;
+		};
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		pwm_pwr_red_led: pwm_pwr_red_led {
+			pwms = <&pwm1 1 PWM_HZ(2000) PWM_POLARITY_INVERTED>;
+		};
+		pwm_pwr_white_led: pwm_pwr_white_led {
+			pwms = <&pwm2 2 PWM_HZ(2000) PWM_POLARITY_INVERTED>;
+		};
+	};
+
+	cros-pwmleds {
+		compatible = "cros-ec,pwm-leds";
+
+		leds = <&pwm_pwr_red_led>;
+		leds = <&pwm_pwr_white_led>;
+	};
+
+	pwm-led-pins {
+		compatible = "cros-ec,pwm-led-pins";
+
+		power_led: power-led {
+			led-id = "EC_LED_ID_POWER_LED";
+			led-pwms = <&pwm_pwr_red_led &pwm_pwr_white_led>;
+
+			color-battery-off {
+				led-color = "LED_OFF";
+				led-values = <0 0>;
+			};
+
+			color-battery-amber {
+				led-color = "LED_AMBER";
+				led-values = <100 0>;
+			};
+
+			color-battery-white {
+				led-color = "LED_WHITE";
+				led-values = <0 100>;
 			};
 		};
 	};

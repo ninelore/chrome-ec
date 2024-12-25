@@ -391,7 +391,7 @@ if(DEFINED CONFIG_BOARD_DIRKS)
 	project(dirks)
 	zephyr_include_directories("dirks/include")
 	zephyr_library_sources(
-			"src/led.c"
+			"dirks/src/led.c"
 			"dirks/src/hdmi.c"
 	)
 	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_USBC "dirks/src/usbc.c")

@@ -154,6 +154,7 @@ choice TEST_TARGET
 
 	config TEST_NISSA_DIRKS
 	  bool "Tests for Dirks-specific code"
+	  select TEST_DISABLE_INLINE_CHIPSET_IN_STATE
 	  help
 		The test target that exercises nissa/dirks/*.c
 endchoice

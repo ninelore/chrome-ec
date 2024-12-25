@@ -4,11 +4,15 @@
  */
 
 #include "ap_power/ap_power_events.h"
+#include "board_led.h"
 #include "charge_manager.h"
+#include "chipset.h"
+#include "dirks.h"
 #include "emul/tcpc/emul_tcpci.h"
 #include "extpower.h"
 #include "hooks.h"
 #include "keyboard_protocol.h"
+#include "led_common.h"
 #include "nissa_hdmi.h"
 #include "system.h"
 #include "tcpm/tcpci.h"
@@ -37,6 +41,9 @@ FAKE_VALUE_FUNC(int, ppc_vbus_sink_enable, int, int);
 FAKE_VALUE_FUNC(int, ppc_is_vbus_present, int);
 FAKE_VOID_FUNC(syv682x_interrupt, enum gpio_signal)
 
+FAKE_VALUE_FUNC(int, chipset_in_state, int);
+FAKE_VALUE_FUNC(int, set_color_power, enum led_color, int);
+
 uint8_t board_get_charger_chip_count(void)
 {
 	return 2;
@@ -54,6 +61,9 @@ static void test_before(void *fixture)
 	RESET_FAKE(ppc_vbus_sink_enable);
 	RESET_FAKE(ppc_is_vbus_present);
 	RESET_FAKE(syv682x_interrupt);
+
+	RESET_FAKE(chipset_in_state);
+	RESET_FAKE(set_color_power);
 }
 
 ZTEST_SUITE(dirks, NULL, NULL, test_before, NULL, NULL);
@@ -171,4 +181,107 @@ ZTEST(dirks, test_pd_snk_is_vbus_provided)
 
 	/* Invalid port */
 	zassert_equal(pd_snk_is_vbus_provided(1), 0);
+}
+
+#define TEST_DELAY_MS 1
+#define LED_CPU_DELAY_MS (2000 + TEST_DELAY_MS)
+#define LED_PULSE_TICK_US 40
+#define LED_PULSE_US 2000
+
+static int sys_state;
+
+static int chipset_in_state_mock(int state_mask)
+{
+	return (state_mask & sys_state) == sys_state;
+}
+
+ZTEST(dirks, test_led_shutdown)
+{
+	/* LED off when shutdown */
+	hook_notify(HOOK_CHIPSET_SHUTDOWN);
+	zassert_equal(set_color_power_fake.call_count, 0);
+	k_sleep(K_MSEC(LED_CPU_DELAY_MS));
+	zassert_equal(set_color_power_fake.call_count, 1);
+	zassert_equal(set_color_power_fake.arg0_val, LED_OFF);
+	zassert_equal(set_color_power_fake.arg1_val, 0);
+}
+
+ZTEST(dirks, test_led_suspend)
+{
+	/* WHITE LED breathing when suspend */
+	hook_notify(HOOK_CHIPSET_SUSPEND);
+	zassert_equal(set_color_power_fake.call_count, 0);
+	k_sleep(K_MSEC(LED_CPU_DELAY_MS));
+	zassert_equal(set_color_power_fake.call_count, 1);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 0);
+	k_sleep(K_MSEC(LED_PULSE_TICK_US));
+	zassert_equal(set_color_power_fake.call_count, 2);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 2);
+	k_sleep(K_MSEC(LED_PULSE_TICK_US));
+	zassert_equal(set_color_power_fake.call_count, 3);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 4);
+}
+
+ZTEST(dirks, test_led_resume)
+{
+	/* WHITE LED always on when chipset is on */
+	hook_notify(HOOK_CHIPSET_RESUME);
+	zassert_equal(set_color_power_fake.call_count, 1);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 100);
+}
+
+ZTEST(dirks, test_led_init)
+{
+	/* If chipset state is off at init, Turn white led off */
+	sys_state = CHIPSET_STATE_ANY_OFF;
+	chipset_in_state_fake.custom_fake = chipset_in_state_mock;
+
+	hook_notify(HOOK_INIT);
+	zassert_equal(set_color_power_fake.call_count, 1);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 0);
+
+	/* If chipset state is on at init, Turn white led on */
+	sys_state = CHIPSET_STATE_ON;
+	chipset_in_state_fake.custom_fake = chipset_in_state_mock;
+
+	hook_notify(HOOK_INIT);
+	zassert_equal(set_color_power_fake.call_count, 2);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 100);
+}
+
+ZTEST(dirks, test_led_brightness_range)
+{
+	uint8_t brightness[EC_LED_COLOR_COUNT] = { 0 };
+
+	/* Verify LED set to OFF */
+	led_set_brightness(EC_LED_ID_POWER_LED, brightness);
+	zassert_equal(set_color_power_fake.call_count, 1);
+	zassert_equal(set_color_power_fake.arg0_val, LED_OFF);
+	zassert_equal(set_color_power_fake.arg1_val, 0);
+
+	/* Verify LED colors defined are reflected in the brightness
+	 * array.
+	 */
+	led_get_brightness_range(EC_LED_ID_POWER_LED, brightness);
+	zassert_equal(brightness[EC_LED_COLOR_RED], 100);
+	zassert_equal(brightness[EC_LED_COLOR_WHITE], 100);
+
+	led_set_brightness(EC_LED_ID_POWER_LED, brightness);
+	zassert_equal(set_color_power_fake.call_count, 2);
+	zassert_equal(set_color_power_fake.arg0_val, LED_WHITE);
+	zassert_equal(set_color_power_fake.arg1_val, 100);
+
+	memset(brightness, 0, sizeof(brightness));
+
+	brightness[EC_LED_COLOR_RED] = 50;
+	led_set_brightness(EC_LED_ID_POWER_LED, brightness);
+	zassert_equal(set_color_power_fake.call_count, 3);
+	zassert_equal(set_color_power_fake.arg0_val, LED_RED);
+	zassert_equal(set_color_power_fake.arg1_val, 50);
 }

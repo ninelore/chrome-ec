@@ -359,6 +359,7 @@ if(CONFIG_TEST_NISSA_DIRKS)
     target_sources(
             app PRIVATE
             src/dirks.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/led.c
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/hdmi.c
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/usbc.c
     )
