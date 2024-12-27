@@ -5,6 +5,7 @@
  * USB-C utility functions for all PD stacks (TCPMv1, TCPMv2, PDC)
  */
 
+#include "common.h"
 #include "usb_common.h"
 #include "usb_pd.h"
 #include "util.h"
@@ -13,6 +14,86 @@
 
 /* The macro is used to prevent a DBZ exception while decoding PDOs. */
 #define PROCESS_ZERO_DIVISOR(x) ((x) == 0 ? 1 : (x))
+
+__overridable int pd_is_valid_input_voltage(int mv)
+{
+	return 1;
+}
+
+int pd_find_pdo_index(uint32_t src_cap_cnt, const uint32_t *const src_caps,
+		      int max_mv, uint32_t *selected_pdo)
+{
+	int i, uw, mv;
+	int ret = 0;
+	int cur_uw = 0;
+	int has_preferred_pdo;
+	int prefer_cur;
+	int __attribute__((unused)) cur_mv = 0;
+
+	/* max voltage is always limited by this boards max request */
+	max_mv = MIN(max_mv, CONFIG_USB_PD_MAX_VOLTAGE_MV);
+
+	/* Get max power that is under our max voltage input */
+	for (i = 0; i < src_cap_cnt; i++) {
+		if (IS_ENABLED(CONFIG_USB_PD_ONLY_FIXED_PDOS) &&
+		    (src_caps[i] & PDO_TYPE_MASK) != PDO_TYPE_FIXED)
+			continue;
+		/* its an unsupported Augmented PDO (PD3.0) */
+		if ((src_caps[i] & PDO_TYPE_MASK) == PDO_TYPE_AUGMENTED)
+			continue;
+
+		mv = PDO_FIXED_VOLTAGE(src_caps[i]);
+		/* Skip invalid voltage */
+		if (!mv)
+			continue;
+		/*
+		 * It's illegal to have EPR PDO in 1...7.
+		 * TODO: This is supposed to be a hard reset (8.3.3.3.8)
+		 */
+		if (i < 7 && mv > PD_MAX_SPR_VOLTAGE)
+			continue;
+		/* Skip any voltage not supported by this board */
+		if (!pd_is_valid_input_voltage(mv))
+			continue;
+
+		if ((src_caps[i] & PDO_TYPE_MASK) == PDO_TYPE_BATTERY) {
+			uw = 250000 * (src_caps[i] & 0x3FF);
+		} else {
+			int ma = PDO_FIXED_CURRENT(src_caps[i]);
+
+			ma = MIN(ma, CONFIG_USB_PD_MAX_CURRENT_MA);
+			uw = ma * mv;
+		}
+
+		if (mv > max_mv)
+			continue;
+		uw = MIN(uw, CONFIG_USB_PD_MAX_POWER_MW * 1000);
+		prefer_cur = 0;
+
+		/* Apply special rules in favor of voltage  */
+		if (IS_ENABLED(PD_PREFER_LOW_VOLTAGE)) {
+			if (uw == cur_uw && mv < cur_mv)
+				prefer_cur = 1;
+		} else if (IS_ENABLED(PD_PREFER_HIGH_VOLTAGE)) {
+			if (uw == cur_uw && mv > cur_mv)
+				prefer_cur = 1;
+		}
+
+		/* Prefer higher power, except for tiebreaker */
+		has_preferred_pdo = prefer_cur || (uw > cur_uw);
+
+		if (has_preferred_pdo) {
+			ret = i;
+			cur_uw = uw;
+			cur_mv = mv;
+		}
+	}
+
+	if (selected_pdo)
+		*selected_pdo = src_caps[ret];
+
+	return ret;
+}
 
 static void extract_pdo_helper(uint32_t pdo, uint32_t *ma, uint32_t *max_mv,
 			       uint32_t *min_mv)
