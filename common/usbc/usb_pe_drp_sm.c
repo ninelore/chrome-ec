@@ -1378,8 +1378,8 @@ __overridable bool pd_can_charge_from_device(int port, const int pdo_cnt,
 		 * Get max power that the partner offers (not necessarily what
 		 * this board will request)
 		 */
-		pd_find_pdo_index(pdo_cnt, pdos, pd_get_max_voltage(),
-				  &max_pdo);
+		pd_select_best_pdo(pdo_cnt, pdos, pd_get_max_voltage(),
+				   &max_pdo);
 		pd_extract_pdo_power(max_pdo, &max_ma, &max_mv, &unused);
 		max_mw = max_ma * max_mv / 1000;
 

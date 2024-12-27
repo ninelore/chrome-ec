@@ -103,8 +103,8 @@ void pd_build_request(int32_t vpd_vdo, uint32_t *rdo, uint32_t *ma,
 	 */
 	if (charging_allowed && max_request_allowed) {
 		/* find pdo index for max voltage we can request */
-		pdo_index = pd_find_pdo_index(src_cap_cnt, src_caps,
-					      max_request_mv, &pdo);
+		pdo_index = pd_select_best_pdo(src_cap_cnt, src_caps,
+					       max_request_mv, &pdo);
 	} else {
 		/* src cap 0 should be vSafe5V */
 		pdo_index = 0;
@@ -213,8 +213,8 @@ void pd_process_source_cap(int port, int cnt, uint32_t *src_caps)
 			max_mv = MIN(max_mv, dps_get_dynamic_voltage());
 
 		/* Get max power info that we could request */
-		pd_find_pdo_index(pd_get_src_cap_cnt(port),
-				  pd_get_src_caps(port), max_mv, &pdo);
+		pd_select_best_pdo(pd_get_src_cap_cnt(port),
+				   pd_get_src_caps(port), max_mv, &pdo);
 		pd_extract_pdo_power(pdo, &ma, &mv, &unused);
 
 		/* Set max. limit, but 2.5 W ceiling will be applied later. */

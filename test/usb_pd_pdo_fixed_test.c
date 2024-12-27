@@ -10,8 +10,8 @@
 #define PDO_FIXED_FLAGS \
 	(PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP | PDO_FIXED_COMM_CAP)
 
-/* Test that a non-fixed PDO will never be selected by pd_find_pdo_index. */
-test_static int test_pd_find_pdo_index(void)
+/* Test that a non-fixed PDO will never be selected by pd_select_best_pdo. */
+test_static int test_pd_select_best_pdo(void)
 {
 	const uint32_t pd_snk_pdo[] = {
 		PDO_FIXED(5000, 500, PDO_FIXED_FLAGS),
@@ -26,24 +26,24 @@ test_static int test_pd_find_pdo_index(void)
 	const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 	uint32_t pdo;
 
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 5000, &pdo), 0,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 5000, &pdo), 0,
 		"%d");
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 9000, &pdo), 3,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 9000, &pdo), 3,
 		"%d");
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 10000, &pdo), 3,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 10000, &pdo), 3,
 		"%d");
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 12000, &pdo), 4,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 12000, &pdo), 4,
 		"%d");
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 15000, &pdo), 4,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 15000, &pdo), 4,
 		"%d");
-	TEST_EQ(pd_find_pdo_index(pd_snk_pdo_cnt, pd_snk_pdo, 20000, &pdo), 5,
+	TEST_EQ(pd_select_best_pdo(pd_snk_pdo_cnt, pd_snk_pdo, 20000, &pdo), 5,
 		"%d");
 	return EC_SUCCESS;
 }
 
 void run_test(int argc, const char **argv)
 {
-	RUN_TEST(test_pd_find_pdo_index);
+	RUN_TEST(test_pd_select_best_pdo);
 
 	test_print_result();
 }

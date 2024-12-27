@@ -334,7 +334,7 @@ static void update_ports(void)
 					break;
 
 				/* Find the 'best' PDO <= voltage */
-				pdo_index = pd_find_pdo_index(
+				pdo_index = pd_select_best_pdo(
 					pd_get_src_cap_cnt(CHG),
 					pd_get_src_caps(CHG),
 					pd_src_voltages_mv[i], &pdo);

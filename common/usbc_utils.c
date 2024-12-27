@@ -20,8 +20,8 @@ __overridable int pd_is_valid_input_voltage(int mv)
 	return 1;
 }
 
-int pd_find_pdo_index(uint32_t src_cap_cnt, const uint32_t *const src_caps,
-		      int max_mv, uint32_t *selected_pdo)
+int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
+		       int max_mv, uint32_t *selected_pdo)
 {
 	int i, uw, mv;
 	int ret = 0;
