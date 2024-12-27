@@ -120,12 +120,6 @@ def get_argparser():
         type=int,
         help="Degree of multiprogramming to use",
     )
-    parser.add_argument(
-        "--goma",
-        action="store_true",
-        dest="goma",
-        help="Enable hyperspeed compilation with Goma! (Googlers only)",
-    )
 
     log_level_group = parser.add_mutually_exclusive_group()
     log_level_group.add_argument(

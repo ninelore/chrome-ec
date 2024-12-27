@@ -166,8 +166,6 @@ class Zmake:
         checkout=None,
         jobserver: Optional[zmake.jobserver.JobClient] = None,
         jobs=0,
-        goma=False,
-        gomacc="/mnt/host/depot_tools/.cipd_bin/gomacc",
         modules_dir=None,
         projects_dirs=None,
         zephyr_base=None,
@@ -175,8 +173,6 @@ class Zmake:
         zmake.multiproc.LogWriter.reset()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._checkout = checkout
-        self.goma = goma
-        self.gomacc = gomacc
         if zephyr_base:
             self.zephyr_base = zephyr_base
         else:
@@ -207,7 +203,7 @@ class Zmake:
             self.jobserver = zmake.jobserver.GNUMakeJobServer(jobs=jobs)
 
         self.executor = zmake.multiproc.Executor()
-        self._sequential = self.jobserver.is_sequential() and not goma
+        self._sequential = self.jobserver.is_sequential()
         self.cmp_failed_projects = {}
         self.failed_projects = []
 
@@ -638,13 +634,6 @@ class Zmake:
                     base_config |= zmake.build_config.BuildConfig(
                         cmake_defs={"EXTRA_CFLAGS": extra_cflags},
                     )
-                if self.goma:
-                    base_config |= zmake.build_config.BuildConfig(
-                        cmake_defs={
-                            "CMAKE_C_COMPILER_LAUNCHER": self.gomacc,
-                            "CMAKE_CXX_COMPILER_LAUNCHER": self.gomacc,
-                        },
-                    )
 
                 if not build_dir.exists():
                     build_dir.mkdir()
@@ -911,10 +900,7 @@ class Zmake:
                 "-C",
                 dirs[build_name].as_posix(),
             ]
-            if self.goma:
-                # Go nuts ninja, goma does the heavy lifting!
-                cmd.append("-j1024")
-            elif self._sequential:
+            if self._sequential:
                 cmd.append("-j1")
             if coverage:
                 cmd.append("all.libraries")

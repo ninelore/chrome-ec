@@ -76,7 +76,6 @@
 *   [Reducing EC Image Size](./reducing_ec_image_size.md)
 *   [Code Reviews](./code_reviews.md)
 *   [IDE Support](./ide-support.md)
-*   [Building with Goma (Googlers only)](./goma.md)
 *   [Parallel Uprevs for ebuilds](./pupr.md)
 
 [1]:https://chromium.googlesource.com/chromiumos/platform/ec/+/cr50_stab/docs/case_closed_debugging.md
