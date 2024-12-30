@@ -6,7 +6,10 @@
 #include "include/usb_common.h"
 #include "usb_pd.h"
 
+#include <zephyr/fff.h>
 #include <zephyr/ztest.h>
+
+FAKE_VALUE_FUNC(int, chipset_in_state, int);
 
 ZTEST(pdc_usb_utils, test_pd_extract_pdo_power_unclamped)
 {

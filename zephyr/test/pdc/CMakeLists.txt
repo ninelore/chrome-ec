@@ -23,6 +23,9 @@ if (DEFINED CONFIG_TEST_SUITE_PDC_GENERIC)
 	target_sources(app PRIVATE src/generic/pdc_attached_snk.c)
 	target_sources(app PRIVATE src/generic/pdc_power_mgmt_api.c)
 	target_sources(app PRIVATE src/generic/pdc_pmc_debug_api.c)
+endif()
+
+if (DEFINED CONFIG_TEST_SUITE_PDC_UTILS)
 	target_sources(app PRIVATE src/generic/usb_utils.c)
 endif()
 
