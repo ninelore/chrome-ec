@@ -23,9 +23,9 @@ __overridable int pd_is_valid_input_voltage(int mv)
 int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		       int max_mv, uint32_t *selected_pdo)
 {
-	int i, uw, mv;
-	int ret = 0;
-	int cur_uw = 0;
+	int i, uw, mv, unused_min_mv, ma;
+	int ret = -1;
+	int cur_uw = -1;
 	int has_preferred_pdo;
 	int prefer_cur;
 	int __attribute__((unused)) cur_mv = 0;
@@ -38,11 +38,13 @@ int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		if (IS_ENABLED(CONFIG_USB_PD_ONLY_FIXED_PDOS) &&
 		    (src_caps[i] & PDO_TYPE_MASK) != PDO_TYPE_FIXED)
 			continue;
+
 		/* its an unsupported Augmented PDO (PD3.0) */
 		if ((src_caps[i] & PDO_TYPE_MASK) == PDO_TYPE_AUGMENTED)
 			continue;
 
-		mv = PDO_FIXED_VOLTAGE(src_caps[i]);
+		pd_extract_pdo_power(src_caps[i], &ma, &mv, &unused_min_mv);
+
 		/* Skip invalid voltage */
 		if (!mv)
 			continue;
@@ -56,17 +58,10 @@ int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		if (!pd_is_valid_input_voltage(mv))
 			continue;
 
-		if ((src_caps[i] & PDO_TYPE_MASK) == PDO_TYPE_BATTERY) {
-			uw = 250000 * (src_caps[i] & 0x3FF);
-		} else {
-			int ma = PDO_FIXED_CURRENT(src_caps[i]);
-
-			ma = MIN(ma, CONFIG_USB_PD_MAX_CURRENT_MA);
-			uw = ma * mv;
-		}
-
 		if (mv > max_mv)
 			continue;
+
+		uw = ma * mv;
 		uw = MIN(uw, CONFIG_USB_PD_MAX_POWER_MW * 1000);
 		prefer_cur = 0;
 
@@ -89,7 +84,7 @@ int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		}
 	}
 
-	if (selected_pdo)
+	if (ret != -1 && selected_pdo)
 		*selected_pdo = src_caps[ret];
 
 	return ret;
