@@ -14,8 +14,9 @@
 
 LOG_MODULE_REGISTER(board_init, LOG_LEVEL_ERR);
 
-bool voltorb_is_more_efficient(int curr_mv, int prev_mv, int batt_mv,
-			       int batt_mw, int input_mw)
+test_export_static bool voltorb_is_more_efficient(int curr_mv, int prev_mv,
+						  int batt_mv, int batt_mw,
+						  int input_mw)
 {
 	int batt_state;
 
