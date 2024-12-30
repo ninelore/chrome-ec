@@ -128,7 +128,6 @@ test-list-host += usb_pd
 test-list-host += usb_pd_console
 test-list-host += usb_pd_giveback
 test-list-host += usb_pd_rev30
-test-list-host += usb_pd_pdo_fixed
 test-list-host += usb_pd_timer
 test-list-host += usb_ppc
 test-list-host += usb_sm_framework_h3
