@@ -21,8 +21,8 @@
 
 / {
 	batteries {
-		default_battery: b300049 {
-			compatible = "celxpert,b300049", "battery-smart";
+		default_battery: hq24u2s1p3l {
+			compatible = "utl,hq24u2s1p3l", "battery-smart";
 		};
 	};
 	gpio-interrupts {
