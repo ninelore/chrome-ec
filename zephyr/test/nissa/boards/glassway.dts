@@ -10,6 +10,14 @@
 #include "../program/nissa/glassway/motionsense.dtsi"
 
 / {
+        chosen {
+                cros-ec,raw-kb = &cros_kb_raw;
+        };
+
+        cros_kb_raw: kb-raw-emul {
+                compatible = "cros-ec,kb-raw-emul";
+        };
+
         aliases {
                 /* type-C */
                 gpio-usb-c1-int-odl = &gpio_sb_1;

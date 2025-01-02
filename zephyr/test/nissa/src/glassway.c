@@ -16,6 +16,9 @@
 #include "glassway_sub_board.h"
 #include "gpio/gpio_int.h"
 #include "hooks.h"
+#include "keyboard_8042_sharedlib.h"
+#include "keyboard_raw.h"
+#include "keyboard_scan.h"
 #include "led_onoff_states.h"
 #include "led_pwm.h"
 #include "mock/isl923x.h"
@@ -35,6 +38,7 @@
 
 #include <ap_power/ap_power.h>
 #include <ap_power/ap_power_events.h>
+#include <drivers/vivaldi_kbd.h>
 #include <dt-bindings/gpio_defines.h>
 #include <typec_control.h>
 
@@ -78,6 +82,7 @@ FAKE_VOID_FUNC(bmi3xx_interrupt, enum gpio_signal);
 FAKE_VOID_FUNC(bma4xx_interrupt, enum gpio_signal);
 FAKE_VOID_FUNC(icm42607_interrupt, enum gpio_signal);
 FAKE_VOID_FUNC(nissa_configure_hdmi_rails);
+FAKE_VOID_FUNC(lpc_keyboard_resume_irq);
 
 void board_usb_pd_count_init(void);
 static uint32_t fw_config_value;
@@ -1064,4 +1069,45 @@ ZTEST(glassway, test_board_anx7483_c1_mux_set)
 	rv = anx7483_emul_get_eq(ANX7483_EMUL1, ANX7483_PIN_DRX2, &eq);
 	zassert_ok(rv);
 	zassert_equal(eq, ANX7483_EQ_SETTING_6_8DB);
+}
+
+int clock_get_freq(void)
+{
+	return 16000000;
+}
+
+static bool keyboard_ca_fr;
+
+static int cbi_get_keyboard_type_config(enum cbi_fw_config_field_id field,
+					uint32_t *value)
+{
+	if (field != FW_KB_TYPE)
+		return -EINVAL;
+
+	zassert_equal(field, FW_KB_TYPE);
+	*value = keyboard_ca_fr ? FW_KB_TYPE_CA_FR : FW_KB_TYPE_DEFAULT;
+	return 0;
+}
+
+ZTEST(glassway, test_keyboard_type)
+{
+	uint16_t forwardslash_pipe_key = get_scancode_set2(2, 7);
+	uint16_t right_control_key = get_scancode_set2(4, 0);
+
+	cros_cbi_get_fw_config_fake.return_val = EINVAL;
+	kb_init();
+	zassert_equal(get_scancode_set2(4, 0), right_control_key);
+	zassert_equal(get_scancode_set2(2, 7), forwardslash_pipe_key);
+
+	cros_cbi_get_fw_config_fake.custom_fake = cbi_get_keyboard_type_config;
+
+	keyboard_ca_fr = false;
+	kb_init();
+	zassert_equal(get_scancode_set2(4, 0), right_control_key);
+	zassert_equal(get_scancode_set2(2, 7), forwardslash_pipe_key);
+
+	keyboard_ca_fr = true;
+	kb_init();
+	zassert_equal(get_scancode_set2(4, 0), forwardslash_pipe_key);
+	zassert_equal(get_scancode_set2(2, 7), right_control_key);
 }

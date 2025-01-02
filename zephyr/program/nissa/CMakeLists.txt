@@ -260,6 +260,7 @@ if(DEFINED CONFIG_BOARD_GLASSWAY)
 			"glassway/src/kb_backlight.c"
 			"glassway/src/board.c"
 			"glassway/src/usb_mux_config.c"
+			"glassway/src/keyboard.c"
 	)
 	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_FAN "glassway/src/fan.c")
 	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_USBC "glassway/src/usbc.c")

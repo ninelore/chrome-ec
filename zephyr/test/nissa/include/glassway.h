@@ -11,6 +11,7 @@
 void fan_init(void);
 void board_setup_init(void);
 void alt_sensor_init(void);
+void kb_init(void);
 
 extern enum glassway_sub_board_type glassway_cached_sub_board;
 
