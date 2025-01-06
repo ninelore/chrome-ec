@@ -16,6 +16,7 @@
 #include "ec_commands.h"
 #include "hooks.h"
 #include "test/util.h"
+#include "usb_common.h"
 #include "usb_mux.h"
 #include "usb_pd.h"
 #include "usbc/pdc_dpm.h"
@@ -1968,85 +1969,16 @@ static void pdc_snk_attached_entry(void *obj)
 }
 
 /**
- * @brief Evaluate a set of source PDOs and return the index of the best PDO.
- *
- * The rule used to choose a PDO is select the highest-wattage, highest-voltage
- * PDO that does not exceed the board's maximum PD voltage.
- *
- * @param pdos Input list of PDOs to check
- * @param num_pdos Number of PDOs in \p pdos
- * @param selected[out] Output parameter for 0-based index of selected PDO
- *
- * @return 0 on success
- * @return -EINVAL if \p selected is NULL or \p num_pdos is 0
- * @return -ENOTSUP if no PDO in \p pdos meets criteria
- */
-STATIC_IF_NOT(CONFIG_ZTEST)
-int evaluate_src_pdos(const uint32_t *pdos, size_t num_pdos, size_t *selected)
-{
-	uint32_t highest_mw = 0, highest_mv = 0;
-	int best_index = -1;
-
-	if (pdos == NULL || selected == NULL || num_pdos == 0) {
-		return -EINVAL;
-	}
-
-	for (size_t i = 0; i < num_pdos; i++) {
-		/* PD spec requires the first PDO to be a 5V fixed, so there
-		 * is expected to always be a usable PDO in this list.
-		 */
-
-		if ((pdos[i] & PDO_TYPE_MASK) != PDO_TYPE_FIXED) {
-			/* Only consider fixed PDOs */
-			continue;
-		}
-
-		/* Extract voltage and current from PDO, and compute wattage */
-		uint32_t mv = PDO_FIXED_VOLTAGE(pdos[i]);
-		uint32_t ma = PDO_FIXED_CURRENT(pdos[i]);
-		uint32_t mw = (mv * ma) / 1000;
-
-		LOG_INF("PDO%d: %08x, %d %d %d", i + 1, pdos[i], mv, ma, mw);
-
-		/* Find highest-wattage PDO that does not exceed the board max
-		 * voltage.
-		 */
-
-		if (mv > pdc_max_request_mv) {
-			/* Voltage too high. Skip. */
-			continue;
-		}
-
-		if ((mw > highest_mw) ||
-		    (mw == highest_mw && mv > highest_mv)) {
-			/* Found a higher-wattage PDO, or an equivalent-wattage
-			 * PDO that is higher voltage. */
-			highest_mw = mw;
-			highest_mv = mv;
-			best_index = i;
-		}
-	}
-
-	if (best_index < 0) {
-		/* No PDO matched. */
-		return -ENOTSUP;
-	}
-
-	*selected = best_index;
-	return 0;
-}
-
-/**
  * @brief Run sink attached state.
  */
 static void pdc_snk_attached_run(void *obj)
 {
 	struct pdc_port_t *port = (struct pdc_port_t *)obj;
 	const struct pdc_config_t *const config = port->dev->config;
-	uint32_t max_ma, max_mv, max_mw, max_mw_pdo;
+	uint32_t max_ma, max_mv, max_mw, max_mw_pdo, unused;
 	uint32_t flags;
-	size_t selected_pdo = 0;
-	int rv;
+	int pdo_index = 0;
+	uint32_t selected_pdo;
 
 	/* The CCI_EVENT is set to re-query connector status, so check the
 	 * connector status and take the appropriate action.
@@ -2164,48 +2096,51 @@ static void pdc_snk_attached_run(void *obj)
 		port->snk_attached_local_state = SNK_ATTACHED_START_CHARGING;
 		flags = RDO_COMM_CAP;
 
-		rv = evaluate_src_pdos(port->snk_policy.src.pdos, PDO_NUM,
-				       &selected_pdo);
-		if (rv) {
-			LOG_ERR("C%d: No suitable PDO found (%d)",
-				config->connector_num, rv);
+		for (int i = 0; i < PDO_NUM; i++) {
+			pd_extract_pdo_power_unclamped(
+				port->snk_policy.src.pdos[i], &max_ma, &max_mv,
+				&unused);
+			max_mw = max_ma * max_mv / 1000;
+			LOG_INF("PDO%d: %08x, %d %d %d", i + 1,
+				port->snk_policy.src.pdos[i], max_mv, max_ma,
+				max_mw);
 		}
 
-		if (port->snk_policy.pdo ==
-			    port->snk_policy.src.pdos[selected_pdo] &&
-		    port->snk_policy.pdo_index == (selected_pdo + 1)) {
+		pdo_index =
+			pd_select_best_pdo(PDO_NUM, port->snk_policy.src.pdos,
+					   pdc_max_request_mv, &selected_pdo);
+
+		if (port->snk_policy.pdo == selected_pdo &&
+		    port->snk_policy.pdo_index == (pdo_index + 1)) {
 			/* Selected PDO didn't change - no need to send RDO */
 			LOG_INF("C%d: Retaining PDO[%d]=0x%08X",
-				config->connector_num, selected_pdo,
-				port->snk_policy.src.pdos[selected_pdo]);
+				config->connector_num, pdo_index, selected_pdo);
 			return;
 		}
 
 		/* Store the selected PDO. Convert the PDO number to 1-based
 		 * indexing.
 		 */
-		port->snk_policy.pdo = port->snk_policy.src.pdos[selected_pdo];
-		port->snk_policy.pdo_index = selected_pdo + 1;
+		port->snk_policy.pdo = port->snk_policy.src.pdos[pdo_index];
+		port->snk_policy.pdo_index = pdo_index + 1;
+
+		/* Get the unclamped PDO voltage and current to determine
+		 * whether we need to set the capability mismatch bit if
+		 * less power is offered than our operating requirement.
+		 */
+		pd_extract_pdo_power_unclamped(selected_pdo, &max_ma, &max_mv,
+					       &unused);
+		max_mw_pdo = max_ma * max_mv / 1000;
+		if (max_mw_pdo < pdc_max_operating_power) {
+			flags |= RDO_CAP_MISMATCH;
+		}
 
 		/* Extract Current, Voltage, and calculate Power. Current is
 		 * clamped to the board maximum here so that the RDO and charge
 		 * manager are given the correct board operating current.
 		 */
-		max_ma = MIN(PDO_FIXED_CURRENT(port->snk_policy.pdo),
-			     CONFIG_PLATFORM_EC_USB_PD_MAX_CURRENT_MA);
-		max_mv = PDO_FIXED_VOLTAGE(port->snk_policy.pdo);
+		pd_extract_pdo_power(selected_pdo, &max_ma, &max_mv, &unused);
 		max_mw = max_ma * max_mv / 1000;
-
-		/* max_mw_pdo holds the raw PDO wattage without clamping. Use
-		 * this to set the mismatch bit if less power is offered than
-		 * our operating requirement.
-		 */
-		max_mw_pdo = PDO_FIXED_CURRENT(port->snk_policy.pdo) *
-			     PDO_FIXED_VOLTAGE(port->snk_policy.pdo) / 1000;
-
-		if (max_mw_pdo < pdc_max_operating_power) {
-			flags |= RDO_CAP_MISMATCH;
-		}
 
 		/* Set RDO to send */
 		if ((port->snk_policy.pdo & PDO_TYPE_MASK) ==
@@ -2214,6 +2149,7 @@ static void pdc_snk_attached_run(void *obj)
 				RDO_BATT(port->snk_policy.pdo_index, max_mw,
 					 max_mw, flags);
 		} else {
+			/* Fixed or variable RDO. */
 			port->snk_policy.rdo_to_send =
 				RDO_FIXED(port->snk_policy.pdo_index, max_ma,
 					  max_ma, flags);
