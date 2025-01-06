@@ -315,6 +315,28 @@ config PLATFORM_EC_USB_PD_MAX_VOLTAGE_MV
 	  match with configured PLATFORM_EC_USB_PD_MAX_POWER_MW and
 	  PLATFORM_EC_USB_PD_MAX_CURRENT_MA.
 
+choice PLATFORM_EC_USB_PD_VOLTAGE_CHOICE
+	prompt "Set the PD selection voltage policy"
+	optional
+	help
+	  This optional choice instructs the DUT to override the default PDO
+	  selection algorithm in favor of a lower or higher voltage.
+
+config PLATFORM_EC_USB_PD_PREFER_LOW_VOLTAGE
+	bool "Prefer lower voltage PDO"
+	help
+	  If enabled, if the partner source device offers multiple PDOs at the
+	  same wattage, the DUT will select the PDO offering the lowest voltage.
+
+config PLATFORM_EC_USB_PD_PREFER_HIGH_VOLTAGE
+	bool "Prefer higher voltage PDO"
+	help
+	  If enabled, if the partner source device offers multiple PDOs at the
+	  same wattage, the DUT will select the PDO offering the highest
+	  voltage.
+
+endchoice
+
 config PLATFORM_EC_PD_POWER_SUPPLY_TURN_ON_DELAY
 	int "Power supply turn on delay in us"
 	default 30000

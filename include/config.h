@@ -4926,6 +4926,18 @@
  */
 #undef CONFIG_USB_PD_REV30
 
+/*
+ * If enabled, the PD selection logic will select the PDO offering the lower
+ * voltage if multiple PDOs provide the same power.
+ */
+#undef CONFIG_USB_PD_PREFER_LOW_VOLTAGE
+
+/*
+ * If enabled, the PD selection logic will select the PDO offering the higher
+ * voltage if multiple PDOs provide the same power.
+ */
+#undef CONFIG_USB_PD_PREFER_HIGH_VOLTAGE
+
 /* Defined automatically based on on maximum PD revision supported. */
 #undef CONFIG_PD_RETRY_COUNT
 

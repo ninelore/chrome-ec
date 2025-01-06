@@ -81,7 +81,7 @@
 #define CONFIG_USB_PD_MAX_VOLTAGE_MV 20000
 
 /* The lower the input voltage, the higher the power efficiency. */
-#define PD_PREFER_LOW_VOLTAGE
+#define CONFIG_USB_PD_PREFER_LOW_VOLTAGE
 
 /*
  * Macros for GPIO signals used in common code that don't match the

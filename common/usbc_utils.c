@@ -71,10 +71,10 @@ int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		prefer_cur = 0;
 
 		/* Apply special rules in favor of voltage  */
-		if (IS_ENABLED(PD_PREFER_LOW_VOLTAGE)) {
+		if (IS_ENABLED(CONFIG_USB_PD_PREFER_LOW_VOLTAGE)) {
 			if (uw == cur_uw && mv < cur_mv)
 				prefer_cur = 1;
-		} else if (IS_ENABLED(PD_PREFER_HIGH_VOLTAGE)) {
+		} else if (IS_ENABLED(CONFIG_USB_PD_PREFER_HIGH_VOLTAGE)) {
 			if (uw == cur_uw && mv > cur_mv)
 				prefer_cur = 1;
 		}
