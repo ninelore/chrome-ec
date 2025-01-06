@@ -1,0 +1,23 @@
+/* Copyright 2025 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#include <cros/cbi_flash.dtsi>
+#include "../npcx_generated.dtsi"
+#include "../interrupts.dtsi"
+#include "../npcx_common.dtsi"
+#include "../npcx_keyboard.dtsi"
+#include "../npcx_overlay.dtsi"
+#include "../npcx_usbc.dtsi"
+#include "../power_signal.dtsi"
+#include "../usba.dtsi"
+#include "motionsense.dtsi"
+
+/ {
+	batteries {
+		default_battery: placeholder {
+			compatible = "cosmx,ap20cbl-3", "battery-smart";
+		};
+	};
+};
