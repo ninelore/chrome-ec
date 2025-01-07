@@ -35,6 +35,10 @@ if (DEFINED CONFIG_TEST_SUITE_PDC_POLICY)
 	target_sources(app PRIVATE src/pdc_policy/select_best_pdo.c)
 endif()
 
+if (DEFINED CONFIG_TEST_SUITE_PDC_POLICY_CLAMPED)
+	target_sources(app PRIVATE src/pdc_policy/select_best_pdo_clamped.c)
+endif()
+
 if (DEFINED CONFIG_TEST_SUITE_PDC_API_NULL_CHECK)
 	target_sources(app PRIVATE src/generic/pdc_null_api.c)
 endif()

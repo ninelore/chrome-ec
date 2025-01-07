@@ -17,6 +17,9 @@ config TEST_SUITE_PDC_DEVICE_NOT_READY
 config TEST_SUITE_PDC_POLICY
 	bool "Enable PDC policy tests"
 
+config TEST_SUITE_PDC_POLICY_CLAMPED
+	bool "Enable PDC policy tests with clamped power"
+
 config TEST_SUITE_PDC_PMC_USB_MUX
 	bool "Enable PDC PMC USB mux tests"
 
