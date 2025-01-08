@@ -252,3 +252,52 @@ ZTEST(pd_select_best_pdo, test_select_higher_wattage)
 					 CONFIG_USB_PD_MAX_VOLTAGE_MV, &pdo),
 		      3, "Failed to select 20V/4A fixed PDO");
 }
+
+ZTEST(pd_select_best_pdo, test_low_high_preference)
+{
+	uint32_t partner_src_pdo[] = {
+		PDO_FIXED(5000, 500, 0),
+		PDO_FIXED(15000, 3000, 0),
+		PDO_FIXED(20000, 2250, 0),
+	};
+	uint32_t pdo;
+	int expected_index;
+
+	if (IS_ENABLED(CONFIG_PLATFORM_EC_USB_PD_PREFER_LOW_VOLTAGE)) {
+		LOG_INF("Lower voltage PDO is preferred");
+		expected_index = 1;
+	} else if (IS_ENABLED(CONFIG_PLATFORM_EC_USB_PD_PREFER_HIGH_VOLTAGE)) {
+		LOG_INF("Higher voltage PDO is preferred");
+		expected_index = 2;
+	} else {
+		LOG_INF("Default PDO selection policy");
+		/* First PDO with equivalent wattage should be picked */
+		expected_index = 1;
+	}
+
+	zassert_equal(
+		pd_select_best_pdo(ARRAY_SIZE(partner_src_pdo), partner_src_pdo,
+				   CONFIG_USB_PD_MAX_VOLTAGE_MV, &pdo),
+		expected_index, "Failed to select fixed PDO based on policy");
+
+	/* This isn't valid - Fixed PDOs are supposed to be ordered by voltage
+	 * but this ensures we have full code coverage.
+	 */
+	partner_src_pdo[1] = PDO_FIXED(20000, 2250, 0);
+	partner_src_pdo[2] = PDO_FIXED(15000, 3000, 0);
+
+	if (IS_ENABLED(CONFIG_PLATFORM_EC_USB_PD_PREFER_LOW_VOLTAGE)) {
+		expected_index = 2;
+	} else if (IS_ENABLED(CONFIG_PLATFORM_EC_USB_PD_PREFER_HIGH_VOLTAGE)) {
+		expected_index = 1;
+	} else {
+		/* First PDO with equivalent wattage should be picked */
+		expected_index = 1;
+	}
+
+	zassert_equal(
+		pd_select_best_pdo(ARRAY_SIZE(partner_src_pdo), partner_src_pdo,
+				   CONFIG_USB_PD_MAX_VOLTAGE_MV, &pdo),
+		expected_index,
+		"Failed to select fixed PDO based on policy with out of order PDOs");
+}
