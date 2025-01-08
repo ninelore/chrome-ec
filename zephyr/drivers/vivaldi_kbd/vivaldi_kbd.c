@@ -21,6 +21,7 @@
 #include <dt-bindings/vivaldi_kbd.h>
 #include <hooks.h>
 #include <host_command.h>
+#include <keyboard_config.h>
 
 LOG_MODULE_REGISTER(vivaldi_kbd, LOG_LEVEL_ERR);
 
@@ -66,10 +67,44 @@ static const struct {
 } vivaldi_keys[] = { DT_INST_FOREACH_PROP_ELEM(0, vivaldi_keys,
 					       VIVALDI_KEY_INIT) };
 
-#define KEYBD_CONFIG_VALIDATE(node_id)                             \
-	BUILD_ASSERT(IN_RANGE(DT_PROP_LEN(node_id, vivaldi_codes), \
-			      MIN_TOP_ROW_KEYS, MAX_TOP_ROW_KEYS), \
-		     "invalid number of codes specified");
+/* If cros_ec_boot_keys exists and is okay, validate that the vivaldi key
+ * TK_REFRESH is the same keycode as boot-keys.refresh-rc.
+ */
+#if DT_HAS_COMPAT_STATUS_OKAY(cros_ec_boot_keys)
+#define BOOT_KEY_VALIDATE(node_id, prop, idx)                               \
+	BUILD_ASSERT(TK_REFRESH != DT_PROP_BY_IDX(node_id, prop, idx) ||    \
+			     DT_INST_PROP_BY_IDX(0, vivaldi_keys, idx) ==   \
+				     DT_PROP(DT_INST(0, cros_ec_boot_keys), \
+					     refresh_rc),                   \
+		     "Vivaldi TK_REFRESH key must match boot-key.refresh-rc");
+#else
+#define BOOT_KEY_VALIDATE(node_id, prop, idx)
+#endif
+
+/* If KEYBOARD_ROW_REFRESH exists, verify that the vivaldi key TK_REFRESH is
+ * on the correct row.
+ */
+#ifdef KEYBOARD_ROW_REFRESH
+#define REFRESH_ROW_VALIDATE(node_id, prop, idx)                              \
+	BUILD_ASSERT(TK_REFRESH != DT_PROP_BY_IDX(node_id, prop, idx) ||      \
+			     (KBD_RC_ROW(DT_INST_PROP_BY_IDX(0, vivaldi_keys, \
+							     idx)) ==         \
+				      KEYBOARD_ROW_REFRESH &&                 \
+			      KBD_RC_COL(DT_INST_PROP_BY_IDX(0, vivaldi_keys, \
+							     idx)) ==         \
+				      KEYBOARD_COL_REFRESH),                  \
+		     "Vivaldi TK_REFRESH key must match \
+KEYBOARD_ROW_REFRESH/KEYBOARD_COL_REFRESH");
+#else
+#define REFRESH_ROW_VALIDATE(node_id, prop, idx)
+#endif
+
+#define KEYBD_CONFIG_VALIDATE(node_id)                                  \
+	BUILD_ASSERT(IN_RANGE(DT_PROP_LEN(node_id, vivaldi_codes),      \
+			      MIN_TOP_ROW_KEYS, MAX_TOP_ROW_KEYS),      \
+		     "invalid number of codes specified");              \
+	DT_FOREACH_PROP_ELEM(node_id, vivaldi_codes, BOOT_KEY_VALIDATE) \
+	DT_FOREACH_PROP_ELEM(node_id, vivaldi_codes, REFRESH_ROW_VALIDATE)
 DT_INST_FOREACH_CHILD(0, KEYBD_CONFIG_VALIDATE)
 
 #define NODE_SUM_ONE(fn) 1 +
