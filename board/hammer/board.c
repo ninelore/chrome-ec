@@ -355,7 +355,7 @@ static const struct ec_response_keybd_config zed_kb = {
 	.capabilities = KEYBD_CAP_SCRNLOCK_KEY,
 };
 
-static const struct ec_response_keybd_config bland_kb = {
+static const struct ec_response_keybd_config eel_kb = {
 	.num_top_row_keys = 10,
 	.action_keys = {
 		TK_BACK,
@@ -395,8 +395,8 @@ board_vivaldi_keybd_config(void)
 	if (IS_ENABLED(BOARD_ZED) || IS_ENABLED(BOARD_STAR) ||
 	    IS_ENABLED(BOARD_GELATIN))
 		return &zed_kb;
-	if (IS_ENABLED(BOARD_BLAND) || IS_ENABLED(BOARD_EEL))
-		return &bland_kb;
+	if (IS_ENABLED(BOARD_EEL))
+		return &eel_kb;
 	if (IS_ENABLED(BOARD_DUCK))
 		return &duck_kb;
 
