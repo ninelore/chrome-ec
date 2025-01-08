@@ -498,6 +498,7 @@ static const struct ec_response_keybd_config landrid_keybd = {
 	/* No function keys and no screenlock key */
 };
 
+BUILD_ASSERT(IS_ENABLED(CONFIG_KEYBOARD_VIVALDI));
 __override const struct ec_response_keybd_config *
 board_vivaldi_keybd_config(void)
 {
@@ -513,6 +514,9 @@ board_vivaldi_keybd_config(void)
 			return &lantis_keybd_backlight;
 	}
 }
+
+/* TODO(b/219051027): Add assert to check that key_typ.{row,col}_refresh == the
+ * row/col in the tables above. */
 
 static void board_update_no_keypad_by_fwconfig(void)
 {

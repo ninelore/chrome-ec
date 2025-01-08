@@ -105,6 +105,9 @@ extern "C" {
 	(KEYBOARD_MASK_REFRESH | KEYBOARD_ROW_TO_MASK(0))
 #endif
 
+/* For safety, after any ec_response_keybd_config, add this assert. */
+#define BUILD_ASSERT_REFRESH_RC(row, col) \
+	BUILD_ASSERT(KEYBOARD_ROW_REFRESH == row && KEYBOARD_COL_REFRESH == col)
 #ifdef __cplusplus
 }
 #endif
