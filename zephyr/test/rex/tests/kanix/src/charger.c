@@ -17,6 +17,11 @@ FAKE_VOID_FUNC(pd_power_supply_reset, int);
 FAKE_VALUE_FUNC(int, pd_check_vconn_swap, int);
 FAKE_VALUE_FUNC(int, pd_set_power_supply_ready, int);
 
+/* Normally implemented in zephyr/shim/src/espi.c */
+void lpc_keyboard_resume_irq(void)
+{
+}
+
 ZTEST_SUITE(kanix_charger, NULL, NULL, NULL, NULL, NULL);
 
 ZTEST(kanix_charger, test_get_leave_safe_mode_delay_ms)

@@ -19,6 +19,11 @@
 FAKE_VALUE_FUNC(int, cros_cbi_get_fw_config, enum cbi_fw_config_field_id,
 		uint32_t *);
 
+/* Normally implemented in zephyr/shim/src/espi.c */
+void lpc_keyboard_resume_irq(void)
+{
+}
+
 static bool cbi_touch_en;
 static bool cbi_read_fail;
 

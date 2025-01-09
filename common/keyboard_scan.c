@@ -37,10 +37,6 @@
 #include "drivers/one_wire_uart.h"
 #endif
 
-#ifdef CONFIG_KEYBOARD_MULTIPLE
-#include "keyboard_customization.h"
-#endif
-
 /* Console output macros */
 #define CPUTS(outstr) cputs(CC_KEYSCAN, outstr)
 #define CPRINTF(format, args...) cprintf(CC_KEYSCAN, format, ##args)

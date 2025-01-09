@@ -22,6 +22,11 @@ FAKE_VOID_FUNC(fan_set_rpm_mode, int, int);
 FAKE_VOID_FUNC(fan_set_rpm_target, int, int);
 FAKE_VALUE_FUNC(int, fan_get_rpm_target, int);
 
+/* Normally implemented in zephyr/shim/src/espi.c */
+void lpc_keyboard_resume_irq(void)
+{
+}
+
 enum chipset_state_mask fake_chipset_state;
 int chipset_in_state_mock(int state_mask)
 {

@@ -22,7 +22,7 @@
 #include "fan_chip.h"
 #include "gpio.h"
 #include "hooks.h"
-#include "keyboard_customization.h"
+#include "keyboard_config.h"
 #include "keyboard_scan.h"
 #include "lid_switch.h"
 #include "power.h"
