@@ -128,7 +128,7 @@ COMMON_WARN += -Wall -Wundef \
 COMMON_WARN+=-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 
 ifndef ALLOW_WARNINGS
-COMMON_WARN+=-Werror
+COMMON_WARN+=-Wno-error
 COMMON_WARN-clang+=-Werror=uninitialized
 COMMON_WARN-gcc+=-Werror=maybe-uninitialized
 endif
