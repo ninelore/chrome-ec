@@ -27,7 +27,10 @@ i2c3ALT: &i2c3 {
 		en_pp3300_a: ec_ds3_r {};
 		en_pp5000_s5: bga_pinf4 {};
 		rsmrst_pwrgd: rsmrst_pwrgd_n_r {};
-		ec_pch_rsmrst_l: pm_rsmrst_n_r {};
+		/*
+		 * TODO: b/386856132 - update schematics net names
+		 */
+		ec_pch_rsmrst_l: cpu_c10_gate_r {};
 		pch_slp_s0_n: pch_slp_s0_n_r {};
 		ec_pch_pwrok_od: pch_pwrok_ec_r {};
 		all_sys_pwrgd: all_sys_pwrgd_r {};
