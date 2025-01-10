@@ -13,6 +13,7 @@
 
 #include "generated.dtsi"
 
+#include "fan.dtsi"
 #include "gpios.dtsi"
 #include "i2c.dtsi"
 #include "temp_sensors.dtsi"
