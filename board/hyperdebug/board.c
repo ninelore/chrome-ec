@@ -228,7 +228,9 @@ static void change_frequencies(int m, int n, int r, uint32_t rcc_cfgr)
 	clock_set_osc(OSC_PLL, OSC_HSI);
 
 	/* Now apply the desired divisor to peripheral clock. */
+	hook_notify(HOOK_PRE_FREQ_CHANGE);
 	STM32_RCC_CFGR = rcc_cfgr;
+	hook_notify(HOOK_FREQ_CHANGE);
 }
 
 static int command_clock_set(int argc, const char **argv)
