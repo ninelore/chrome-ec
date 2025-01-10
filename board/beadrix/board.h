@@ -90,6 +90,9 @@
 #define PD_POWER_SUPPLY_TURN_ON_DELAY 13080 /* us */
 #define PD_POWER_SUPPLY_TURN_OFF_DELAY 16080 /* us */
 
+/* Keyboard */
+#define CONFIG_KEYBOARD_REFRESH_ROW3
+
 #ifndef __ASSEMBLER__
 
 #include "gpio_signal.h"

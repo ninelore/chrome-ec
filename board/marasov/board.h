@@ -151,6 +151,9 @@
 
 #define CONFIG_ADC_CHANNELS_RUNTIME_CONFIG
 
+/* Keyboard */
+#define CONFIG_KEYBOARD_REFRESH_ROW3
+
 #ifndef __ASSEMBLER__
 
 #include "gpio_signal.h" /* needed by registers.h */
