@@ -378,16 +378,32 @@ static int read_matrix(uint8_t *state, bool at_boot)
 	if (pb_pressed && at_boot) {
 		/* Check if KSI2 (or KSI3) is asserted on all columns */
 		for (c = 0; c < keyboard_cols; c++) {
-			if (!(state[c] & KEYBOARD_MASKED_BY_POWERBTN)) {
+#ifdef CONFIG_KEYBOARD_MULTIPLE
+			if (!(state[c] & KEYBOARD_MASKED_BY_POWERBTN(
+						 key_typ.row_refresh))) {
 				break;
 			}
+#else
+			if (!(state[c] & KEYBOARD_MASKED_BY_POWERBTN(
+						 KEYBOARD_ROW_REFRESH))) {
+				break;
+			}
+#endif
 		}
 
 		if (c == keyboard_cols) {
 			for (c = 0; c < keyboard_cols; c++) {
+#ifdef CONFIG_KEYBOARD_MULTIPLE
+				if (c == key_typ.col_refresh)
+					continue;
+				state[c] &= ~KEYBOARD_MASKED_BY_POWERBTN(
+					key_typ.row_refresh);
+#else
 				if (c == KEYBOARD_COL_REFRESH)
 					continue;
-				state[c] &= ~KEYBOARD_MASKED_BY_POWERBTN;
+				state[c] &= ~KEYBOARD_MASKED_BY_POWERBTN(
+					KEYBOARD_ROW_REFRESH);
+#endif
 			}
 		}
 	}
@@ -481,14 +497,14 @@ static int check_runtime_keys(const uint8_t *state)
 	uint8_t mask_key_vol_up_row = 0;
 
 	if (key_vol_up_col == KEYBOARD_COL_KEY_R) {
-		mask_key_r_row = KEYBOARD_MASK_KEY_R;
+		mask_key_r_row = KEYBOARD_ROW_TO_MASK(KEYBOARD_ROW_KEY_R);
 		mask_key_vol_up_row = KEYBOARD_ROW_TO_MASK(key_vol_up_row);
 	}
 #else
 	uint8_t mask_key_r_row = 0;
 
-	if (key_vol_up_col == KEYBOARD_COL_KEY_R) {
-		mask_key_r_row = KEYBOARD_MASK_KEY_R;
+	if (key_vol_up_col == key_typ.col_key_r) {
+		mask_key_r_row = KEYBOARD_ROW_TO_MASK(key_typ.row_key_r);
 	}
 #endif
 
@@ -501,12 +517,16 @@ static int check_runtime_keys(const uint8_t *state)
 		return 0;
 
 #ifndef CONFIG_KEYBOARD_MULTIPLE
-	if (state[KEYBOARD_COL_RIGHT_ALT] != KEYBOARD_MASK_RIGHT_ALT &&
-	    state[KEYBOARD_COL_LEFT_ALT] != KEYBOARD_MASK_LEFT_ALT)
+	if (state[KEYBOARD_COL_RIGHT_ALT] !=
+		    KEYBOARD_ROW_TO_MASK(KEYBOARD_ROW_RIGHT_ALT) &&
+	    state[KEYBOARD_COL_LEFT_ALT] !=
+		    KEYBOARD_ROW_TO_MASK(KEYBOARD_ROW_LEFT_ALT))
 		return 0;
 #else
-	if (state[key_typ.col_right_alt] != KEYBOARD_MASK_RIGHT_ALT &&
-	    state[key_typ.col_left_alt] != KEYBOARD_MASK_LEFT_ALT)
+	if (state[key_typ.col_right_alt] !=
+		    KEYBOARD_ROW_TO_MASK(key_typ.row_right_alt) &&
+	    state[key_typ.col_left_alt] !=
+		    KEYBOARD_ROW_TO_MASK(key_typ.row_left_alt))
 		return 0;
 #endif
 
@@ -526,13 +546,14 @@ static int check_runtime_keys(const uint8_t *state)
 #ifndef CONFIG_KEYBOARD_MULTIPLE
 	/* Check individual keys */
 	if ((state[KEYBOARD_COL_KEY_R] & ~mask_key_vol_up_row) ==
-	    KEYBOARD_MASK_KEY_R) {
+	    KEYBOARD_ROW_TO_MASK(KEYBOARD_ROW_KEY_R)) {
 		/* R = reboot */
 		CPRINTS("warm reboot");
 		keyboard_clear_buffer();
 		chipset_reset(CHIPSET_RESET_KB_WARM_REBOOT);
 		return 1;
-	} else if (state[KEYBOARD_COL_KEY_H] == KEYBOARD_MASK_KEY_H) {
+	} else if (state[KEYBOARD_COL_KEY_H] ==
+		   KEYBOARD_ROW_TO_MASK(KEYBOARD_ROW_KEY_H)) {
 		/* H = hibernate */
 		CPRINTS("hibernate");
 		system_enter_hibernate(0, 0);
@@ -540,13 +561,15 @@ static int check_runtime_keys(const uint8_t *state)
 	}
 #else
 	/* Check individual keys */
-	if (state[key_typ.col_key_r] == KEYBOARD_MASK_KEY_R) {
+	if (state[key_typ.col_key_r] ==
+	    KEYBOARD_ROW_TO_MASK(key_typ.row_key_r)) {
 		/* R = reboot */
 		CPRINTS("warm reboot");
 		keyboard_clear_buffer();
 		chipset_reset(CHIPSET_RESET_KB_WARM_REBOOT);
 		return 1;
-	} else if (state[key_typ.col_key_h] == KEYBOARD_MASK_KEY_H) {
+	} else if (state[key_typ.col_key_h] ==
+		   KEYBOARD_ROW_TO_MASK(key_typ.row_key_h)) {
 		/* H = hibernate */
 		CPRINTS("hibernate");
 		system_enter_hibernate(0, 0);
