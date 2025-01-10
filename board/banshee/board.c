@@ -79,11 +79,13 @@ void battery_present_interrupt(enum gpio_signal signal)
 }
 
 struct boot_key_entry boot_key_list[] = {
-	[BOOT_KEY_ESC] = { KEYBOARD_COL_ESC, KEYBOARD_ROW_ESC },
-	[BOOT_KEY_DOWN_ARROW] = { KEYBOARD_COL_DOWN, KEYBOARD_ROW_DOWN },
-	[BOOT_KEY_LEFT_SHIFT] = { KEYBOARD_COL_LEFT_SHIFT,
-				  KEYBOARD_ROW_LEFT_SHIFT },
-	[BOOT_KEY_REFRESH] = { KEYBOARD_COL_REFRESH, KEYBOARD_ROW_REFRESH },
+	[BOOT_KEY_ESC] = { BANSHEE_KEYBOARD_COL_ESC, BANSHEE_KEYBOARD_ROW_ESC },
+	[BOOT_KEY_DOWN_ARROW] = { BANSHEE_KEYBOARD_COL_DOWN,
+				  BANSHEE_KEYBOARD_ROW_DOWN },
+	[BOOT_KEY_LEFT_SHIFT] = { BANSHEE_KEYBOARD_COL_LEFT_SHIFT,
+				  BANSHEE_KEYBOARD_ROW_LEFT_SHIFT },
+	[BOOT_KEY_REFRESH] = { BANSHEE_KEYBOARD_COL_REFRESH,
+			       BANSHEE_KEYBOARD_ROW_REFRESH },
 };
 BUILD_ASSERT(ARRAY_SIZE(boot_key_list) == BOOT_KEY_COUNT);
 
@@ -119,10 +121,12 @@ static void configure_keyboard(void)
 		gpio_set_flags(GPIO_EC_KSO_04_INV, GPIO_ODR_HIGH);
 		gpio_set_alternate_function(GPIO_PORT_1, (BIT(5) | BIT(7)),
 					    GPIO_ALT_FUNC_DEFAULT);
-		key_typ.col_refresh = KEYBOARD_COL_ID2_REFRESH;
-		key_typ.row_refresh = KEYBOARD_ROW_ID2_REFRESH;
-		boot_key_list[BOOT_KEY_REFRESH].col = KEYBOARD_COL_ID2_REFRESH;
-		boot_key_list[BOOT_KEY_REFRESH].row = KEYBOARD_ROW_ID2_REFRESH;
+		key_typ.col_refresh = BANSHEE_KEYBOARD_COL_ID2_REFRESH;
+		key_typ.row_refresh = BANSHEE_KEYBOARD_ROW_ID2_REFRESH;
+		boot_key_list[BOOT_KEY_REFRESH].col =
+			BANSHEE_KEYBOARD_COL_ID2_REFRESH;
+		boot_key_list[BOOT_KEY_REFRESH].row =
+			BANSHEE_KEYBOARD_ROW_ID2_REFRESH;
 	}
 
 	board_id_keyboard_col_inverted((int)board_id);

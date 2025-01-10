@@ -384,9 +384,11 @@ static const struct ec_response_keybd_config delbin_kb = {
 };
 
 /* TK_REFRESH is always T2 above, vivaldi_keys[1] is overridden above to 3/2. */
-BUILD_ASSERT_REFRESH_RC(3, 2);
+BUILD_ASSERT(DELBIN_KEYBOARD_ROW_REFRESH == 3 &&
+	     DELBIN_KEYBOARD_COL_REFRESH == 2);
 /* Keyboard 2 uses the same vivaldi_keys[1]. */
-BUILD_ASSERT(KEYBOARD2_ROW_REFRESH == 3 && KEYBOARD2_COL_REFRESH == 2);
+BUILD_ASSERT(DELBIN_KEYBOARD2_ROW_REFRESH == 3 &&
+	     DELBIN_KEYBOARD2_COL_REFRESH == 2);
 
 BUILD_ASSERT(IS_ENABLED(CONFIG_KEYBOARD_VIVALDI));
 __override const struct ec_response_keybd_config *
