@@ -141,11 +141,3 @@ __override void board_pre_task_i2c_peripheral_init(void)
 	}
 #endif
 }
-
-__override uint8_t board_keyboard_row_refresh(void)
-{
-	if (board_id < 2)
-		return KEYBOARD_ROW_REFRESH;
-	else
-		return KEYBOARD_ROW_ID2_REFRESH;
-}

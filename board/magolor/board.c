@@ -163,14 +163,6 @@ static const struct ec_response_keybd_config magma_keybd = {
 	.capabilities = KEYBD_CAP_SCRNLOCK_KEY | KEYBD_CAP_NUMERIC_KEYPAD,
 };
 
-__override uint8_t board_keyboard_row_refresh(void)
-{
-	if (gpio_get_level(GPIO_EC_VIVALDIKEYBOARD_ID))
-		return 3;
-	else
-		return 2;
-}
-
 __override const struct ec_response_keybd_config *
 board_vivaldi_keybd_config(void)
 {

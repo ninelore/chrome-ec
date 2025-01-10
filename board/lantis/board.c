@@ -514,14 +514,6 @@ board_vivaldi_keybd_config(void)
 	}
 }
 
-__override uint8_t board_keyboard_row_refresh(void)
-{
-	if (gpio_get_level(GPIO_EC_VIVALDIKEYBOARD_ID))
-		return 3;
-	else
-		return 2;
-}
-
 static void board_update_no_keypad_by_fwconfig(void)
 {
 	if (!get_cbi_fw_config_numeric_pad()) {
