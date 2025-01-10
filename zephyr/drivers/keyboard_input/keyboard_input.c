@@ -144,7 +144,7 @@ static int cmd_kbpress(const struct shell *sh, size_t argc, char **argv)
 	return 0;
 }
 
-SHELL_CMD_ARG_REGISTER(kbpress, NULL, "Simulate keypress: ksstate col row 0|1",
+SHELL_CMD_ARG_REGISTER(kbpress, NULL, "Simulate keypress: kbpress col row 0|1",
 		       cmd_kbpress, 4, 0);
 
 static enum ec_status
