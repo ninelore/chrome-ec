@@ -25,6 +25,14 @@ parameters that may be used, please consult the Twister documentation.
 #   version: "version:0.6.2"
 # >
 # wheel: <
+#   name: "infra/python/wheels/future-py2_py3"
+#   version: "version:0.18.2"
+# >
+# wheel: <
+#   name: "infra/python/wheels/junitparser-py2_py3"
+#   version: "version:2.8.0"
+# >
+# wheel: <
 #   name: "infra/python/wheels/natsort-py3"
 #   version: "version:8.3.1"
 # >
