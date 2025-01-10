@@ -44,6 +44,7 @@
 extern "C" {
 #endif
 
+#ifndef CONFIG_KEYBOARD_MULTIPLE
 /* Columns for keys we particularly care about when using a single keyboard
  * layout. */
 #define KEYBOARD_COL_DOWN 11
@@ -72,9 +73,16 @@ extern "C" {
 #endif
 #define KEYBOARD_COL_RIGHT_ALT 10
 #define KEYBOARD_ROW_RIGHT_ALT 0
+#define KEYBOARD_COL_LEFT_SHIFT 7
+#define KEYBOARD_ROW_LEFT_SHIFT 5
+
+#endif /* CONFIG_KEYBOARD_MULTIPLE */
+
+#ifdef CONFIG_KEYBOARD_RUNTIME_KEYS
 /*
  * Vol-up is part of vivaldi (a.k.a. top row keys). Thus, it needs to be
- * customized per boards.
+ * customized per boards. The default value is only used if
+ * board_vivaldi_keybd_config() returns NULL.
  */
 #ifndef KEYBOARD_DEFAULT_COL_VOL_UP
 #define KEYBOARD_DEFAULT_COL_VOL_UP 4
@@ -82,11 +90,29 @@ extern "C" {
 #ifndef KEYBOARD_DEFAULT_ROW_VOL_UP
 #define KEYBOARD_DEFAULT_ROW_VOL_UP 0
 #endif
-#define KEYBOARD_COL_LEFT_SHIFT 7
-#define KEYBOARD_ROW_LEFT_SHIFT 5
+#endif /* CONFIG_KEYBOARD_RUNTIME_KEYS */
 
 #endif /* CONFIG_KEYBOARD_CUSTOMIZATION */
 
+/* Below are some safety checks for keyboard_customization.h files. */
+#ifdef CONFIG_KEYBOARD_MULTIPLE
+#if defined(KEYBOARD_COL_DOWN) || defined(KEYBOARD_ROW_DOWN) ||               \
+	defined(KEYBOARD_COL_ESC) || defined(KEYBOARD_ROW_ESC) ||             \
+	defined(KEYBOARD_COL_KEY_H) || defined(KEYBOARD_ROW_KEY_H) ||         \
+	defined(KEYBOARD_COL_KEY_R) || defined(KEYBOARD_ROW_KEY_R) ||         \
+	defined(KEYBOARD_COL_LEFT_ALT) || defined(KEYBOARD_ROW_LEFT_ALT) ||   \
+	defined(KEYBOARD_COL_REFRESH) || defined(KEYBOARD_ROW_REFRESH) ||     \
+	defined(KEYBOARD_COL_RIGHT_ALT) || defined(KEYBOARD_ROW_RIGHT_ALT) || \
+	defined(KEYBOARD_COL_LEFT_SHIFT) || defined(KEYBOARD_ROW_LEFT_SHIFT)
+#error Populate the structs key_typ & boot_key_list instead of keyboard macros.
+#endif
+#endif /* CONFIG_KEYBOARD_MULTIPLE */
+#ifndef CONFIG_KEYBOARD_RUNTIME_KEYS
+#if defined(KEYBOARD_DEFAULT_COL_VOL_UP) || defined(KEYBOARD_DEFAULT_ROW_VOL_UP)
+#error KEYBOARD_DEFAULT_{ROW,COL}_VOL_UP are only used with \
+CONFIG_KEYBOARD_RUNTIME_KEYS.
+#endif
+#endif /* CONFIG_KEYBOARD_RUNTIME_KEYS */
 /*
  * GSC may not mask pass-through rows even when the power button is pressed.
  * Keyscan will clear the corresponding rows.
