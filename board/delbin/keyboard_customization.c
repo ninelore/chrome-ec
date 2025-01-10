@@ -117,6 +117,15 @@ int keyboard_choose(void)
 	return 0;
 }
 
+struct boot_key_entry boot_key_list[] = {
+	[BOOT_KEY_ESC] = { KEYBOARD_COL_ESC, KEYBOARD_ROW_ESC },
+	[BOOT_KEY_DOWN_ARROW] = { KEYBOARD_COL_DOWN, KEYBOARD_ROW_DOWN },
+	[BOOT_KEY_LEFT_SHIFT] = { KEYBOARD_COL_LEFT_SHIFT,
+				  KEYBOARD_ROW_LEFT_SHIFT },
+	[BOOT_KEY_REFRESH] = { KEYBOARD_COL_REFRESH, KEYBOARD_ROW_REFRESH },
+};
+BUILD_ASSERT(ARRAY_SIZE(boot_key_list) == BOOT_KEY_COUNT);
+
 void key_choose(void)
 {
 	if (keyboard_choose() == 1) {

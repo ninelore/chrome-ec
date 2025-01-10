@@ -95,18 +95,15 @@ __overridable struct keyboard_scan_config keyscan_config = {
 
 #ifdef CONFIG_KEYBOARD_BOOT_KEYS
 #ifndef CONFIG_KEYBOARD_MULTIPLE
-static const
-#endif
-	struct boot_key_entry boot_key_list[] = {
-		[BOOT_KEY_ESC] = { KEYBOARD_COL_ESC, KEYBOARD_ROW_ESC },
-		[BOOT_KEY_DOWN_ARROW] = { KEYBOARD_COL_DOWN,
-					  KEYBOARD_ROW_DOWN },
-		[BOOT_KEY_LEFT_SHIFT] = { KEYBOARD_COL_LEFT_SHIFT,
-					  KEYBOARD_ROW_LEFT_SHIFT },
-		[BOOT_KEY_REFRESH] = { KEYBOARD_COL_REFRESH,
-				       KEYBOARD_ROW_REFRESH },
-	};
+static const struct boot_key_entry boot_key_list[] = {
+	[BOOT_KEY_ESC] = { KEYBOARD_COL_ESC, KEYBOARD_ROW_ESC },
+	[BOOT_KEY_DOWN_ARROW] = { KEYBOARD_COL_DOWN, KEYBOARD_ROW_DOWN },
+	[BOOT_KEY_LEFT_SHIFT] = { KEYBOARD_COL_LEFT_SHIFT,
+				  KEYBOARD_ROW_LEFT_SHIFT },
+	[BOOT_KEY_REFRESH] = { KEYBOARD_COL_REFRESH, KEYBOARD_ROW_REFRESH },
+};
 BUILD_ASSERT(ARRAY_SIZE(boot_key_list) == BOOT_KEY_COUNT);
+#endif
 static uint32_t boot_key_value = BOOT_KEY_NONE;
 #endif
 
@@ -894,7 +891,7 @@ static uint32_t check_key_list(const uint8_t *state)
 
 	/* Update mask with all boot keys that were pressed. */
 	k = boot_key_list;
-	for (c = 0; c < ARRAY_SIZE(boot_key_list); c++, k++) {
+	for (c = 0; c < BOOT_KEY_COUNT; c++, k++) {
 		if (curr_state[k->col] & BIT(k->row)) {
 			boot_key_mask |= BIT(c);
 			curr_state[k->col] &= ~BIT(k->row);
