@@ -18,7 +18,6 @@
 #include "i2c.dtsi"
 #include "temp_sensors.dtsi"
 
-#include "../fatcat_it82002aw/gsc_board.dtsi"
 #include "../fatcat_it82002aw/interrupts.dtsi"
 
 /* Power Signals */
@@ -31,7 +30,22 @@
 #define PWR_ALL_SYS_PWRGD &gpio6 3
 
 #include "../../intelrvp/ptlrvp/power_signals.dtsi"
+#include "../../intelrvp/ptlrvp/gsc_board.dtsi"
+
+&it8801_mfd {
+	irq-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
+};
+
 #include "../../intelrvp/ptlrvp/i2c.dtsi"
+
+/*
+ * Using IT8801 MFD driver
+ * These lines can be deleted after all PTL platforms support the MFD driver.
+ * b/386325459
+ */
+/delete-node/ &kb_discrete;
+
+#include "../../intelrvp/ptlrvp/ioex_gpio.dtsi"
 #include "../../intelrvp/ptlrvp/keyboard.dtsi"
 #include "../../intelrvp/ptlrvp/ptlrvp_npcx/psl.dtsi"
 
