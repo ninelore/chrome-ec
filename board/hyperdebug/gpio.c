@@ -2842,24 +2842,66 @@ void dap_goog_gpio(size_t peek_c)
 	}
 }
 
-/* Utility function for busy-waiting, used by SPI and I2C TPM. */
-int await_high_level(int gsc_ready_pin, timestamp_t deadline)
+/*
+ * The monitoring_for_falling_edge() family of functions use the SysTick timer
+ * for polling the GPIO from interrupts.
+ */
+
+static int gsc_ready_pin;
+static volatile enum {
+	GSC_WAITING_FOR_HIGH_LEVEL = 0,
+	GSC_WAITING_FOR_FALLING_EDGE = 1,
+	GSC_DETECTED_FALLING_EDGE = 2,
+} gsc_ready_state;
+
+void sys_tick_handler(void)
 {
-	while (!gpio_get_level(gsc_ready_pin)) {
+	if (gpio_get_level(gsc_ready_pin)) {
+		/* High level, prepare to detect falling edge. */
+		if (gsc_ready_state == GSC_WAITING_FOR_HIGH_LEVEL)
+			gsc_ready_state = GSC_WAITING_FOR_FALLING_EDGE;
+	} else {
+		if (gsc_ready_state == GSC_WAITING_FOR_FALLING_EDGE) {
+			/* Low level after above, we detected falling edge. */
+			gsc_ready_state = GSC_DETECTED_FALLING_EDGE;
+			/* No need for further timer interrupts */
+			CPU_NVIC_ST_CTRL = 0;
+		}
+	}
+}
+
+#define CPU_NVIC_ST_RVR CPUREG(0xE000E014)
+#define CPU_NVIC_ST_CVR CPUREG(0xE000E018)
+
+void start_monitoring_for_falling_edge(int pin)
+{
+	gsc_ready_pin = pin;
+	gsc_ready_state = GSC_WAITING_FOR_HIGH_LEVEL;
+
+	/*
+	 * SysTick interrupt every 5 us.  Should be able to detect pulses as
+	 * narrow as 10us.
+	 */
+	CPU_NVIC_ST_RVR = 5 * clock_get_freq() / 1000000 - 1;
+	/* Enable SysTick countdown, internal CPU clock source, interrupt. */
+	CPU_NVIC_ST_CTRL = ST_CLKSOURCE | ST_TICKINT | ST_ENABLE;
+}
+
+int wait_for_falling_edge(timestamp_t deadline)
+{
+	while (gsc_ready_state != GSC_DETECTED_FALLING_EDGE) {
 		timestamp_t now = get_time();
-		if (timestamp_expired(deadline, &now))
+		if (timestamp_expired(deadline, &now)) {
+			/* Stop SysTick */
+			CPU_NVIC_ST_CTRL = 0;
 			return EC_ERROR_TIMEOUT;
+		}
 	}
 	return EC_SUCCESS;
 }
 
-/* Utility function for busy-waiting, used by SPI and I2C TPM. */
-int await_low_level(int gsc_ready_pin, timestamp_t deadline)
+void stop_monitoring_for_falling_edge(void)
 {
-	while (gpio_get_level(gsc_ready_pin)) {
-		timestamp_t now = get_time();
-		if (timestamp_expired(deadline, &now))
-			return EC_ERROR_TIMEOUT;
-	}
-	return EC_SUCCESS;
+	/* Stop SysTick */
+	CPU_NVIC_ST_CTRL = 0;
 }

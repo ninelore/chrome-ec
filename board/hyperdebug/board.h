@@ -290,9 +290,17 @@ enum gpio_signal gpio_find_by_name(const char *name);
 
 extern int shield_reset_pin;
 
-/* Utility methods shared by SPI and I2C TPM code. */
-int await_high_level(int gsc_ready_pin, timestamp_t deadline);
-int await_low_level(int gsc_ready_pin, timestamp_t deadline);
+/*
+ * Utility methods shared by SPI and I2C TPM code.
+ *
+ * A invocation of `start_monitoring_for_falling_edge()` will enable rather
+ * frequent timer interrupts, and must always be followed by an eventual
+ * invocation of `stop_monitoring_for_falling_edge()`.  In between such a pair
+ * of calls, `wait_for_falling_edge()` may be called once, or not at all.
+ */
+void start_monitoring_for_falling_edge(int gsc_ready_pin);
+int wait_for_falling_edge(timestamp_t deadline);
+void stop_monitoring_for_falling_edge(void);
 
 #endif /* !__ASSEMBLER__ */
 #endif /* __CROS_EC_BOARD_H */
