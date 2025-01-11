@@ -17,6 +17,13 @@
  * needs to be moved to Zephyr upstream
  */
 
+/* TODO: b/389279802 - delete this once the upstream PR that defines
+ * IS_BIT_SET() merges.
+ */
+#ifndef IS_BIT_SET
+#define IS_BIT_SET(reg, bit) (((reg) >> (bit)) & (0x1))
+#endif
+
 /* The FIU module version of NPCX4.
  * As npcx4 has some changes for the FIU module , it is not fully compatible
  * with the old FIU module. We need to read the FIU version of the chip in use
