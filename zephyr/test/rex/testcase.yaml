@@ -250,3 +250,11 @@ tests:
       - CONFIG_TEST_PROJECT_KANIX=y
       - CONFIG_TEST_PROJECT_TOUCH_PANEL=y
       - CONFIG_PLATFORM_EC_LID_SWITCH=y
+
+  rex.kanix.fan:
+    extra_dtc_overlay_files:
+      - boards/kanix/kanix.dtsi
+    extra_configs:
+      - CONFIG_TEST_PROJECT_KANIX=y
+      - CONFIG_TEST_BOARD_FAN_CUSTOM=y
+      - CONFIG_TEST_DISABLE_INLINE_CHIPSET_IN_STATE=y

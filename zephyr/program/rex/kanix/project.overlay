@@ -131,6 +131,50 @@
 			handler = "soc_edp_bl_interrupt";
 		};
 	};
+
+	fan_steps: fan-steps {
+		compatible = "cros-ec,fan-steps";
+		level_0 {
+			temp_on = <25>;
+			temp_off = <99>;
+			rpm_target = <0>;
+		};
+		level_1 {
+			temp_on = <38>;
+			temp_off = <34>;
+			rpm_target = <2700>;
+		};
+		level_2 {
+			temp_on = <42>;
+			temp_off = <37>;
+			rpm_target = <2925>;
+		};
+		level_3 {
+			temp_on = <45>;
+			temp_off = <41>;
+			rpm_target = <3300>;
+		};
+		level_4 {
+			temp_on = <48>;
+			temp_off = <44>;
+			rpm_target = <3585>;
+		};
+		level_5 {
+			temp_on = <51>;
+			temp_off = <47>;
+			rpm_target = <3900>;
+		};
+		level_6 {
+			temp_on = <54>;
+			temp_off = <50>;
+			rpm_target = <4255>;
+		};
+		level_7 {
+			temp_on = <65>;
+			temp_off = <60>;
+			rpm_target = <4775>;
+		};
+	};
 };
 
 &i2c1_0 {
@@ -189,8 +233,8 @@
 
 &fan0 {
 	pwms = <&pwm5 0 PWM_KHZ(25) PWM_POLARITY_NORMAL>;
-	rpm_min = <2500>;
-	rpm_start = <2500>;
+	rpm_min = <2200>;
+	rpm_start = <2200>;
 	rpm_max = <6000>;
 };
 

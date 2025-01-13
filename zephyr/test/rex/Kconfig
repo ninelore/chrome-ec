@@ -135,6 +135,11 @@ config TEST_PROJECT_TOUCH_PANEL
 	help
 	  Include touch_panel.c into the binary and test their functions.
 
+config TEST_BOARD_FAN_CUSTOM
+	bool "Run the tests intended for thermal.c"
+	help
+	  Include thermal.c into the binary and test their functions.
+
 module = REX
 module-str = Rex board-specific code
 source "subsys/logging/Kconfig.template.log_config"
