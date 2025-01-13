@@ -38,6 +38,7 @@ target_link_options(npcx_monitor BEFORE PRIVATE
 set(npcx_monitor_elf ${CMAKE_CURRENT_BINARY_DIR}/npcx_monitor.elf)
 set(npcx_monitor_bin ${CMAKE_BINARY_DIR}/npcx_monitor.bin)
 
+if (NOT DEFINED CONFIG_COVERAGE)
 add_custom_target(generate_npcx_monitor
   COMMAND ${CMAKE_OBJCOPY} -O binary ${npcx_monitor_elf} ${npcx_monitor_bin}
   BYPRODUCTS ${npcx_monitor_bin}
@@ -45,3 +46,4 @@ add_custom_target(generate_npcx_monitor
   )
 
 add_dependencies(zephyr generate_npcx_monitor)
+endif()
