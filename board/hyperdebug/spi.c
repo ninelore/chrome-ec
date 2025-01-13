@@ -779,14 +779,6 @@ static int usb_spi_tpm_transaction(const struct spi_device_t *spi_device,
 	if (rv == EC_SUCCESS)
 		rv = spi_transaction(spi_device, txdata, 4, resp, -1);
 
-	/* Optionally wait for Google ready signal, on read transactions. */
-	if (rv == EC_SUCCESS &&
-	    (flash_flags & FLASH_FLAG_READ_WRITE_MSK) ==
-		    FLASH_FLAG_READ_WRITE_READ &&
-	    (flash_flags & FLASH_FLAG_TPM_WAIT_FOR_READY)) {
-		rv = await_low_level(gsc_ready_pin, deadline);
-	}
-
 	/* Poll for the TPM standard ready status. */
 	while (rv == EC_SUCCESS && resp[3] != 0x01) {
 		timestamp_t now = get_time();
@@ -805,13 +797,11 @@ static int usb_spi_tpm_transaction(const struct spi_device_t *spi_device,
 	/* Release chip select even when returning an error. */
 	gpio_set_level(spi_device->gpio_cs, chip_select_level_before);
 
-	/* Optionally wait for Google ready signal, on write transactions. */
-	if (rv == EC_SUCCESS &&
-	    (flash_flags & FLASH_FLAG_READ_WRITE_MSK) ==
-		    FLASH_FLAG_READ_WRITE_WRITE &&
-	    (flash_flags & FLASH_FLAG_TPM_WAIT_FOR_READY)) {
+	/* Optionally wait for Google ready signal. */
+	if (rv == EC_SUCCESS && (flash_flags & FLASH_FLAG_TPM_WAIT_FOR_READY)) {
 		rv = await_low_level(gsc_ready_pin, deadline);
 	}
+
 	return rv;
 }
 
