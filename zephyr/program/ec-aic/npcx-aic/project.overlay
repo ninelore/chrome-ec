@@ -1,0 +1,40 @@
+/* Copyright 2025 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#include <cros/integrated_fwid.dtsi>
+#include <cros/cbi_flash.dtsi>
+
+/ {
+	aliases {
+		gpio-wp = &ec_wp_l;
+	};
+
+	named-gpios {
+		compatible = "named-gpios";
+
+		/* TODO - need to define a shared pin on the MECC
+		 * connector for write-protect when used with the EC AIC
+		 * Tester board.  On RVPs, the write-protect is provided on
+		 * an I/O expander.
+		 * For now, mapped to PD alert pin for port 0.
+		 */
+		ec_wp_l: write-protect {
+			gpios = <&gpiof 0 GPIO_INPUT>;
+		};
+		/* unimplemented GPIOs */
+		entering-rw {
+			enum-name = "GPIO_ENTERING_RW";
+		};
+	};
+};
+
+&cbi_flash {
+	/*
+	 * CBI section size is 0x1000 bytes, the CBI portion lies at the end of
+	 * EC_RO section. EC_RO section ends at 0x50000 byte which is the offset
+	 */
+	offset = <0x50000>;
+	size = <0x1000>;
+};

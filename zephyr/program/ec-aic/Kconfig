@@ -7,6 +7,11 @@ config BOARD_ITE_AIC
 	help
 	  Build Google AIC image for the ITE chipset.
 
+config BOARD_NPCX_AIC
+	bool "Google NPCX AIC board"
+	help
+	  Build Google AIC image for the NPCX9 chipset.
+
 module = EC_AIC
 module-str = EC-AIC board-specific code
 source "subsys/logging/Kconfig.template.log_config"
