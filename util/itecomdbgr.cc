@@ -509,7 +509,7 @@ static int check_status(struct itecomdbgr_config *conf, uint8_t wait_mask,
 	return 0;
 }
 
-static void getchipid(struct itecomdbgr_config *conf)
+static int getchipid(struct itecomdbgr_config *conf)
 {
 	uint8_t chipid[3], chipver, eflash_size_flag;
 
@@ -517,14 +517,21 @@ static void getchipid(struct itecomdbgr_config *conf)
 
 	/* Get CHIPID_1 for dbgr command set */
 	write_com(conf, test, 3);
-	printf("getchipid = %02x\n", debug_getc(conf));
+	chipid[1] = debug_getc(conf); /* read for clear buffer */
 
 	chipid[0] = rd_reg_or_ff(conf, 0xF02085);
 	chipid[1] = rd_reg_or_ff(conf, 0xF02086);
 	chipid[2] = rd_reg_or_ff(conf, 0xF02087);
 	chipver = rd_reg_or_ff(conf, 0xF02002);
+
+	if ((chipid[0] != 0x08) && (chipid[0] != 0x05)) {
+		/* Get Chip ID Fail */
+		return FAIL;
+	}
+
 	printf("Chip ID = %02x %02x %02x", chipid[0], chipid[1], chipid[2]);
 	printf(", Chip Ver = %02x", chipver);
+
 	eflash_size_flag = chipver >> 4;
 	if (eflash_size_flag == 0xC)
 		conf->eflash_size_in_k = 1024;
@@ -547,6 +554,7 @@ static void getchipid(struct itecomdbgr_config *conf)
 	} else {
 		conf->update_end_addr = conf->g_flash_size;
 	}
+	return SUCCESS;
 }
 
 static int read_id_2(struct itecomdbgr_config *conf)
@@ -984,6 +992,7 @@ static int uart_app(struct itecomdbgr_config *conf)
 
 	int tries = 0;
 	while (++tries < 25) {
+		flush_com(conf);
 		if (conf->g_steps == STEPS_TEST) {
 			enter_uart_dbgr_mode(conf);
 			read_id_2(conf);
@@ -993,25 +1002,17 @@ static int uart_app(struct itecomdbgr_config *conf)
 		if (conf->g_steps == STEPS_NORMAL) {
 			enter_uart_dbgr_mode_and_set_nack_mode(conf);
 
-			write_com(conf, cs_high, sizeof(cs_high));
-			write_com(conf, cs_low, sizeof(cs_low));
-
 			/* dbgr reset */
 			write_com(conf, dbgr_reset_buf, sizeof(dbgr_reset_buf));
 
-			write_com(conf, cs_high, sizeof(cs_high));
-			write_com(conf, cs_low, sizeof(cs_low));
+			if (getchipid(conf) == SUCCESS) {
+				/* Reset UART1*/
+				wr_reg(conf, 0xF02011, 1);
 
-			getchipid(conf);
-
-			/* Reset UART1*/
-			wr_reg(conf, 0xF02011, 1);
-
-			wr_reg(conf, 0xF01618, 0xFF);
-			wr_reg(conf, 0xF01619, 0xFF);
-
-			read_id_2(conf);
-
+				wr_reg(conf, 0xF01618, 0xFF);
+				wr_reg(conf, 0xF01619, 0xFF);
+				read_id_2(conf);
+			}
 			flush_com(conf);
 		}
 
