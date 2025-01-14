@@ -358,6 +358,7 @@ utils-y=utils.o
 utils_str-y=utils_str.o
 vboot-y=vboot.o
 version-y += version.o
+watchdog-y=watchdog.o
 float-y=fp.o
 fp-y=fp.o
 x25519-y=x25519.o
