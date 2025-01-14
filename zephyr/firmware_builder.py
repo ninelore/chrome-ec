@@ -122,16 +122,6 @@ def build(opts):
     modules = zmake.modules.locate_from_checkout(find_checkout())
     projects_path = zmake.modules.default_projects_dirs(modules)
 
-    # Validate board targets are reflected as Bazel targets
-    cmd = ["pytest", "-v", "bazel/test_gen_bazel_targets.py"]
-    subprocess.run(
-        cmd,
-        cwd=platform_ec,
-        check=True,
-        stdin=subprocess.DEVNULL,
-        env=env,
-    )
-
     # Start with a clean build environment
     cmd = ["make", "clobber"]
     log_cmd(cmd)

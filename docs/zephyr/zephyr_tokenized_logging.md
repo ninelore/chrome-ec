@@ -18,8 +18,7 @@ Detokenizing occurs before the log is outputted to console or saved to
 
 Enable Kconfig `CONFIG_PLATFORM_EC_LOG_TOKENIZED` and its dependencies for the
 board you want to enable tokenized logging.  Additionally, make sure `picolibc`
-and `pigweed` modules are added to your board and don't forget to regenerate
-`all_targets.generated.bzl`.
+and `pigweed` modules are added to your board.
 
 *Note: Tokenized logging is only supported for Zephyr EC*
 
