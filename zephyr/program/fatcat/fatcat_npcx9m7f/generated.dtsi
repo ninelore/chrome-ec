@@ -113,7 +113,7 @@
 			enum-name = "GPIO_EN_PP3300_A";
 		};
 		gpio_ioex_kbd_int_odl: ioex_kbd_int_odl {
-			gpios = <&gpio7 0 (GPIO_INPUT)>;
+			gpios = <&gpio7 0 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
 			enum-name = "GPIO_KB_DISCRETE_INT";
 		};
 		gpio_lid_open: lid_open {
