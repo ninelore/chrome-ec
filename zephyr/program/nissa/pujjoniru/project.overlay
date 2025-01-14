@@ -8,7 +8,7 @@
 
 #include "cbi.dtsi"
 #include "generated.dtsi"
-#include "gpio_leds.dtsi"
+#include "pwm_leds.dtsi"
 #include "keyboard.dtsi"
 #include "overlay.dtsi"
 #include "power_signals.dtsi"

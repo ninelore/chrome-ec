@@ -108,7 +108,7 @@
 			enum-name = "GPIO_AC_PRESENT";
 		};
 		gpio_ec_wp_odl: ec_wp_odl {
-			gpios = <&gpioa 6 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
+			gpios = <&gpioj 1 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
 		};
 		gpio_en_pp3300_s5: en_pp3300_s5 {
 			gpios = <&gpioe 6 GPIO_OUTPUT_LOW>;
@@ -182,15 +182,6 @@
 		};
 		gpio_vccin_aux_vid1: vccin_aux_vid1 {
 			gpios = <&gpiok 1 GPIO_INPUT>;
-		};
-		gpio_pwr_white_led2: pwr_white_led2 {
-			gpios = <&gpioa 2 GPIO_OUTPUT_LOW>;
-		};
-		gpio_pwr_red_led1: pwr_red_led1 {
-			gpios = <&gpioa 3 GPIO_OUTPUT_LOW>;
-		};
-		gpio_pwr_green_led0: pwr_green_led0 {
-			gpios = <&gpioj 1 GPIO_OUTPUT_LOW>;
 		};
 		charger_vap_otg_en {
 			gpios = <&gpioh 4 GPIO_OUTPUT_LOW>;

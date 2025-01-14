@@ -11,6 +11,27 @@
 	pinctrl-names = "default";
 };
 
+&pwm2 {
+	status = "okay";
+	prescaler-cx = <PWM_PRESCALER_C4>;
+	pinctrl-0 = <&pwm2_gpa2_default>;
+	pinctrl-names = "default";
+};
+
+&pwm3 {
+	status = "okay";
+	prescaler-cx = <PWM_PRESCALER_C4>;
+	pinctrl-0 = <&pwm3_gpa3_default>;
+	pinctrl-names = "default";
+};
+
+&pwm6 {
+	status = "okay";
+	prescaler-cx = <PWM_PRESCALER_C4>;
+	pinctrl-0 = <&pwm6_gpa6_default>;
+	pinctrl-names = "default";
+};
+
 /* Keyboard backlight - use a prescaler for operation about 324 Hz */
 &pwm7 {
 	status = "okay";
