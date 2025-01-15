@@ -215,8 +215,19 @@ INPUT_CALLBACK_DEFINE(fake_dev, test_input_cb_handler, NULL);
 ZTEST(keyboard_input, test_kbpress)
 {
 	const struct shell *shell_zephyr = shell_backend_dummy_get_ptr();
+	const char *outbuffer;
+	size_t buffer_size;
 
-	zassert_equal(shell_execute_cmd(shell_zephyr, "kbpress"), -EINVAL);
+	/* Give the shell time to initialize */
+	k_sleep(K_MSEC(100));
+
+	shell_backend_dummy_clear_output(shell_zephyr);
+	zassert_ok(shell_execute_cmd(shell_zephyr, "kbpress"));
+	outbuffer = shell_backend_dummy_get_output(shell_zephyr, &buffer_size);
+	zassert_true(buffer_size > 0, NULL);
+	zassert_ok(strcmp(outbuffer, "\r\nSimulated keys:\r\n"),
+		   "outbuffer = '%s'", outbuffer);
+
 	zassert_equal(shell_execute_cmd(shell_zephyr, "kbpress x 2 3"),
 		      -EINVAL);
 	zassert_equal(shell_execute_cmd(shell_zephyr, "kbpress 1 x 3"),
@@ -230,6 +241,22 @@ ZTEST(keyboard_input, test_kbpress)
 	zassert_equal(last_evt.y, 5);
 	zassert_equal(last_evt.touch, 1);
 	zassert_equal(last_evt.count, 3);
+
+	shell_backend_dummy_clear_output(shell_zephyr);
+	zassert_ok(shell_execute_cmd(shell_zephyr, "kbpress"));
+	outbuffer = shell_backend_dummy_get_output(shell_zephyr, &buffer_size);
+	zassert_true(buffer_size > 0, NULL);
+	zassert_ok(strcmp(outbuffer, "\r\nSimulated keys:\r\n\t3 5\r\n"),
+		   "outbuffer = '%s'", outbuffer);
+
+	zassert_ok(shell_execute_cmd(shell_zephyr, "kbpress clear"));
+
+	shell_backend_dummy_clear_output(shell_zephyr);
+	zassert_ok(shell_execute_cmd(shell_zephyr, "kbpress"));
+	outbuffer = shell_backend_dummy_get_output(shell_zephyr, &buffer_size);
+	zassert_true(buffer_size > 0, NULL);
+	zassert_ok(strcmp(outbuffer, "\r\nSimulated keys:\r\n"),
+		   "outbuffer = '%s'", outbuffer);
 }
 
 ZTEST(keyboard_input, test_mkbp_command_simulate_key)
