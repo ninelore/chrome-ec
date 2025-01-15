@@ -142,8 +142,8 @@ const static struct ec_thermal_config thermal_vr = {
 		[EC_TEMP_THRESH_HIGH] = C_TO_K(85),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(35),
-	.temp_fan_max = C_TO_K(77),
+	.temp_fan_off = C_TO_K(43),
+	.temp_fan_max = C_TO_K(72),
 };
 
 const static struct ec_thermal_config thermal_cpu = {
@@ -157,8 +157,8 @@ const static struct ec_thermal_config thermal_cpu = {
 		[EC_TEMP_THRESH_HIGH] = C_TO_K(76),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(35),
-	.temp_fan_max = C_TO_K(69),
+	.temp_fan_off = C_TO_K(38),
+	.temp_fan_max = C_TO_K(66),
 };
 
 const static struct ec_thermal_config thermal_ambient = {
@@ -172,8 +172,8 @@ const static struct ec_thermal_config thermal_ambient = {
 		[EC_TEMP_THRESH_HIGH] = C_TO_K(72),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(35),
-	.temp_fan_max = C_TO_K(65),
+	.temp_fan_off = C_TO_K(36),
+	.temp_fan_max = C_TO_K(68),
 };
 
 const static struct ec_thermal_config thermal_charger = {
@@ -187,8 +187,8 @@ const static struct ec_thermal_config thermal_charger = {
 		[EC_TEMP_THRESH_HIGH] = C_TO_K(82),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(35),
-	.temp_fan_max = C_TO_K(75),
+	.temp_fan_off = C_TO_K(41),
+	.temp_fan_max = C_TO_K(73),
 };
 
 test_export_static void fan_init(void)
