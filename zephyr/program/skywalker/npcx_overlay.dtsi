@@ -13,6 +13,23 @@
 		entering_rw {
 			enum-name = "GPIO_ENTERING_RW";
 		};
+		en_pp4200_s5: en_pp3700_s5 {};
+		ap_ec_sysrst_odl {
+			gpios = <&gpioa 1 (GPIO_INPUT | GPIO_VOLTAGE_1P8 |
+						GPIO_ACTIVE_LOW)>;
+		};
+		ap_ec_wdtrst_l {
+			gpios = <&gpio5 2 (GPIO_INPUT | GPIO_VOLTAGE_1P8 |
+						GPIO_ACTIVE_LOW)>;
+		};
+		ap_in_sleep_l {
+			gpios = <&gpio5 4 (GPIO_INPUT | GPIO_VOLTAGE_1P8 |
+						GPIO_ACTIVE_LOW)>;
+		};
+		pmic_ec_resetb {
+			gpios = <&gpio9 5 (GPIO_INPUT | GPIO_VOLTAGE_1P8 |
+					   GPIO_ACTIVE_LOW)>;
+		};
 	};
 
 	named-i2c-ports {
