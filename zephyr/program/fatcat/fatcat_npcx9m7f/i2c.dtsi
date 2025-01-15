@@ -63,8 +63,3 @@ charger_i2c: &i2c2_0 {
 	label = "I2C_PORT_SMB_PCH";
 	clock-frequency = <I2C_BITRATE_STANDARD>;
 };
-
-/*
- * Aliases to common names
- */
-i2c_smb_bs: &i2c_ec_i2c_mi {};
