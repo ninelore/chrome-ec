@@ -152,6 +152,58 @@ static int cmd_get_alt_modes(const struct shell *sh, int argc, char **argv)
 	return 0;
 }
 
+/**
+ * @brief Run the GET_CAM_SUPPORTED UCSI command
+ */
+static int cmd_get_cam_supported(const struct shell *sh, int argc, char **argv)
+{
+	const struct device *dev = get_ppm_dev();
+	const struct ucsi_pd_driver *ppm_api;
+	uint8_t port;
+	uint8_t resp[8] = { 0 };
+	int rv;
+
+	__ASSERT(dev, "PPM device is not ready");
+
+	ppm_api = dev->api;
+
+	if (cmd_get_pd_port(sh, dev, argv[1], &port)) {
+		shell_error(sh, "Invalid port");
+		return -ERANGE;
+	}
+
+	struct ucsi_control_t get_cam_supported = {
+                .command = UCSI_GET_CAM_SUPPORTED,
+                .data_length = 0,
+                .command_specific = {
+                        /* Convert to 1-indexed port number */
+                        (port + 1) & 0x7F,
+                },
+        };
+
+	rv = ppm_api->execute_cmd(dev, &get_cam_supported, (uint8_t *)&resp);
+	if (rv < 0) {
+		shell_error(sh, "Failed to execute UCSI command: %d", rv);
+		return 1;
+	}
+
+	shell_info(sh, "Port: C%u (UCSI port %u), Supported:", port, port + 1);
+	shell_hexdump(sh, resp, rv);
+
+	shell_fprintf(sh, SHELL_INFO, "\nSupported indexes: ");
+	for (int i = 0; i < MIN(rv, ARRAY_SIZE(resp)); i++) {
+		for (int j = 0; j < 8; j++) {
+			if (resp[i] & BIT(j)) {
+				shell_fprintf(sh, SHELL_INFO, "%02d ",
+					      8 * i + j);
+			}
+		}
+	}
+	shell_fprintf(sh, SHELL_INFO, "\n");
+
+	return 0;
+}
+
 /* LCOV_EXCL_START */
 
 SHELL_STATIC_SUBCMD_SET_CREATE(
@@ -163,6 +215,10 @@ SHELL_STATIC_SUBCMD_SET_CREATE(
 		"Usage: ppm get_alt_modes <port> "
 		"[conn|sop|sopprime|sopprimeprime]",
 		cmd_get_alt_modes, 2, 1),
+	SHELL_CMD_ARG(get_cam_supported, NULL,
+		      "Run GET_CAM_SUPPORTED UCSI command.\n"
+		      "Usage: ppm get_cam_supported <port>",
+		      cmd_get_cam_supported, 2, 0),
 	SHELL_SUBCMD_SET_END);
 
 SHELL_CMD_REGISTER(ppm, &sub_ppm_cmds, "PPM console commands", NULL);
