@@ -64,7 +64,6 @@ for repo in "${!zephyr_repos[@]}"; do
 
   git --no-pager diff "${upstream_commit}" ':(exclude).vpython3' \
     ':(exclude)DIR_METADATA' ':(exclude)OWNERS' ':(exclude)PRESUBMIT.cfg' \
-    ':(exclude)scripts/do-coreboot*' ':(exclude)scripts/cross-coreboot*' \
     || die "git diff failed"
 done
 
