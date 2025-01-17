@@ -64,6 +64,26 @@
 			   <&gpio0 3 GPIO_ACTIVE_HIGH>,
 			   <&gpiob 1 GPIO_ACTIVE_HIGH>;
 	};
+
+	named-adc-channels {
+		compatible = "named-adc-channels";
+
+		ambient {
+			enum-name = "ADC_TEMP_SENSOR_2_AMBIENT";
+			io-channels = <&adc0 0>;
+		};
+
+		amon {
+			enum-name = "ADC_AMON_BMON";
+			io-channels = <&adc0 5>;
+		};
+       };
+};
+
+&adc0 {
+	status = "okay";
+	pinctrl-0 = <&adc0_chan0_gp45 &adc0_chan5_gp37>;
+	pinctrl-names = "default";
 };
 
 &cbi_flash {
