@@ -447,6 +447,7 @@ class Renode(Platform):
             if board_config.name == BLOONCHIPPER:
                 if zephyr and test_name in [
                     "abort",  # TODO(b/384094781)
+                    "benchmark",  # TODO(b/390253975)
                     "exception",  # TODO(b/388327673)
                     # TODO(b/382705460): We have seen this flake in the CQ.
                     # Re-enable when missing character bug is fixed.
