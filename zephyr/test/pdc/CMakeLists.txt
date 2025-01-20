@@ -79,6 +79,11 @@ if (DEFINED CONFIG_TEST_SUITE_PPM)
 	target_sources(app PRIVATE src/generic/ppm.c)
 endif()
 
+if (DEFINED CONFIG_TEST_SUITE_PPM_CONSOLE)
+	target_sources(app PRIVATE ${PLATFORM_EC}/zephyr/subsys/ucsi/ppm_console.c)
+	target_sources(app PRIVATE src/generic/ppm_console.c)
+endif()
+
 if (DEFINED CONFIG_TEST_SUITE_PDC_PMC_USB_MUX)
 	target_sources(app PRIVATE src/generic/pdc_pmc_usb_mux.c)
 endif()

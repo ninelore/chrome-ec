@@ -56,6 +56,13 @@ config TEST_SUITE_PPM
 	  (ppm_common, ppm_driver, pdc_driver) and mocking is discouraged.
 	  Inputs to the tests are controlled through a PDC emulator.
 
+config TEST_SUITE_PPM_CONSOLE
+	bool "Enable tests for the `ppm` console command"
+	help
+	  Run a test suite covering the `ppm` console command, which sends
+	  various UCSI commands from the EC console for testing and debugging
+	  purposes.
+
 config TEST_SUITE_PPM_DRIVER
 	bool "Enable PPM driver tests"
 	help
