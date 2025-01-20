@@ -326,3 +326,83 @@ ZTEST(ucsi_ppm_console, test_ppm_get_cam_supported__success)
 	zassert_not_null(
 		strstr(outbuffer, "Supported indexes: 00 07 08 10 12 14"));
 }
+
+ZTEST(ucsi_ppm_console, test_ppm_get_current_cam__bad_port)
+{
+	int rv;
+
+	/* Note: emulated PPM driver returns 1 active port */
+
+	rv = shell_execute_cmd(get_ec_shell(), "ppm get_current_cam");
+	zassert_equal(rv, -EINVAL, "Expected %d, but got %d", -EINVAL, rv);
+	shell_backend_dummy_clear_output(get_ec_shell());
+
+	rv = shell_execute_cmd(get_ec_shell(), "ppm get_current_cam 2");
+	zassert_equal(rv, -ERANGE, "Expected %d, but got %d", -ERANGE, rv);
+	shell_backend_dummy_clear_output(get_ec_shell());
+
+	rv = shell_execute_cmd(get_ec_shell(), "ppm get_current_cam -1");
+	zassert_equal(rv, -ERANGE, "Expected %d, but got %d", -ERANGE, rv);
+	shell_backend_dummy_clear_output(get_ec_shell());
+}
+
+ZTEST(ucsi_ppm_console, test_ppm_get_current_cam__ucsi_fail)
+{
+	int rv;
+
+	/* Report an error running the UCSI command */
+	ppm_driver_mock_execute_cmd_sync_fake.return_val = -1;
+
+	rv = shell_execute_cmd(get_ec_shell(), "ppm get_current_cam 0");
+	zassert_equal(rv, 1, "Expected %d, but got %d", 1, rv);
+	shell_backend_dummy_clear_output(get_ec_shell());
+}
+
+/**
+ * @brief Custom fake to return a UCSI GET_CURRENT_CAM response
+ */
+static int execute_ucsi_get_current_cam(const struct device *dev,
+					struct ucsi_control_t *cmd,
+					uint8_t *out)
+{
+	zassert_equal(0, cmd->data_length, "GET_CURRENT_CAM length must be 0");
+	zassert_equal(UCSI_GET_CURRENT_CAM, cmd->command,
+		      "Command must be UCSI_GET_CURRENT_CAM");
+
+	/* UCSI ports are 1-indexed */
+	zassert_equal(1, cmd->command_specific[0] & 0x7F,
+		      "Incorrect port sent");
+
+	/* Report no active alt modes */
+	out[0] = 0xFF;
+
+	/* 1 byte written out */
+	return 1;
+}
+
+ZTEST(ucsi_ppm_console, test_ppm_get_current_cam__success)
+{
+	int rv;
+	const char *outbuffer;
+	size_t buffer_size;
+
+	ppm_driver_mock_execute_cmd_sync_fake.custom_fake =
+		execute_ucsi_get_current_cam;
+
+	rv = shell_execute_cmd(get_ec_shell(), "ppm get_current_cam 0");
+	zassert_ok(rv, "Expected success (0), but got %d", rv);
+
+	/* Inspect shell output. Expected output:
+	 *
+	 *    Port: C0 (UCSI port 1), CAM:
+	 *    00000000: <hexdump>
+	 */
+
+	outbuffer =
+		shell_backend_dummy_get_output(get_ec_shell(), &buffer_size);
+	zassert_true(buffer_size > 0, NULL);
+
+	zassert_not_null(strstr(outbuffer, "Port: C0 (UCSI port 1), CAM:"));
+	zassert_not_null(strstr(outbuffer, "00000000: ff  "));
+	zassert_not_null(strstr(outbuffer, "No active alternate modes"));
+}
