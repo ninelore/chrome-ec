@@ -22,7 +22,7 @@
 LOG_MODULE_REGISTER(pdc_attached_snk);
 
 #define PDC_NODE_PORT0 DT_NODELABEL(pdc_emul1)
-#define TEST_USBC_PORT0 USBC_PORT_FROM_DRIVER_NODE(PDC_NODE_PORT0, pdc)
+#define TEST_USBC_PORT0 USBC_PORT_FROM_PDC_DRIVER_NODE(PDC_NODE_PORT0)
 
 extern bool test_pdc_power_mgmt_is_snk_typec_attached_run(int port);
 

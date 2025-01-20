@@ -1142,7 +1142,7 @@ static DEVICE_API(emul_pdc, emul_tps6699x_api) = {
 		.pdc_data = { \
 			.irq_gpios = GPIO_DT_SPEC_INST_GET(n, irq_gpios), \
 		}, \
-		.port = USBC_PORT_FROM_DRIVER_NODE(DT_DRV_INST(n), pdc), \
+		.port = USBC_PORT_FROM_PDC_DRIVER_NODE(DT_DRV_INST(n)), \
 	}; \
 	static const struct i2c_common_emul_cfg tps6699x_emul_cfg_##n = { \
 		.dev_label = DT_NODE_FULL_NAME(DT_DRV_INST(n)), \

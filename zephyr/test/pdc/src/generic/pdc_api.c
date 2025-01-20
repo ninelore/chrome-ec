@@ -32,7 +32,7 @@ LOG_MODULE_REGISTER(test_pdc_api, LOG_LEVEL_INF);
 static const struct emul *emul = EMUL_DT_GET(RTS5453P_NODE);
 static const struct device *dev = DEVICE_DT_GET(RTS5453P_NODE);
 static const uint8_t connector_number =
-	USBC_PORT_FROM_DRIVER_NODE(RTS5453P_NODE, pdc) + 1;
+	USBC_PORT_FROM_PDC_DRIVER_NODE(RTS5453P_NODE) + 1;
 static bool test_cc_cb_called;
 static union cci_event_t test_cc_cb_cci;
 

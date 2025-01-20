@@ -2881,7 +2881,7 @@ static void rts54xx_thread(void *dev, void *unused1, void *unused2)
 		.i2c = I2C_DT_SPEC_INST_GET(inst),                            \
 		.irq_gpios = GPIO_DT_SPEC_INST_GET(inst, irq_gpios),          \
 		.connector_number =                                           \
-			USBC_PORT_FROM_DRIVER_NODE(DT_DRV_INST(inst), pdc),   \
+			USBC_PORT_FROM_PDC_DRIVER_NODE(DT_DRV_INST(inst)),    \
 		.bits.command_completed = 1,                                  \
 		.bits.external_supply_change = 1,                             \
 		.bits.power_operation_mode_change = 1,                        \

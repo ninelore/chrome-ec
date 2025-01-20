@@ -1590,7 +1590,7 @@ static DEVICE_API(emul_pdc, emul_realtek_rts54xx_api) = {
 		.pdc_data = {						\
 			.irq_gpios = GPIO_DT_SPEC_INST_GET(n, irq_gpios), \
 		},							\
-		.port = USBC_PORT_FROM_DRIVER_NODE(DT_DRV_INST(n), pdc),  \
+		.port = USBC_PORT_FROM_PDC_DRIVER_NODE(DT_DRV_INST(n)),  \
 		.ara_emul = EMUL_DT_GET(DT_NODELABEL(smbus_ara_emul)),       \
 	};       \
 	static const struct i2c_common_emul_cfg rts5453p_emul_cfg_##n = {   \
