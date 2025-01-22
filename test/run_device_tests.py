@@ -460,6 +460,8 @@ class Renode(Platform):
                     "zephyr_flash_stm32f4",  # TODO(b/384974228)
                     # TODO(b/384975384)
                     "zephyr_counter_basic_api_stm32_subsec",
+                    # TODO(b/390255521)
+                    "timer",
                 ]:
                     return True
             if test_name in [
