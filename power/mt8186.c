@@ -102,6 +102,7 @@ static bool is_exiting_off;
 /* forward declaration */
 static enum power_state power_get_signal_state(void);
 
+#ifdef CONFIG_CHARGER_MIN_BAT_PCT_FOR_POWER_ON
 static bool power_is_enough(void)
 {
 	timestamp_t poll_deadline;
@@ -115,6 +116,7 @@ static bool power_is_enough(void)
 
 	return system_can_boot_ap();
 }
+#endif /* CONFIG_CHARGER_MIN_BAT_PCT_FOR_POWER_ON */
 
 /* Turn on the PMIC power source to AP, this also boots AP. */
 static void set_pmic_pwron(void)
@@ -168,6 +170,10 @@ static void reset_request_interrupt_deferred(void)
 }
 DECLARE_DEFERRED(reset_request_interrupt_deferred);
 
+/*
+ * TODO(b/391746217): Fix chipset_reset_request_interrupt and
+ * chipset_warm_reset_interrupt. The function names should be swapped.
+ **/
 void chipset_reset_request_interrupt(enum gpio_signal signal)
 {
 	power_signal_interrupt(signal);
@@ -176,9 +182,15 @@ void chipset_reset_request_interrupt(enum gpio_signal signal)
 
 static void watchdog_interrupt_deferred(void)
 {
-	/* If it's a real WDT, it must be in S0. */
-	if (!(power_get_signals() & (IN_AP_RST | IN_SUSPEND_ASSERTED)))
+	uint32_t flags = IN_AP_RST;
+
+	if (!IS_ENABLED(CONFIG_PLATFORM_EC_POWERSEQ_MTK_ALLOW_S3_WDT)) {
+		flags |= IN_SUSPEND_ASSERTED;
+	}
+
+	if (!(power_get_signals() & flags)) {
 		chipset_reset(CHIPSET_RESET_AP_WATCHDOG);
+	}
 }
 DECLARE_DEFERRED(watchdog_interrupt_deferred);
 
