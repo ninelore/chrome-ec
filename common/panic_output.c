@@ -87,6 +87,10 @@ void panic_puts(const char *outstr)
 	usb_puts(outstr);
 #endif
 
+	/* Don't write to uart before it's initialized */
+	if (!uart_init_done())
+		return;
+
 	/* Flush the output buffer */
 	uart_flush_output();
 
@@ -104,6 +108,10 @@ void panic_puts(const char *outstr)
 void panic_printf(const char *format, ...)
 {
 	va_list args;
+
+	/* Don't write to uart before it's initialized */
+	if (!uart_init_done())
+		return;
 
 	/* Flush the output buffer */
 	uart_flush_output();
