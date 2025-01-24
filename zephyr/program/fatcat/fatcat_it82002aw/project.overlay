@@ -40,6 +40,7 @@ i2c3ALT: &i2c3 {
 
 #include "adc.dtsi"
 #include "console.dtsi"
+#include "fan.dtsi"
 #include "gpios.dtsi"
 #include "i2c.dtsi"
 #include "interrupts.dtsi"
