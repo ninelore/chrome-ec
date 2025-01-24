@@ -122,12 +122,6 @@
 		gpio_io_exp_int_mecc_r: io_exp_int_mecc_r {
 			gpios = <&gpioh 5 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
 		};
-		gpio_kso16_r: kso16_r {
-			gpios = <&gpioc 3 (GPIO_INPUT)>;
-		};
-		gpio_kso17_r: kso17_r {
-			gpios = <&gpioc 5 (GPIO_INPUT)>;
-		};
 		gpio_pch_pwrok_ec_r: pch_pwrok_ec_r {
 			gpios = <&gpioj 1 (GPIO_OUTPUT | GPIO_ACTIVE_HIGH | GPIO_OUTPUT_INIT_LOW)>;
 		};
@@ -313,6 +307,8 @@
 		&kso13_default
 		&kso14_default
 		&kso15_default
+		&kso16_default
+		&kso17_default
 		&kso1_default
 		&kso3_default
 		&kso4_default
