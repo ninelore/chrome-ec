@@ -45,6 +45,7 @@ i2c3ALT: &i2c3 {
 #include "interrupts.dtsi"
 #include "keyboard.dtsi"
 #include "pwm.dtsi"
+#include "temp_sensors.dtsi"
 
 #include "../../intelrvp/ptlrvp/gsc_board.dtsi"
 
