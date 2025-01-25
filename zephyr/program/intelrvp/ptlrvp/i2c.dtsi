@@ -78,3 +78,11 @@
 	clock-frequency = <I2C_BITRATE_FAST>;
 	status = "okay";
 };
+
+/*
+ * b/392207109
+ * This chip is not powered when the EC boots
+ */
+&pca95xx_0 {
+	zephyr,deferred-init;
+};
