@@ -54,15 +54,6 @@ i2c3ALT: &i2c3 {
 	irq-gpios = <&gpioi 6 GPIO_ACTIVE_LOW>;
 };
 
-#include "../../intelrvp/ptlrvp/i2c.dtsi"
-
-/*
- * Using IT8801 MFD driver
- * These lines can be deleted after all PTL platforms support the MFD driver.
- * b/386325459
- */
-/delete-node/ &kb_discrete;
-
 #include "../../intelrvp/ptlrvp/ioex_gpio.dtsi"
 #include "../../intelrvp/ptlrvp/keyboard.dtsi"
 #include "../../intelrvp/ptlrvp/power_signals.dtsi"

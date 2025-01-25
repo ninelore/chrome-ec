@@ -36,15 +36,6 @@
 	irq-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
 };
 
-#include "../../intelrvp/ptlrvp/i2c.dtsi"
-
-/*
- * Using IT8801 MFD driver
- * These lines can be deleted after all PTL platforms support the MFD driver.
- * b/386325459
- */
-/delete-node/ &kb_discrete;
-
 #include "../../intelrvp/ptlrvp/ioex_gpio.dtsi"
 #include "../../intelrvp/ptlrvp/ptlrvp_npcx/psl.dtsi"
 #include "../../intelrvp/ptlrvp/ptlrvp_npcx/keyboard.dtsi"

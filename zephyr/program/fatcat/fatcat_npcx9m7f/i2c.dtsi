@@ -63,3 +63,12 @@ charger_i2c: &i2c2_0 {
 	label = "I2C_PORT_SMB_PCH";
 	clock-frequency = <I2C_BITRATE_STANDARD>;
 };
+
+#include "../../intelrvp/ptlrvp/i2c.dtsi"
+
+/*
+ * Using IT8801 MFD driver
+ * These lines can be deleted after all PTL platforms support the MFD driver.
+ * b/386325459
+ */
+/delete-node/ &kb_discrete;
