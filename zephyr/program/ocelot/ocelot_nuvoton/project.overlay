@@ -1,0 +1,14 @@
+/* Copyright 2025 The ChromiumOS Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* ocelot program common DTS includes */
+
+#include <cros/integrated_fwid.dtsi>
+
+#include "../ocelot_stub.dtsi"
+
+/* ocelot_nuvoton project DTS includes */
+
+/* ocelot_nuvoton overrides follow... */
