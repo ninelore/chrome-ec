@@ -43,3 +43,13 @@
 	poll-period-ms = <3>;
 	stable-poll-period-ms = <9>;
 };
+
+/* Create aliases for keyboard columns 16 and 17 to match the naming
+ * convention used by arbitrage.
+ * TODO: b/392966526 - remove these aliases once the upstream names are
+ * fixed.
+ */
+kso16_default: &kso16_gpc3_default {
+};
+kso17_default: &kso17_gpc5_default {
+};
