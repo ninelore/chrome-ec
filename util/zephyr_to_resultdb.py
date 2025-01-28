@@ -57,6 +57,7 @@ def translate_expected(status, suite_name, test_id):
             "pdc/pdc.policy.high_voltage",
             "tests/drivers/counter/counter_basic_api/drivers.counter.basic_api",
             "tests/drivers/gpio/gpio_api_1pin/drivers.gpio.1pin",
+            "tests/drivers/gpio/gpio_basic_api/drivers.gpio.2pin",
             "tests/subsys/pm/policy_api/pm.policy.api.default",
             "tests/subsys/pm/policy_api/pm.policy.api.app",
         ]:
