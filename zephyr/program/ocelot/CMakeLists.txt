@@ -6,6 +6,10 @@ cmake_minimum_required(VERSION 3.20.5)
 
 find_package(Zephyr REQUIRED HINTS "${ZEPHYR_BASE}")
 
+if(DEFINED CONFIG_BOARD_OCELOT_ITE)
+	project(ocelot_ite)
+endif()
+
 if(DEFINED CONFIG_BOARD_OCELOT_NUVOTON)
 	project(ocelot_nuvoton)
 endif()
