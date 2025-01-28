@@ -7,7 +7,7 @@
  * Aliases to common names
  */
 gpio_ec_pch_wake_odl: &gpio_ec_soc_wake_ls_odl {};
-pwrbtn: &gpio_ec_soc_pwr_btn_odl {};
+pwrbtn: &gpio_ec_mech_pwr_btn_l {};
 gpio_c_ioex_kbd_intr_r: &gpio_ioex_kbd_int_odl {};
 cse_early_rec_sw: &gpio_ec_soc_rec_switch_odl {};
 
