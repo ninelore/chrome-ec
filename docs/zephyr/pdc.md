@@ -19,3 +19,8 @@ See [zephyr/drivers/usbc/](https://chromium.googlesource.com/chromiumos/platform
 
 ### State Machine Diagram
 ![PDC Power Management State Machine](pdc_power_mgmt_state_diagram.png)
+
+## Call Flows
+
+### PDC Attach Sequence
+![PDC Attach Sequence](pdc_attach_sequence.png)
