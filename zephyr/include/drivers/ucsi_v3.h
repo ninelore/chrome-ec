@@ -37,7 +37,7 @@ extern "C" {
  * @brief Mamimun number of data bytes the PDC can transfer or receive
  *        at a time
  */
-#define PDC_MAX_DATA_LENGTH 256
+#define PDC_MAX_DATA_LENGTH 255
 
 /**
  * @brief UCSI Commands

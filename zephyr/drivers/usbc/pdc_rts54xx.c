@@ -1577,7 +1577,7 @@ static int rts54_post_command_with_callback(const struct device *dev,
 	}
 
 	if (buf) {
-		assert(len <= ARRAY_SIZE(data->wr_buf));
+		assert(len <= sizeof(data->wr_buf));
 		memcpy(data->wr_buf, buf, len);
 	}
 
