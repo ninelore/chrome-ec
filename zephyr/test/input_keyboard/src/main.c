@@ -21,13 +21,26 @@
 
 DEFINE_FFF_GLOBALS;
 
-static const struct input_kbd_matrix_common_config kbd_cfg = {
-	.col_size = 88,
-	.row_size = 99,
+#define TEST_KBD_SCAN_NODE DT_NODELABEL(fake_input_device)
+
+INPUT_KBD_MATRIX_DT_DEFINE(TEST_KBD_SCAN_NODE);
+
+FAKE_VOID_FUNC(test_drive_column, const struct device *, int);
+FAKE_VALUE_FUNC(kbd_row_t, test_read_row, const struct device *);
+FAKE_VOID_FUNC(test_set_detect_mode, const struct device *, bool);
+
+static const struct input_kbd_matrix_api test_api = {
+	.drive_column = test_drive_column,
+	.read_row = test_read_row,
+	.set_detect_mode = test_set_detect_mode,
 };
 
-static const struct device *const fake_dev =
-	DEVICE_DT_GET(DT_NODELABEL(fake_input_device));
+static const struct input_kbd_matrix_common_config kbd_cfg =
+	INPUT_KBD_MATRIX_DT_COMMON_CONFIG_INIT(TEST_KBD_SCAN_NODE, &test_api);
+
+static struct input_kbd_matrix_common_data kbd_data;
+
+static const struct device *const fake_dev = DEVICE_DT_GET(TEST_KBD_SCAN_NODE);
 
 static int vnd_keyboard_pm_action(const struct device *dev,
 				  enum pm_device_action action)
@@ -39,9 +52,9 @@ static int vnd_keyboard_pm_action(const struct device *dev,
 
 PM_DEVICE_DT_DEFINE(VND_KEYBOARD_NODE, vnd_keyboard_pm_action);
 
-DEVICE_DT_DEFINE(VND_KEYBOARD_NODE, NULL, PM_DEVICE_DT_GET(VND_KEYBOARD_NODE),
-		 NULL, &kbd_cfg, PRE_KERNEL_1,
-		 CONFIG_KERNEL_INIT_PRIORITY_DEVICE, NULL);
+DEVICE_DT_DEFINE(VND_KEYBOARD_NODE, input_kbd_matrix_common_init,
+		 PM_DEVICE_DT_GET(VND_KEYBOARD_NODE), &kbd_data, &kbd_cfg,
+		 POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEVICE, NULL);
 
 FAKE_VALUE_FUNC(int, system_is_locked);
 FAKE_VOID_FUNC(keyboard_state_changed, int, int, int);
@@ -135,14 +148,14 @@ uint8_t keyboard_get_cols(void);
 
 ZTEST(keyboard_input, test_get_cols)
 {
-	zassert_equal(keyboard_get_cols(), 88);
+	zassert_equal(keyboard_get_cols(), 10);
 }
 
 uint8_t keyboard_get_rows(void);
 
 ZTEST(keyboard_input, test_get_rows)
 {
-	zassert_equal(keyboard_get_rows(), 99);
+	zassert_equal(keyboard_get_rows(), 8);
 }
 
 extern uint8_t keyboard_cols;
@@ -265,14 +278,14 @@ ZTEST(keyboard_input, test_mkbp_command_simulate_key)
 	struct host_cmd_handler_args args =
 		BUILD_HOST_COMMAND_PARAMS(EC_CMD_MKBP_SIMULATE_KEY, 0, param);
 
-	param.col = 10;
-	param.row = 11;
+	param.col = 9;
+	param.row = 7;
 	param.pressed = 1;
 
 	zassert_ok(host_command_process(&args));
 
-	zassert_equal(last_evt.x, 10);
-	zassert_equal(last_evt.y, 11);
+	zassert_equal(last_evt.x, 9);
+	zassert_equal(last_evt.y, 7);
 	zassert_equal(last_evt.touch, 1);
 	zassert_equal(last_evt.count, 3);
 
@@ -280,8 +293,8 @@ ZTEST(keyboard_input, test_mkbp_command_simulate_key)
 
 	zassert_ok(host_command_process(&args));
 
-	zassert_equal(last_evt.x, 10);
-	zassert_equal(last_evt.y, 11);
+	zassert_equal(last_evt.x, 9);
+	zassert_equal(last_evt.y, 7);
 	zassert_equal(last_evt.touch, 0);
 	zassert_equal(last_evt.count, 6);
 }
@@ -314,6 +327,12 @@ ZTEST(keyboard_input, test_mkbp_command_simulate_key_invalid_param)
 
 	param.col = 0;
 	param.row = kbd_cfg.row_size;
+}
+
+ZTEST(keyboard_input, test_keyboard_input_priority)
+{
+	zassert_equal(k_thread_priority_get(&kbd_data.thread),
+		      EC_TASK_PRIORITY(EC_TASK_KEYSCAN_PRIO));
 }
 
 static void reset(void *fixture)

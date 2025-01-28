@@ -66,15 +66,21 @@ void keyboard_scan_enable(int enable, enum kb_scan_disable_masks mask)
 	}
 }
 
-static int keyboard_pm_init(void)
+static int keyboard_input_init(void)
 {
+	struct input_kbd_matrix_common_data *data = kbd_dev->data;
+
 	/* Initialize as active */
 	pm_device_runtime_get(kbd_dev);
+
+	/* fix up the device thread priority */
+	k_thread_priority_set(&data->thread,
+			      EC_TASK_PRIORITY(EC_TASK_KEYSCAN_PRIO));
 
 	return 0;
 }
 
-SYS_INIT(keyboard_pm_init, APPLICATION, 0);
+SYS_INIT(keyboard_input_init, APPLICATION, 0);
 
 static void keyboard_input_cb(struct input_event *evt, void *user_data)
 {
