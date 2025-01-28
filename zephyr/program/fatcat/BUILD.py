@@ -53,6 +53,7 @@ register_npcx9_project(
     project_name="fatcat_npcx9m7f",
     extra_kconfig_files=[
         here / ".." / "intelrvp" / "zephyr_ap_pwrseq.conf",
+        here / ".." / "intelrvp" / "ptlrvp" / "pd.conf",
     ],
 )
 

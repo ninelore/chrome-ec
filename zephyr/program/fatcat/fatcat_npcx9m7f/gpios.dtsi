@@ -10,6 +10,8 @@ gpio_ec_pch_wake_odl: &gpio_ec_soc_wake_ls_odl {};
 pwrbtn: &gpio_ec_mech_pwr_btn_l {};
 gpio_c_ioex_kbd_intr_r: &gpio_ioex_kbd_int_odl {};
 cse_early_rec_sw: &gpio_ec_soc_rec_switch_odl {};
+std_adp_prsnt: &gpio_adp_det {};
+gpio_pdc_pow_irq: &gpio_usb_pd_int_ls_odl {};
 
 vol_up_ec: &gpio_ec_volup_btn_odl {};
 vol_dn_ec: &gpio_ec_voldn_btn_odl {};
