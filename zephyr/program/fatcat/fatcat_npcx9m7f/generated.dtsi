@@ -110,7 +110,7 @@
 		};
 		gpio_en_s5_rails: en_s5_rails {
 			gpios = <&gpio4 1 (GPIO_INPUT)>;
-			enum-name = "GPIO_EN_PP3300_A";
+			enum-name = "GPIO_TEMP_SENSOR_POWER";
 		};
 		gpio_ioex_kbd_int_odl: ioex_kbd_int_odl {
 			gpios = <&gpio7 0 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
