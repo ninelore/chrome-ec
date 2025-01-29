@@ -452,6 +452,13 @@ void clock_set_osc(enum clock_osc osc, enum clock_osc pll_osc)
 			STM32_PWR_CR1 = val;
 
 			/*
+			 * Wait for higher voltage to stabilize, before
+			 * proceeding to increase clock frequency.
+			 */
+			while (STM32_PWR_SR2 & STM32_PWR_SR2_VOSF)
+				;
+
+			/*
 			 * Set Flash latency according to frequency
 			 */
 			val = STM32_FLASH_ACR;
