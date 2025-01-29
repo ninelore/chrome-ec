@@ -55,7 +55,6 @@ i2c3ALT: &i2c3 {
 };
 
 #include "../../intelrvp/ptlrvp/ioex_gpio.dtsi"
-#include "../../intelrvp/ptlrvp/keyboard.dtsi"
 #include "../../intelrvp/ptlrvp/power_signals.dtsi"
 
 /* these need to be promoted to program.conf */
