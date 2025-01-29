@@ -7,8 +7,42 @@
 
 #include <cros/integrated_fwid.dtsi>
 
-#include "../ocelot_stub.dtsi"
-
 /* ocelot_nuvoton project DTS includes */
+#include "generated.dtsi"
 
 /* ocelot_nuvoton overrides follow... */
+/ {
+	aliases {
+		gpio-wp = &gpio_c_ec_wp_odl;
+	};
+
+	named-gpios {
+		/* Fix the write protect pin assignement */
+		/delete-node/ ec_soc_rtcrst_odl;
+		gpio_c_ec_wp_odl: c_ec_wp_odl {
+			gpios = <&gpioc 7 GPIO_INPUT>;
+		};
+		/* unimplemented GPIOs */
+		entering-rw {
+			enum-name = "GPIO_ENTERING_RW";
+		};
+	};
+};
+
+
+/* Disable nodes for features not yet enabled. */
+/delete-node/ &{/named-adc-channels};
+/delete-node/ &{/named-i2c-ports};
+
+&i2c0_0 {
+	status = "disabled";
+};
+&i2c2_0 {
+	status = "disabled";
+};
+&i2c_ctrl0 {
+	status = "disabled";
+};
+&i2c_ctrl2 {
+	status = "disabled";
+};
