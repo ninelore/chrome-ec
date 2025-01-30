@@ -79,6 +79,14 @@ static int panic_txchar(void *context, int c)
 
 void panic_puts(const char *outstr)
 {
+#if defined(CONFIG_USB_CONSOLE) || defined(CONFIG_USB_CONSOLE_STREAM)
+	/*
+	 * Send the message to the USB console
+	 * on platforms which support it.
+	 */
+	usb_puts(outstr);
+#endif
+
 	/* Flush the output buffer */
 	uart_flush_output();
 
@@ -86,13 +94,6 @@ void panic_puts(const char *outstr)
 	while (*outstr) {
 		/* Send the message to the UART console */
 		panic_txchar(NULL, *outstr);
-#if defined(CONFIG_USB_CONSOLE) || defined(CONFIG_USB_CONSOLE_STREAM)
-		/*
-		 * Send the message to the USB console
-		 * on platforms which support it.
-		 */
-		usb_puts(outstr);
-#endif
 		++outstr;
 	}
 
