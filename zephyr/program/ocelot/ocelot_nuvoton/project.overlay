@@ -9,6 +9,7 @@
 
 /* ocelot_nuvoton project DTS includes */
 #include "generated.dtsi"
+#include "i2c.dtsi"
 
 /* ocelot_nuvoton overrides follow... */
 / {
@@ -32,17 +33,3 @@
 
 /* Disable nodes for features not yet enabled. */
 /delete-node/ &{/named-adc-channels};
-/delete-node/ &{/named-i2c-ports};
-
-&i2c0_0 {
-	status = "disabled";
-};
-&i2c2_0 {
-	status = "disabled";
-};
-&i2c_ctrl0 {
-	status = "disabled";
-};
-&i2c_ctrl2 {
-	status = "disabled";
-};
