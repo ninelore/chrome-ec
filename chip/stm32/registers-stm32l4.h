@@ -262,6 +262,7 @@
 #define STM32_USART_RQR(base) STM32_USART_REG(base, 0x18)
 #define STM32_USART_ISR(base) STM32_USART_REG(base, 0x1C)
 #define STM32_USART_ICR(base) STM32_USART_REG(base, 0x20)
+#define STM32_USART_ICR_FECF BIT(1)
 #define STM32_USART_ICR_ORECF BIT(3)
 #define STM32_USART_ICR_TCCF BIT(6)
 #define STM32_USART_ICR_RTOCF BIT(11)
@@ -270,6 +271,7 @@
 #define STM32_USART_PRESC(base) STM32_USART_REG(base, 0x2C)
 /* register alias */
 #define STM32_USART_SR(base) STM32_USART_ISR(base)
+#define STM32_USART_SR_FE BIT(1)
 #define STM32_USART_SR_ORE BIT(3)
 #define STM32_USART_SR_RXNE BIT(5)
 #define STM32_USART_SR_TC BIT(6)
