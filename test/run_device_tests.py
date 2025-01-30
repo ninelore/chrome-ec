@@ -438,6 +438,7 @@ class Renode(Platform):
 
         if board_config.name in [BLOONCHIPPER, DARTMONKEY]:
             if board_config.name == BLOONCHIPPER:
+                # bloonchipper Zephyr tests to skip on Renode.
                 if zephyr and test_name in [
                     "abort",  # TODO(b/384094781)
                     "benchmark",  # TODO(b/390253975)
@@ -457,10 +458,12 @@ class Renode(Platform):
                     "timer",
                 ]:
                     return True
-            if test_name in [
-                "rtc_stm32f4",  # TODO(b/384991107)
-            ]:
-                return True
+
+                # bloonchipper EC tests to skip on Renode.
+                if test_name in [
+                    "rtc_stm32f4",  # TODO(b/384991107)
+                ]:
+                    return True
         elif board_config.name in [HELIPILOT, BUCCANEER, GWENDOLIN]:
             if test_name in [
                 "exception",  # TODO(b/384730599)
