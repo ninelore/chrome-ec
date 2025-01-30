@@ -962,6 +962,15 @@ static ALWAYS_INLINE void pdc_thread(void *pdc_dev, void *unused1,
 
 DT_INST_FOREACH_STATUS_OKAY(PDC_SUBSYS_INIT)
 
+/* Enforce initialization order constraints. This driver depends on the PDC
+ * driver(s) and also charge manager (the latter is enforced by
+ * `common/charge_manager.c`)
+ */
+
+BUILD_ASSERT(CONFIG_PDC_POWER_MGMT_INIT_PRIORITY >
+		     CONFIG_PDC_DRIVER_INIT_PRIORITY,
+	     "pdc_power_mgmt must init after PDC drivers");
+
 #define PDC_DATA_INIT(inst) [USBC_PORT_NEW(DT_DRV_INST(inst))] = &data_##inst,
 
 /**

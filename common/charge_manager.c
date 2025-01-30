@@ -247,7 +247,7 @@ DECLARE_HOOK(HOOK_INIT, charge_manager_init, HOOK_PRIO_INIT_CHARGE_MANAGER);
 #else
 BUILD_ASSERT(CONFIG_CHARGE_MANAGER_SYS_INIT_PRIORITY <
 		     CONFIG_PDC_POWER_MGMT_INIT_PRIORITY,
-	     "The charge manager initialization must be higher priortity than "
+	     "The charge manager initialization must be higher priority than "
 	     "the PDC power management");
 
 /* When CONFIG_USB_PDC_POWER_MGMT is used, we need to init the

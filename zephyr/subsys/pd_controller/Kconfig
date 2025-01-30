@@ -20,7 +20,7 @@ menuconfig USB_PDC_POWER_MGMT
 
 config PDC_POWER_MGMT_INIT_PRIORITY
 	int "USB-C stack init priority"
-	default 90
+	default 91
 	help
 	  Initialization priority of the USB-C in POST_KERNEL.
 

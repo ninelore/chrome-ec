@@ -2663,7 +2663,7 @@ static void tps_thread(void *dev, void *unused1, void *unused2)
                                                                                \
 	DEVICE_DT_INST_DEFINE(inst, pdc_init, NULL, &pdc_data_##inst,          \
 			      &pdc_config##inst, POST_KERNEL,                  \
-			      CONFIG_APPLICATION_INIT_PRIORITY,                \
+			      CONFIG_PDC_DRIVER_INIT_PRIORITY,                 \
 			      &pdc_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(TPS6699X_PDC_DEFINE)
