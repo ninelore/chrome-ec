@@ -193,7 +193,7 @@ int stm32_plln = 55;
 int stm32_pllr = 2;
 
 /* Change system/core clock frequency and peripheral clock frequency. */
-static void change_frequencies(int m, int n, int r, uint32_t rcc_cfgr)
+static void change_frequencies(int m, int n, int r, uint32_t rcc_cfgr_prescaler)
 {
 	/*
 	 * There are a few concerns: We must not use the PLL as source of
@@ -203,7 +203,9 @@ static void change_frequencies(int m, int n, int r, uint32_t rcc_cfgr)
 	 */
 
 	/* Peripheral clock equal to system core clock (no division). */
-	STM32_RCC_CFGR = STM32_RCC_CFGR_PPRE1_DIV1 | STM32_RCC_CFGR_PPRE2_DIV1;
+	STM32_RCC_CFGR = (STM32_RCC_CFGR & ~STM32_RCC_CFGR_PPRE1_MSK &
+			  ~STM32_RCC_CFGR_PPRE2_MSK) |
+			 STM32_RCC_CFGR_PPRE1_DIV1 | STM32_RCC_CFGR_PPRE2_DIV1;
 
 	/* Temporarily use 16MHz clock source, rather than PLL. */
 	clock_set_osc(OSC_HSI, OSC_INIT);
@@ -229,7 +231,9 @@ static void change_frequencies(int m, int n, int r, uint32_t rcc_cfgr)
 
 	/* Now apply the desired divisor to peripheral clock. */
 	hook_notify(HOOK_PRE_FREQ_CHANGE);
-	STM32_RCC_CFGR = rcc_cfgr;
+	STM32_RCC_CFGR = (STM32_RCC_CFGR & ~STM32_RCC_CFGR_PPRE1_MSK &
+			  ~STM32_RCC_CFGR_PPRE2_MSK) |
+			 rcc_cfgr_prescaler;
 	hook_notify(HOOK_FREQ_CHANGE);
 }
 
