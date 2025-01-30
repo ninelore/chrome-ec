@@ -234,14 +234,7 @@ class Zmake:
             all_projects=all_projects,
         )
 
-        # TODO: b/299112542 - "zmake compare-builds -a" fails to build
-        # bloonchipper
-        skipped_projects = set(
-            filter(
-                lambda project: project.config.project_name == "bloonchipper",
-                projects,
-            )
-        )
+        skipped_projects = set()
 
         for project in skipped_projects:
             self.logger.warning(
@@ -432,8 +425,6 @@ class Zmake:
         else:
             self.logger.info("Temporary dir %s will be retained", temp_dir)
 
-        # TODO: b/299112542 - "zmake compare-builds -a" fails to build
-        # bloonchipper
         projects, project_names, all_projects = self._filter_projects(
             project_names, all_projects
         )
