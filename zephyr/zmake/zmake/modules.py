@@ -38,6 +38,7 @@ known_modules = {
     "pigweed": lambda name, checkout: (checkout / "src" / "third_party" / name),
     "hal_intel_public": third_party_module,
     "picolibc": third_party_module,
+    "intel_module_private": third_party_module,
 }
 
 
