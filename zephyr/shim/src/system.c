@@ -228,7 +228,7 @@ test_mockable void system_reset(int flags)
 		/* Wait 10 seconds for external reset */
 		for (i = 0; i < 1000; i++) {
 			watchdog_reload();
-			udelay(10000);
+			k_busy_wait(10000);
 		}
 	}
 

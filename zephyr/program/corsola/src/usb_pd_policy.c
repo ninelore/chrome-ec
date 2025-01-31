@@ -203,7 +203,7 @@ __override int svdm_dp_attention(int port, uint32_t *payload)
 		 * very short (500us), we can use udelay instead of usleep for
 		 * more stable pulse period.
 		 */
-		udelay(HPD_DSTREAM_DEBOUNCE_IRQ);
+		k_busy_wait(HPD_DSTREAM_DEBOUNCE_IRQ);
 		svdm_set_hpd_gpio(port, 1);
 	} else {
 		svdm_set_hpd_gpio(port, lvl);

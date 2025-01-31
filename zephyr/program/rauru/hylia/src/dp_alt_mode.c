@@ -73,7 +73,7 @@ void hylia_dp_attention(int port, uint32_t vdo_dp_status)
 
 		/* generate IRQ_HPD pulse */
 		svdm_set_hpd_gpio(port, 0);
-		udelay(HPD_DSTREAM_DEBOUNCE_IRQ);
+		k_busy_wait(HPD_DSTREAM_DEBOUNCE_IRQ);
 		svdm_set_hpd_gpio(port, 1);
 	} else {
 		svdm_set_hpd_gpio(port, lvl);
