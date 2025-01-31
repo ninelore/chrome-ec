@@ -42,7 +42,7 @@ def translate_status(status):
 def translate_expected(status, suite_name, test_id):
     """Translates ZTEST status to ResultDB expected"""
 
-    if status in ["passed", "filtered"]:
+    if status in ["passed", "filtered", "not run"]:
         return True
     if status == "skipped":
         # A list of zephyr/main suites that are known to skip.
@@ -57,7 +57,6 @@ def translate_expected(status, suite_name, test_id):
             "pdc/pdc.policy.high_voltage",
             "tests/drivers/counter/counter_basic_api/drivers.counter.basic_api",
             "tests/drivers/gpio/gpio_api_1pin/drivers.gpio.1pin",
-            "tests/drivers/gpio/gpio_basic_api/drivers.gpio.2pin",
             "tests/subsys/pm/policy_api/pm.policy.api.default",
             "tests/subsys/pm/policy_api/pm.policy.api.app",
         ]:
