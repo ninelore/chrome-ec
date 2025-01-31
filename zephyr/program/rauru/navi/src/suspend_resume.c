@@ -88,7 +88,7 @@ static void ap_wakeup_isr_debounce(void)
 
 DECLARE_DEFERRED(ap_wakeup_isr_debounce);
 
-#define AP_WAKEUP_ISR_DEBOUNCE_T (2 * MSEC)
+#define AP_WAKEUP_ISR_DEBOUNCE_T (2 * USEC_PER_MSEC)
 /*
  * Interrupt handler for the CS_L pin. This function is called when the AP
  * enters or exits S3 sleep.
@@ -180,7 +180,8 @@ __override void board_handle_host_sleep_event(enum host_sleep_event state)
 		 * Delay 50 ms to enable the IRQ to avoid being triggered by the
 		 * ongoing SPI transaction.
 		 */
-		hook_call_deferred(&enable_cs_interrupt_data, 50 * MSEC);
+		hook_call_deferred(&enable_cs_interrupt_data,
+				   50 * USEC_PER_MSEC);
 	}
 }
 

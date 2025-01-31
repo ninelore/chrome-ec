@@ -1475,7 +1475,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_snk_attached)
 				     "TypeCSnkAttached"));
 
 	/* Allow for debouncing time. */
-	TEST_WORKING_DELAY(PD_T_SINK_WAIT_CAP / MSEC);
+	TEST_WORKING_DELAY(PD_T_SINK_WAIT_CAP / USEC_PER_MSEC);
 	zassert_true(test_pdc_power_mgmt_is_snk_typec_attached_run(TEST_PORT));
 }
 
@@ -1494,7 +1494,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_src_attached)
 				     "TypeCSrcAttached"));
 
 	/* Allow for debouncing time. */
-	TEST_WORKING_DELAY(PD_T_SINK_WAIT_CAP / MSEC);
+	TEST_WORKING_DELAY(PD_T_SINK_WAIT_CAP / USEC_PER_MSEC);
 	zassert_true(test_pdc_power_mgmt_is_src_typec_attached_run(TEST_PORT));
 }
 

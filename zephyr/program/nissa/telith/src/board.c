@@ -301,7 +301,7 @@ void bl_pg_interrupt(enum gpio_signal s)
 		gpio_disable_dt_interrupt(
 			GPIO_INT_FROM_NODELABEL(int_blpwr_pgd));
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_blpwr_en), 0);
-		hook_call_deferred(&bl_pg_handle_data, 10 * MSEC);
+		hook_call_deferred(&bl_pg_handle_data, 10 * USEC_PER_MSEC);
 	}
 }
 

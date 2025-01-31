@@ -68,7 +68,7 @@ void svdm_set_hpd_gpio(int port, int en)
 		 * do not reset the aux path immediately. Defer this call and
 		 * re-check if this is a real disable.
 		 */
-		hook_call_deferred(&reset_aux_deferred_data, 1 * MSEC);
+		hook_call_deferred(&reset_aux_deferred_data, 1 * USEC_PER_MSEC);
 	}
 }
 

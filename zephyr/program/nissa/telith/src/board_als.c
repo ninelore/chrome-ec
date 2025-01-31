@@ -80,7 +80,8 @@ DECLARE_DEFERRED(als_change_deferred);
 void door_open_interrupt(enum gpio_signal s)
 {
 	if (als_enable) {
-		hook_call_deferred(&als_change_deferred_data, 500 * MSEC);
+		hook_call_deferred(&als_change_deferred_data,
+				   500 * USEC_PER_MSEC);
 	} else {
 		hook_call_deferred(&als_change_deferred_data, -1);
 	}
@@ -100,7 +101,8 @@ static void check_als_status(void)
 		als_enable = 1;
 		gpio_enable_dt_interrupt(
 			GPIO_INT_FROM_NODELABEL(int_als_status));
-		hook_call_deferred(&als_change_deferred_data, 500 * MSEC);
+		hook_call_deferred(&als_change_deferred_data,
+				   500 * USEC_PER_MSEC);
 	} else {
 		gpio_disable_dt_interrupt(
 			GPIO_INT_FROM_NODELABEL(int_als_status));
