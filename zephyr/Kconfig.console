@@ -113,7 +113,7 @@ config PLATFORM_EC_LOG_TOKENIZED
 	bool "Use tokenized logging for EC"
 	depends on PIGWEED_LOG_TOKENIZED_LIB
 	depends on CPP
-	depends on STD_CPP17 # coreboot g++ __cplusplus 201703L
+	depends on STD_CPP17 || STD_CPP20
 	depends on EXTERNAL_MODULE_LIBCPP
 	depends on PIGWEED_MINIMAL_CPP_STDLIB
 	depends on PICOLIBC
