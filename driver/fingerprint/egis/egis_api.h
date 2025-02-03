@@ -76,6 +76,36 @@ typedef enum {
 } egis_api_return_t;
 
 /**
+ * enum egis_capture_mode_t - Specifies the "mode" when capturing images.
+ *
+ * @EGIS_CAPTURE_VENDOR_FORMAT: Capture normal images with 8-bits per pixel
+ * output
+ * @EGIS_CAPTURE_BLACK_PXL_TEST: Capture for check dark pixel test with 16-bits
+ * per pixel output
+ * @EGIS_CAPTURE_WHITE_PXL_TEST: Capture for check white pixel test with 16-bits
+ * per pixel output
+ * @EGIS_CAPTURE_DEFECT_PXL_TEST: Capture for check defect pixel test with
+ * 16-bits per pixel output
+ * @EGIS_CAPTURE_NOISE_TEST: Capture for check noise test with 16-bits per pixel
+ * output
+ * @EGIS_CAPTURE_ABNORMAL_TEST: Capture for check abnormal pixel test with
+ * 16-bits per pixel output
+ * @EGIS_CAPTURE_RV_INT_TEST: Capture for RV test with 16-bits per pixel output
+ * @EGIS_CAPTURE_TYPE_MAX: End of enum
+ *
+ */
+typedef enum {
+	EGIS_CAPTURE_NORMAL_FORMAT = 0,
+	EGIS_CAPTURE_BLACK_PXL_TEST = 1,
+	EGIS_CAPTURE_WHITE_PXL_TEST = 2,
+	EGIS_CAPTURE_DEFECT_PXL_TEST = 3,
+	EGIS_CAPTURE_NOISE_TEST = 4,
+	EGIS_CAPTURE_ABNORMAL_TEST = 5,
+	EGIS_CAPTURE_RV_INT_TEST = 6,
+	EGIS_CAPTURE_TYPE_MAX,
+} egis_capture_mode_t;
+
+/**
  * @brief Get the fingerprint sensor HWID
  *
  * @param[out] id sensor id read from sensor.
