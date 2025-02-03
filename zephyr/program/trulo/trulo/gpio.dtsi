@@ -96,6 +96,9 @@
 		ec-i2c-sensor-sda {
 			gpios = <&gpio8 7 GPIO_INPUT>;
 		};
+		gpio_ec_soc_wake_odl: ec_soc_wake_odl {
+			gpios = <&gpiob 0 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_OUTPUT_INIT_LOW)>;
+		};
 	};
 
 	unused-pins {
