@@ -285,7 +285,7 @@ class CompareBuilds:
             / pathlib.Path(project.config.project_name)
             / "output"
         )
-        ish_targets = {"rex-ish", "brox-ish", "orisa-ish"}
+        ish_targets = {"rex-ish", "brox-ish", "orisa-ish", "ptl-ish"}
 
         output_dir1 = self.checkouts[0].modules_dir / output_path
         output_dir2 = self.checkouts[1].modules_dir / output_path
