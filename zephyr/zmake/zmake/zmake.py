@@ -263,7 +263,9 @@ class Zmake:
 
         Returns a list of projects.
         """
-        found_projects = zmake.project.find_projects(self.projects_dirs)
+        found_projects = zmake.project.find_projects(
+            self.projects_dirs, self.module_paths
+        )
         if all_projects:
             projects = set(found_projects.values())
         else:
@@ -1034,7 +1036,9 @@ class Zmake:
         Args:
             fmt: The formatting string to print projects with.
         """
-        for project in zmake.project.find_projects(self.projects_dirs).values():
+        for project in zmake.project.find_projects(
+            self.projects_dirs, self.module_paths
+        ).values():
             print(fmt.format(config=project.config), end="")
 
         return 0

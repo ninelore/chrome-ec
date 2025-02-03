@@ -177,7 +177,7 @@ def test_prune_modules_optional_missing():
 
 def test_find_projects_empty(tmp_path):
     """Test the find_projects method when there are no projects."""
-    projects = list(zmake.project.find_projects([tmp_path]))
+    projects = list(zmake.project.find_projects([tmp_path], module_paths=None))
     assert len(projects) == 0
 
 
@@ -201,6 +201,23 @@ register_raw_project(
 )
 """
 
+CONFIG_FILE_3 = """
+register_raw_project(
+    project_name="has_public_modules",
+    zephyr_board="has_public_modules",
+    modules=["ec", "cmsis"],
+)
+register_raw_project(
+    project_name="has_private_modules",
+    zephyr_board="has_private_modules",
+    modules=["ec", "intel_module_private"],
+)
+register_raw_project(
+    project_name="has_default_modules",
+    zephyr_board="has_default_modules",
+)
+"""
+
 
 def test_find_projects(tmp_path):
     """Test the find_projects method when there are projects."""
@@ -214,7 +231,7 @@ def test_find_projects(tmp_path):
     cf2_dir.mkdir()
     (cf2_dir / "BUILD.py").write_text(CONFIG_FILE_2)
 
-    projects = zmake.project.find_projects([tmp_path])
+    projects = zmake.project.find_projects([tmp_path], None)
     assert len(projects) == 5
     assert projects["one"].config.project_dir == cf1_dir
 
@@ -233,6 +250,65 @@ def test_find_projects(tmp_path):
     assert projects["five"].config.full_name == "root.myboard.five"
 
 
+def test_find_project_missing_public_module(tmp_path):
+    """If a project requires a public module, it should raise an exception
+    if the module is missing."""
+    modules_dir = tmp_path / "modules"
+
+    # Create a stub "ec" module
+    ec_dir = modules_dir / "ec" / "zephyr"
+    ec_dir.mkdir(parents=True)
+    (ec_dir / "module.yml").write_bytes(b"")
+
+    # Create an empty "cmsis" module.  It should cause an error.
+    cmsis_dir = modules_dir / "cmsis" / "zephyr"
+    cmsis_dir.mkdir(parents=True)
+
+    module_paths = zmake.modules.locate_from_directory(modules_dir)
+
+    # Create projects that require modules
+    projects_dir = tmp_path / "projects"
+    cf3_dir = projects_dir / "cf3"
+    cf3_dir.mkdir(parents=True)
+    (cf3_dir / "BUILD.py").write_text(CONFIG_FILE_3)
+
+    with pytest.raises(KeyError):
+        zmake.project.find_projects([projects_dir], module_paths)
+
+
+def test_find_project_missing_private_module(tmp_path):
+    """If a project requires a private module, it should not raise
+    an exception and the project should be skipped."""
+    modules_dir = tmp_path / "modules"
+
+    # Create a stub "ec" module
+    ec_dir = modules_dir / "ec" / "zephyr"
+    ec_dir.mkdir(parents=True)
+    (ec_dir / "module.yml").write_bytes(b"")
+
+    # Create a stub "cmsis" module.
+    cmsis_dir = modules_dir / "cmsis" / "zephyr"
+    cmsis_dir.mkdir(parents=True)
+    (cmsis_dir / "module.yml").write_bytes(b"")
+
+    # Private module not defined
+
+    module_paths = zmake.modules.locate_from_directory(modules_dir)
+
+    # Create projects that require modules
+    projects_dir = tmp_path / "projects"
+    cf3_dir = projects_dir / "cf3"
+    cf3_dir.mkdir(parents=True)
+    (cf3_dir / "BUILD.py").write_text(CONFIG_FILE_3)
+
+    projects = zmake.project.find_projects([projects_dir], module_paths)
+
+    assert len(projects) == 2
+    assert "has_public_modules" in projects
+    assert "has_default_modules" in projects
+    assert "has_private_modules" not in projects
+
+
 def test_find_projects_name_conflict(tmp_path):
     """When two projects define the same name, that should be an error."""
     cf1_dir = tmp_path / "cf1"
@@ -244,7 +320,7 @@ def test_find_projects_name_conflict(tmp_path):
     (cf2_dir / "BUILD.py").write_text(CONFIG_FILE_2)
 
     with pytest.raises(KeyError):
-        zmake.project.find_projects([tmp_path])
+        zmake.project.find_projects([tmp_path], None)
 
 
 def test_register_variant(tmp_path):
@@ -264,7 +340,7 @@ another = some_variant.variant(
 )
     """
     )
-    projects = zmake.project.find_projects([tmp_path])
+    projects = zmake.project.find_projects([tmp_path], None)
     assert projects["some"].config.zephyr_board == "foo"
     assert projects["some-variant"].config.zephyr_board == "bar"
     assert projects["another"].config.zephyr_board == "bar"

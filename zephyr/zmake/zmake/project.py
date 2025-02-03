@@ -128,6 +128,38 @@ class Project:
             )
         return build_config.BuildConfig()
 
+    def verify_modules(self, module_paths):
+        """Verify required modules found.
+
+        Args:
+            module_paths: A dictionary mapping module names to their
+                paths.  This dictionary is not modified.
+
+        Returns:
+            True - all modules found.
+            False - one more private modules not found.
+
+        Raises:
+            A KeyError, if a required public module is not found.
+        """
+        for module in self.config.modules:
+            if module not in module_paths:
+                if not zmake.modules.is_private(module):
+                    raise KeyError(
+                        f"The public {module} is required by the "
+                        f"{self.config.project_name} project, but is not available."
+                    )
+
+                logging.warning(
+                    "Private module '%s' is not present. "
+                    "'%s' project skipped by build all",
+                    module,
+                    self.config.project_name,
+                )
+                return False
+
+        return True
+
     def prune_modules(self, module_paths):
         """Reduce a modules dict to the ones required by this project.
 
@@ -285,12 +317,14 @@ def load_config_file(path) -> typing.List[Project]:
 
 
 def find_projects(
-    root_dirs: typing.List[typing.Union[str, os.PathLike]]
+    root_dirs: typing.List[typing.Union[str, os.PathLike]], module_paths
 ) -> typing.Dict[str, Project]:
     """Finds all zmake projects in root_dir.
 
     Args:
         root_dirs: an list of dirs as Pathlike objects
+        module_paths: A dictionary mapping module names to their
+            paths.  This dictionary is not modified.
 
     Returns:
         A dictionary mapping project names to Project objects.
@@ -305,5 +339,8 @@ def find_projects(
                         raise KeyError(
                             f"Duplicate project defined: {project.config.project_name} (in {path})"
                         )
-                    found_projects[project.config.project_name] = project
+                    if module_paths is None or project.verify_modules(
+                        module_paths
+                    ):
+                        found_projects[project.config.project_name] = project
     return found_projects

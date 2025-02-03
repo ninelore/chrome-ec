@@ -152,7 +152,9 @@ def build(opts):
         env=env,
     )
     if not opts.code_coverage:
-        for project in zmake.project.find_projects(projects_path).values():
+        for project in zmake.project.find_projects(
+            projects_path, modules
+        ).values():
             build_dir = (
                 platform_ec / "build" / "zephyr" / project.config.project_name
             )
@@ -312,7 +314,7 @@ def bundle_firmware(opts):
     projects_path = zmake.modules.default_projects_dirs(modules)
     subprocesses = []
     per_board_targets = collections.defaultdict(list)
-    for project in zmake.project.find_projects(projects_path).values():
+    for project in zmake.project.find_projects(projects_path, modules).values():
         build_dir = (
             platform_ec / "build" / "zephyr" / project.config.project_name
         )
@@ -452,7 +454,9 @@ def test(opts):
             "ALL_FILTERED", metrics, build_dir / "lcov_no_tests.info"
         )
 
-        for project in zmake.project.find_projects(projects_path).values():
+        for project in zmake.project.find_projects(
+            projects_path, modules
+        ).values():
             if project.config.project_name in SPECIAL_BOARDS:
                 _extract_lcov_summary(
                     f"BOARD_{project.config.full_name}".upper(),
@@ -475,7 +479,7 @@ def check_inherits(_opts):
     projects_path = zmake.modules.default_projects_dirs(modules)
     # Ec target name -> board name -> boolean if seen in Boxster
     ec_to_board = collections.defaultdict(dict)
-    for project in zmake.project.find_projects(projects_path).values():
+    for project in zmake.project.find_projects(projects_path, modules).values():
         board_dict = {}
         for board in project.config.inherited_from:
             board_dict[board] = False
