@@ -47,7 +47,7 @@ ZTEST(timer, test_usleep)
 ZTEST(timer, test_timestamp_expired)
 {
 	/* Set an arbitrary time for "now", all times will be relative to now */
-	timestamp_t now = { .val = 2 * HOUR };
+	timestamp_t now = { .val = 2 * USEC_PER_SEC * SEC_PER_HOUR };
 	timestamp_t deadline;
 
 	/* set the deadline in the past, verify expired*/
