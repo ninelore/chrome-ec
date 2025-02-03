@@ -26,7 +26,7 @@ LOG_MODULE_REGISTER(board_init, LOG_LEVEL_INF);
 #define CPRINTS(format, args...) cprints(CC_SYSTEM, format, ##args)
 
 #define SB_AP23A7L 0x00
-#define CONFIG_BATTERY_ACTIVATION_TIMEOUT (10 * SECOND)
+#define CONFIG_BATTERY_ACTIVATION_TIMEOUT (10 * USEC_PER_SEC)
 
 enum battery_present battery_hw_present(void)
 {

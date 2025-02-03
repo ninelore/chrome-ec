@@ -82,7 +82,7 @@ static void check_batt_current(void)
 	}
 
 	/* Deferred 2s to avoid state conflict */
-	hook_call_deferred(&update_prochot_deferred_data, 2 * SECOND);
+	hook_call_deferred(&update_prochot_deferred_data, 2 * USEC_PER_SEC);
 }
 DECLARE_HOOK(HOOK_CHIPSET_RESUME, check_batt_current, HOOK_PRIO_DEFAULT);
 

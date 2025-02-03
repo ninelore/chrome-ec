@@ -76,6 +76,6 @@ ZTEST(timer, test_timestamp_expired_null)
 
 	/* set the deadline to far enough in the future that it will not expire,
 	 * verify not expired */
-	deadline.val = get_time().val + SECOND;
+	deadline.val = get_time().val + USEC_PER_SEC;
 	zassert_false(timestamp_expired(deadline, NULL));
 }

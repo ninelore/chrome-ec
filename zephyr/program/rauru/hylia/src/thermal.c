@@ -21,7 +21,7 @@
 
 #define CPRINTS(format, args...) cprints(CC_SYSTEM, format, ##args)
 #define CPRINTF(format, args...) cprintf(CC_SYSTEM, format, ##args)
-#define CONFIG_BATTERY_ACTIVATION_TIMEOUT (10 * SECOND)
+#define CONFIG_BATTERY_ACTIVATION_TIMEOUT (10 * USEC_PER_SEC)
 
 #define DECLINE_LEVEL_COUNT 1
 #define INCREMENT_LEVEL_COUNT 3
