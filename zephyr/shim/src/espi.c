@@ -193,7 +193,7 @@ static void espi_vwire_handler(const struct device *dev,
 	/* If PLTRST# asserted (low) then send reset hook */
 	if (event.evt_details == ESPI_VWIRE_SIGNAL_PLTRST &&
 	    event.evt_data == 0) {
-		hook_call_deferred(&espi_chipset_reset_data, USEC_PER_MSEC);
+		hook_call_deferred(&espi_chipset_reset_data, 1 * USEC_PER_MSEC);
 		update_ap_boot_time(PLTRST_LOW);
 	} else if (event.evt_details == ESPI_VWIRE_SIGNAL_PLTRST &&
 		   event.evt_data == 1) {
