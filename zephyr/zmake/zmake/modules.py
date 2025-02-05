@@ -8,37 +8,20 @@ from zmake import build_config
 from zmake import util
 
 
-def third_party_module(name, checkout):
-    """Common callback in registry for all third_party/zephyr modules.
-
-    Args:
-        name: The name of the module.
-        checkout: The path to the chromiumos source.
-
-    Return:
-        The path to the module module.
-    """
-    return checkout / "src" / "third_party" / "zephyr" / name
-
-
 known_modules = {
     # TODO(b/384581513): boringssl is not officially recognized by Zephyr,
     # since it doesn't have a zephyr/module.yaml. That doesn't prevent us from
     # using it with zmake.
-    "boringssl": lambda name, checkout: (
-        checkout / "src" / "third_party" / name
-    ),
-    "hal_stm32": third_party_module,
-    "cmsis": third_party_module,
-    "ec": lambda name, checkout: (checkout / "src" / "platform" / "ec"),
-    "fpc": lambda name, checkout: (
-        checkout / "src" / "platform" / "fingerprint" / "fpc"
-    ),
-    "nanopb": third_party_module,
-    "pigweed": lambda name, checkout: (checkout / "src" / "third_party" / name),
-    "hal_intel_public": third_party_module,
-    "picolibc": third_party_module,
-    "intel_module_private": third_party_module,
+    "boringssl": "src/third_party/borringssl",
+    "hal_stm32": "src/third_party/zephyr/hal_stm32",
+    "cmsis": "src/third_party/zephyr/cmsis",
+    "ec": "src/platform/ec",
+    "fpc": "src/platform/fingerprint/fpc",
+    "nanopb": "src/third_party/zephyr/nanopb",
+    "pigweed": "src/third_party/pigweed",
+    "hal_intel_public": "src/third_party/zephyr/hal_intel_public",
+    "picolibc": "src/third_party/zephyr/picolibc",
+    "intel_module_private": "src/third_party/zephyr/intel_module_private",
 }
 
 
@@ -57,8 +40,8 @@ def locate_from_checkout(checkout_dir):
         A dictionary mapping module names to paths.
     """
     result = {}
-    for name, locator in known_modules.items():
-        path = locator(name, checkout_dir)
+    for name, module_path in known_modules.items():
+        path = checkout_dir / module_path
         if path.exists():
             result[name] = path
     return result
