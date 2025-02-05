@@ -197,7 +197,7 @@ ZTEST_USER(chargesplash, test_lockout)
 		      "chargesplash should be locked out");
 	set_ac_enabled(false);
 
-	crec_sleep(CONFIG_CHARGESPLASH_PERIOD);
+	k_sleep(K_SECONDS(CONFIG_CHARGESPLASH_PERIOD));
 
 	set_ac_enabled(true);
 	zassert_true(is_chargesplash_requested(),
@@ -245,7 +245,7 @@ ZTEST_USER(chargesplash, test_manual_lockout_via_console)
 	zassert_false(is_chargesplash_requested(),
 		      "chargesplash should be not requested due to lockout");
 
-	crec_sleep(CONFIG_CHARGESPLASH_PERIOD);
+	k_sleep(K_SECONDS(CONFIG_CHARGESPLASH_PERIOD));
 
 	zassert_ok(shell_execute_cmd(get_ec_shell(), "chargesplash request"),
 		   NULL);
@@ -273,7 +273,7 @@ ZTEST_USER(chargesplash, test_manual_lockout_via_hostcmd)
 	zassert_false(is_chargesplash_requested(),
 		      "chargesplash should be not requested due to lockout");
 
-	crec_sleep(CONFIG_CHARGESPLASH_PERIOD);
+	k_sleep(K_SECONDS(CONFIG_CHARGESPLASH_PERIOD));
 
 	zassert_ok(chargesplash_hostcmd(EC_CHARGESPLASH_REQUEST, &response),
 		   NULL);
