@@ -11,6 +11,9 @@ pwrbtn: &gpio_ec_mech_pwr_btn_l {};
 gpio_c_ioex_kbd_intr_r: &gpio_ioex_kbd_int_odl {};
 cse_early_rec_sw: &gpio_ec_soc_rec_switch_odl {};
 
+vol_up_ec: &gpio_ec_volup_btn_odl {};
+vol_dn_ec: &gpio_ec_voldn_btn_odl {};
+
 en_pp5000_s5: &gpio_en_pp5000_s5 {};
 ec_pch_pwrok_od: &gpio_soc_pwrok_r {};
 all_sys_pwrgd: &gpio_all_sys_pwrgd {};
