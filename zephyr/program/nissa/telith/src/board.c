@@ -287,7 +287,7 @@ DECLARE_HOOK(HOOK_INIT, board_init, HOOK_PRIO_DEFAULT);
 static void bl_pg_handle(void)
 {
 	gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_blpwr_en), 1);
-	crec_msleep(50);
+	k_msleep(50);
 	if (gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(gpio_blpwr_pgd))) {
 		gpio_enable_dt_interrupt(
 			GPIO_INT_FROM_NODELABEL(int_blpwr_pgd));

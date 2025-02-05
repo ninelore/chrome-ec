@@ -64,7 +64,7 @@ static void wait_for_chipset_startup(void)
 	 * TODO(b/230362548): We need to give the EC a bit to "calm down"
 	 * after reaching S0.
 	 */
-	crec_msleep(2000);
+	k_msleep(2000);
 }
 
 #define GPIO_LID_OPEN_EC_NODE DT_NODELABEL(gpio_lid_open_ec)

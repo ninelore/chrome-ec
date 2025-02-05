@@ -44,7 +44,7 @@ static int als_eeprom_write(uint8_t offset, uint8_t *data, int len)
 		return rv;
 	}
 	/* Wait for internal write cycle completion */
-	crec_msleep(EEPROM_PAGE_WRITE_MS);
+	k_msleep(EEPROM_PAGE_WRITE_MS);
 
 	return EC_SUCCESS;
 }
