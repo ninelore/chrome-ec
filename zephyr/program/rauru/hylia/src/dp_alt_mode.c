@@ -68,7 +68,7 @@ void hylia_dp_attention(int port, uint32_t vdo_dp_status)
 		uint64_t now = get_time().val;
 		/* wait for the minimum spacing between IRQ_HPD if needed */
 		if (now < svdm_hpd_deadline[port]) {
-			crec_usleep(svdm_hpd_deadline[port] - now);
+			k_usleep(svdm_hpd_deadline[port] - now);
 		}
 
 		/* generate IRQ_HPD pulse */

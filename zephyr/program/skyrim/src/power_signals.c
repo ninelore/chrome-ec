@@ -150,7 +150,7 @@ void board_pwrbtn_to_pch(int level)
 	    !gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(gpio_ec_soc_rsmrst_l))) {
 		start = get_time();
 		do {
-			crec_usleep(500);
+			k_usleep(500);
 			if (gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(
 				    gpio_ec_soc_rsmrst_l)))
 				break;
