@@ -90,8 +90,8 @@
 		&kso13_default
 		&kso14_default
 		&kso15_default
-		&kso16_gpc3_default
-		&kso17_gpc5_default>;
+		&kso16_default
+		&kso17_default>;
 	pinctrl-1 = <
 		&ksi0_sleep
 		&ksi1_sleep
@@ -117,8 +117,8 @@
 		&kso13_sleep
 		&kso14_sleep
 		&kso15_sleep
-		&kso16_gpc3_sleep
-		&kso17_gpc5_sleep>;
+		&kso16_sleep
+		&kso17_sleep>;
 
 	pinctrl-names = "default", "sleep";
 	row-size = <8>;
