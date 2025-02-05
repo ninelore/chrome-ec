@@ -86,7 +86,7 @@ typedef enum {
  * @return EGIS_API_ERROR_PARAMETER on incorrect parameter, @p id filled with
  * zeros
  */
-int egis_get_hwid(uint16_t *id);
+egis_api_return_t egis_get_hwid(uint16_t *id);
 
 /**
  * @brief Reset and initialize the sensor IC.
