@@ -270,7 +270,7 @@ def main():
         if args.upload:
             upload_results(rdb_results)
     else:
-        raise Exception("Missing test result file for conversion")
+        raise ValueError("Missing test result file for conversion")
 
 
 if __name__ == "__main__":

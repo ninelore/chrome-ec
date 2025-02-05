@@ -39,8 +39,7 @@ def get_git_hash(ref):
         raise OSError(
             f"Failed to determine hash for git reference {ref}"
         ) from e
-    else:
-        full_reference = result.stdout.strip()
+    full_reference = result.stdout.strip()
 
     return full_reference
 
