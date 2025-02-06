@@ -29,7 +29,7 @@
 			gpios = <&gpiob 1 GPIO_INPUT>;
 			enum-name = "GPIO_LID_OPEN";
 		};
-		gpio_acok_ec_od: acok_ec_od {
+		gpio_chg_acok_ec: chg_acok_ec {
 			gpios = <&gpiob 0 GPIO_INPUT>;
 			enum-name = "GPIO_AC_PRESENT";
 		};

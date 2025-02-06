@@ -33,6 +33,7 @@
 #include "i2c.dtsi"
 #include "interrupts.dtsi"
 #include "power_signals.dtsi"
+#include "usb_typec.dtsi"
 
 /* these need to be promoted to program.conf */
 
@@ -41,12 +42,18 @@
 /* Felino overrides follow... */
 
 / {
-	named-gpios {
-		compatible = "named-gpios";
-
-		/* override since arb does not support GPIO_VOLTAGE_1P8 */
-		gpio_rsmrst_pwrgd_n_r: rsmrst_pwrgd_n_r {
-			gpios = <&gpiof 0 (GPIO_INPUT | GPIO_VOLTAGE_1P8)>;
+	batteries {
+		default_battery: smp-ap23b7q {
+			compatible = "smp,ap23b7q", "battery-smart";
+		};
+		lges-ap22a8n {
+			compatible = "lges,ap22a8n", "battery-smart";
+		};
+		smp_ap23a7l {
+			compatible = "smp,ap23a7l", "battery-smart";
+		};
+		lges-ap23a8l {
+			compatible = "lges,ap23a8l", "battery-smart";
 		};
 	};
 
