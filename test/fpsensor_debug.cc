@@ -93,6 +93,21 @@ test_static int test_command_fpcapture_system_is_locked(void)
 	return EC_SUCCESS;
 }
 
+test_static int test_command_fpcapture_mode_is_negative(void)
+{
+	enum ec_error_list res;
+
+	/* System is unlocked. */
+	is_locked = 0;
+
+	/* Test for the case when access capture mode is negative. */
+	char console_input[] = "fpcapture -1";
+	res = test_send_console_command(console_input);
+	TEST_EQ(res, EC_ERROR_PARAM1, "%d");
+
+	return EC_SUCCESS;
+}
+
 test_static int test_command_fpenroll(void)
 {
 	enum ec_error_list res;
@@ -118,6 +133,7 @@ void run_test(int argc, const char **argv)
 		RUN_TEST(test_command_fpdownload);
 		RUN_TEST(test_command_fpmatch);
 		RUN_TEST(test_command_fpcapture_system_is_locked);
+		RUN_TEST(test_command_fpcapture_mode_is_negative);
 		RUN_TEST(test_command_fpenroll);
 	}
 
