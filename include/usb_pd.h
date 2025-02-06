@@ -357,8 +357,11 @@ enum pdo_augmented_pps {
 /* Maximum SPR voltage in mV offered by PD 3.0 Version 2.0 Spec */
 #define PD_REV3_MAX_VOLTAGE 20000
 
-/* Maximum SPR voltage in mV */
+/* Maximum fixed SPR voltage in mV */
 #define PD_MAX_SPR_VOLTAGE 20000
+
+/* Maximum variable SPR voltage in mV */
+#define PD_MAX_VARIABLE_VOLTAGE 21000
 
 /* Maximum EPR voltage in mV */
 #define PD_MAX_EPR_VOLTAGE 48000

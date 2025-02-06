@@ -48,12 +48,23 @@ int pd_select_best_pdo(uint32_t src_cap_cnt, const uint32_t *const src_caps,
 		/* Skip invalid voltage */
 		if (!mv)
 			continue;
+
 		/*
 		 * It's illegal to have EPR PDO in 1...7.
 		 * TODO: This is supposed to be a hard reset (8.3.3.3.8)
 		 */
-		if (i < 7 && mv > PD_MAX_SPR_VOLTAGE)
-			continue;
+		if (i < 7) {
+			if (((src_caps[i] & PDO_TYPE_MASK) == PDO_TYPE_FIXED) &&
+			    mv > PD_MAX_SPR_VOLTAGE) {
+				continue;
+			}
+			if (((src_caps[i] & PDO_TYPE_MASK) ==
+			     PDO_TYPE_VARIABLE) &&
+			    mv > PD_MAX_VARIABLE_VOLTAGE) {
+				continue;
+			}
+		}
+
 		/* Skip any voltage not supported by this board */
 		if (!pd_is_valid_input_voltage(mv))
 			continue;
@@ -133,8 +144,6 @@ void pd_extract_pdo_power_unclamped(uint32_t pdo, uint32_t *ma,
 	extract_pdo_helper(pdo, ma, max_mv, min_mv);
 }
 
-#if defined(CONFIG_USB_PD_MAX_POWER_MW) && defined(CONFIG_USB_PD_MAX_CURRENT_MA)
-
 void pd_extract_pdo_power(uint32_t pdo, uint32_t *ma, uint32_t *max_mv,
 			  uint32_t *min_mv)
 {
@@ -150,5 +159,3 @@ void pd_extract_pdo_power(uint32_t pdo, uint32_t *ma, uint32_t *max_mv,
 		*ma = MIN(*ma, board_limit_ma);
 	}
 }
-
-#endif

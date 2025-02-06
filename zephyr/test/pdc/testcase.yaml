@@ -119,6 +119,16 @@ tests:
     extra_dtc_overlay_files:
     - "./boards/rts5453p.overlay"
 
+  pdc.policy_variable:
+    extra_configs:
+    - CONFIG_TEST_SUITE_PDC_POLICY_VARIABLE=y
+    - CONFIG_TEST_DISABLE_INLINE_CHIPSET_IN_STATE=y
+    - CONFIG_PLATFORM_EC_USB_PD_MAX_VOLTAGE_MV=28000
+    - CONFIG_PLATFORM_EC_USB_PD_MAX_POWER_MW=65000
+    - CONFIG_PLATFORM_EC_USB_PD_MAX_CURRENT_MA=3000
+    extra_dtc_overlay_files:
+    - "./boards/rts5453p.overlay"
+
   pdc.rts54xx:
     extra_configs:
     - CONFIG_TEST_SUITE_PDC_RTS54XX=y

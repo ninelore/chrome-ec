@@ -20,6 +20,9 @@ config TEST_SUITE_PDC_POLICY
 config TEST_SUITE_PDC_POLICY_CLAMPED
 	bool "Enable PDC policy tests with clamped power"
 
+config TEST_SUITE_PDC_POLICY_VARIABLE
+	bool "Enable PDC policy tests to verify variabled PDOs"
+
 config TEST_SUITE_PDC_PMC_USB_MUX
 	bool "Enable PDC PMC USB mux tests"
 
