@@ -89,7 +89,7 @@ ZTEST(fpsensor_debug, test_command_fpcapture_mode_is_too_large)
 	snprintf(console_input, sizeof(console_input), "fpcapture %d",
 		 FP_CAPTURE_TYPE_MAX);
 	int rv = shell_execute_cmd(get_ec_shell(), console_input);
-	zassert_equal(rv, EC_ERROR_UNKNOWN);
+	zassert_equal(rv, EC_ERROR_PARAM1);
 }
 
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
