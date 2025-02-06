@@ -48,6 +48,8 @@ enum pdc_state_t {
 	/** Stop operation */
 	PDC_SUSPENDED,
 
+	/** Initial value, a placeholder state before entering init state */
+	PDC_INVALID,
 	/** State count. Always leave as last item. */
 	PDC_STATE_COUNT,
 };
