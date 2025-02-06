@@ -6,6 +6,8 @@
 #include "system.h"
 #include "test_util.h"
 
+#include <stdio.h>
+
 static int is_locked;
 
 int system_is_locked(void)
@@ -108,11 +110,30 @@ test_static int test_command_fpcapture_mode_is_negative(void)
 	return EC_SUCCESS;
 }
 
+test_static int test_command_fpcapture_mode_is_too_large(void)
+{
+	enum ec_error_list res;
+
+	/* System is unlocked. */
+	is_locked = 0;
+
+	/* Test for the case when capture mode is larger than
+	 * FP_CAPTURE_TYPE_MAX.
+	 */
+	char console_input[] = "fpcapture 56";
+	snprintf(console_input, sizeof(console_input), "fpcapture %d",
+		 FP_CAPTURE_TYPE_MAX);
+	res = test_send_console_command(console_input);
+	TEST_EQ(res, EC_ERROR_UNKNOWN, "%d");
+
+	return EC_SUCCESS;
+}
+
 test_static int test_command_fpenroll(void)
 {
 	enum ec_error_list res;
 
-	/* System is locked. */
+	/* System is unlocked. */
 	is_locked = 1;
 
 	/* Test for the case when access is denied. */
@@ -134,6 +155,7 @@ void run_test(int argc, const char **argv)
 		RUN_TEST(test_command_fpmatch);
 		RUN_TEST(test_command_fpcapture_system_is_locked);
 		RUN_TEST(test_command_fpcapture_mode_is_negative);
+		RUN_TEST(test_command_fpcapture_mode_is_too_large);
 		RUN_TEST(test_command_fpenroll);
 	}
 

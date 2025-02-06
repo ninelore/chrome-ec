@@ -6,6 +6,8 @@
 #include "console.h"
 #include "system.h"
 
+#include <stdio.h>
+
 #include <zephyr/fff.h>
 #include <zephyr/ztest.h>
 
@@ -76,6 +78,18 @@ ZTEST(fpsensor_debug, test_command_fpcapture_mode_is_negative)
 	char console_input[] = "fpcapture -1";
 	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_ERROR_PARAM1);
+}
+
+ZTEST(fpsensor_debug, test_command_fpcapture_mode_is_too_large)
+{
+	/* System is unlocked. */
+	is_locked = 0;
+
+	char console_input[] = "fpcapture 56";
+	snprintf(console_input, sizeof(console_input), "fpcapture %d",
+		 FP_CAPTURE_TYPE_MAX);
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
+	zassert_equal(rv, EC_ERROR_UNKNOWN);
 }
 
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
