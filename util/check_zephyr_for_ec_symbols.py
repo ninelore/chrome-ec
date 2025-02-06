@@ -14,6 +14,7 @@ import preupload.lib
 
 
 EC_FUNCTIONS: Dict[str, str] = {
+    "clock": "k_uptime_get_32",
     "force_time": "",
     "time_after": "",
     "time_until": "",
