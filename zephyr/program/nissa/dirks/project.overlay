@@ -7,7 +7,6 @@
 #include "../ite_espi.dtsi"
 
 #include "generated.dtsi"
-#include "keyboard.dtsi"
 #include "overlay.dtsi"
 #include "power_signals.dtsi"
 #include "pwm_leds.dtsi"
