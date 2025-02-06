@@ -1,8 +1,6 @@
 /* Copyright 2025 The ChromiumOS Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
- *
- * This file is auto-generated - do not edit!
  */
 
 / {
@@ -35,9 +33,6 @@
 	named-gpios {
 		compatible = "named-gpios";
 
-		gpio_acc_int_l: acc_int_l {
-			gpios = <&gpioc 0 GPIO_INPUT>;
-		};
 		gpio_all_sys_pwrgd: all_sys_pwrgd {
 			gpios = <&gpiob 7 GPIO_INPUT>;
 		};
@@ -54,10 +49,6 @@
 		};
 		gpio_ec_cbi_wp: ec_cbi_wp {
 			gpios = <&gpioj 5 GPIO_OUTPUT>;
-		};
-		gpio_ec_edp_bl_en_od: ec_edp_bl_en_od {
-			gpios = <&gpiok 4 GPIO_ODR_HIGH>;
-			enum-name = "GPIO_ENABLE_BACKLIGHT";
 		};
 		gpio_ec_entering_rw: ec_entering_rw {
 			gpios = <&gpioc 7 GPIO_OUTPUT>;
@@ -138,15 +129,8 @@
 		gpio_hdmi_sel: hdmi_sel {
 			gpios = <&gpioc 6 GPIO_OUTPUT>;
 		};
-		gpio_imu_int_l: imu_int_l {
-			gpios = <&gpioj 0 GPIO_INPUT>;
-		};
 		gpio_imvp91_vrrdy_od: imvp91_vrrdy_od {
 			gpios = <&gpioj 4 GPIO_INPUT>;
-		};
-		gpio_lid_open: lid_open {
-			gpios = <&gpiof 3 GPIO_INPUT>;
-			enum-name = "GPIO_LID_OPEN";
 		};
 		gpio_pen_detect_odl: pen_detect_odl {
 			gpios = <&gpioj 1 GPIO_INPUT_PULL_UP>;
@@ -178,10 +162,6 @@
 		};
 		gpio_sys_rst_odl: sys_rst_odl {
 			gpios = <&gpiod 1 GPIO_ODR_HIGH>;
-		};
-		gpio_tablet_mode_l: tablet_mode_l {
-			gpios = <&gpioa 7 GPIO_INPUT>;
-			enum-name = "GPIO_TABLET_MODE_L";
 		};
 		gpio_usb_a0_ilimit_sdp: usb_a0_ilimit_sdp {
 			gpios = <&gpiol 5 GPIO_OUTPUT>;
