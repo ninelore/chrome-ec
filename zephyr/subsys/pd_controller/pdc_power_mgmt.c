@@ -2847,13 +2847,13 @@ static void enforce_pd_chipset_resume_policy_1(int port)
 
 /**
  * @brief Chipset Resume (S3->S0) Policy 2:
- *	a) DRP Toggle ON
+ *	a) Set DRP role based on platform
  */
 static void enforce_pd_chipset_resume_policy_2(int port)
 {
 	LOG_DBG("C%d: Chipset Resume Policy 2", port);
 
-	pdc_power_mgmt_set_dual_role(port, PD_DRP_TOGGLE_ON);
+	pdc_power_mgmt_set_dual_role(port, pd_get_drp_state_in_s0());
 }
 
 /**
