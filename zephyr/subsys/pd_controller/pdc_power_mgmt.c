@@ -3174,6 +3174,9 @@ static int pdc_subsys_init(const struct device *dev)
 	/* Initialize typec only timer */
 	k_timer_init(&port->typec_only_timer, NULL, NULL);
 
+	/* Initialize platform policy */
+	enforce_pd_chipset_shutdown_policy_1(config->connector_num);
+
 	/* Create the thread for this port */
 	config->create_thread(dev);
 
