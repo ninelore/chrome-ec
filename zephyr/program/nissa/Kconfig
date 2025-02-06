@@ -210,6 +210,12 @@ config BOARD_DIRKS
 	  Build Google Dirks reference board. Dirks has Intel TWL SoC
 	  with IT81302 EC.
 
+config BOARD_GUREN
+	bool "Google GUREN Board"
+	help
+	  Build Google GUREN reference board. Nivviks has Intel TWL SoC
+	  with NPCX993FA0BX EC.
+
 module = NISSA
 module-str = Nissa board-specific code
 source "subsys/logging/Kconfig.template.log_config"

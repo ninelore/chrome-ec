@@ -383,6 +383,19 @@ if(DEFINED CONFIG_BOARD_PUJJONIRU)
 			"pujjoniru/src/keyboard_customization.c"
 	)
 endif()
+if(DEFINED CONFIG_BOARD_GUREN)
+	project(guren)
+	zephyr_library_sources(
+			"guren/src/sub_board.c"
+			"guren/src/kb_backlight.c"
+			"guren/src/board.c"
+			"guren/src/usb_mux_config.c"
+			"guren/src/keyboard.c"
+	)
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_FAN "guren/src/fan.c")
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_USBC "guren/src/usbc.c")
+	zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_CHARGER "guren/src/charger.c")
+endif()
 if(DEFINED CONFIG_BOARD_INTEL_ISH_5_4_1)
 	project(orisa-ish)
 	add_subdirectory(orisa-ish)

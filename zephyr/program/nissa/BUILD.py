@@ -255,6 +255,11 @@ dirks = register_nissa_project(
     chip="it8xxx2/it81302bx",
 )
 
+guren = register_nissa_project(
+    project_name="guren",
+    chip="npcx9/npcx9m3f",
+)
+
 # Note for reviews, do not let anyone edit these assertions, the addresses
 # must not change after the first RO release.
 assert_rw_fwid_DO_NOT_EDIT(project_name="anraggar", addr=0xBFFE0)
@@ -290,3 +295,4 @@ assert_rw_fwid_DO_NOT_EDIT(project_name="teliks", addr=0xBFFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="rull", addr=0xBFFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="telith", addr=0xBFFE0)
 assert_rw_fwid_DO_NOT_EDIT(project_name="pujjoniru", addr=0xBFFE0)
+assert_rw_fwid_DO_NOT_EDIT(project_name="guren", addr=0x7FFE0)
