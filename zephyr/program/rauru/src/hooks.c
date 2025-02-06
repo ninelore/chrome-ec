@@ -14,6 +14,7 @@
 #include "usb_charge.h"
 #include "usb_pd.h"
 #include "usb_tc_sm.h"
+#include "usbc/pdc_power_mgmt.h"
 
 #include <zephyr/drivers/gpio.h>
 
@@ -52,10 +53,17 @@ void xhci_interrupt(enum gpio_signal signal)
 	}
 #endif
 
-#ifdef CONFIG_PLATFORM_EC_USB_PD_TCPMV2
+#if defined(CONFIG_PLATFORM_EC_USB_PD_TCPMV2) || \
+	defined(CONFIG_PDC_POWER_MGMT_USB_MUX)
 	const int xhci_stat = gpio_get_level(signal);
 
 	for (int i = 0; i < CONFIG_USB_PD_PORT_MAX_COUNT; i++) {
+#ifdef CONFIG_PDC_POWER_MGMT_USB_MUX
+		if (xhci_stat) {
+			/* Apply PDC platform policy, enable DRP toggling */
+			pdc_power_mgmt_set_dual_role(i, PD_DRP_TOGGLE_ON);
+		}
+#else /* CONFIG_PLATFORM_EC_USB_PD_TCPMV2 */
 		/*
 		 * Enable DRP toggle after XHCI inited. This is used to follow
 		 * USB 3.2 spec 10.3.1.1.
@@ -69,11 +77,14 @@ void xhci_interrupt(enum gpio_signal signal)
 			 */
 			pd_set_dual_role(i, PD_DRP_FORCE_SINK);
 		}
+#endif /* CONFIG_PDC_POWER_MGMT_USB_MUX */
 	}
-#endif
+#endif /* defined(CONFIG_PLATFORM_EC_USB_PD_TCPMV2) || \
+	  defined(CONFIG_PDC_POWER_MGMT_USB_MUX) */
 }
 
-#ifdef CONFIG_PLATFORM_EC_USB_PD_TCPMV2
+#if defined(CONFIG_PLATFORM_EC_USB_PD_TCPMV2) || \
+	defined(CONFIG_PDC_POWER_MGMT_USB_MUX)
 __override enum pd_dual_role_states pd_get_drp_state_in_s0(void)
 {
 	if (gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(gpio_ap_xhci_init_done))) {
