@@ -58,7 +58,7 @@ ZTEST(fpsensor_debug, test_command_fpupload)
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
  * entire handlers.
  */
-ZTEST(fpsensor_debug, test_command_fpcapture)
+ZTEST(fpsensor_debug, test_command_fpcapture_system_is_locked)
 {
 	/* System is locked. */
 	is_locked = 1;

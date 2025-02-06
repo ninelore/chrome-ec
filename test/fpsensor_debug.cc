@@ -78,7 +78,7 @@ test_static int test_command_fpmatch(void)
 	return EC_SUCCESS;
 }
 
-test_static int test_command_fpcapture(void)
+test_static int test_command_fpcapture_system_is_locked(void)
 {
 	enum ec_error_list res;
 
@@ -117,7 +117,7 @@ void run_test(int argc, const char **argv)
 		RUN_TEST(test_command_fpupload);
 		RUN_TEST(test_command_fpdownload);
 		RUN_TEST(test_command_fpmatch);
-		RUN_TEST(test_command_fpcapture);
+		RUN_TEST(test_command_fpcapture_system_is_locked);
 		RUN_TEST(test_command_fpenroll);
 	}
 
