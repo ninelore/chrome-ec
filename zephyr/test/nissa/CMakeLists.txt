@@ -355,11 +355,10 @@ if(CONFIG_TEST_NISSA_TELIKS)
 endif()
 
 if(CONFIG_TEST_NISSA_DIRKS)
-    target_compile_definitions(app PRIVATE CHARGER_PRIMARY=0 CHARGER_SECONDARY=1)
+    zephyr_include_directories("${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/include")
     target_sources(
             app PRIVATE
             src/dirks.c
-            ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/charger.c
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/hdmi.c
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/usbc.c
     )

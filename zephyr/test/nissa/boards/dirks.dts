@@ -22,7 +22,7 @@
 		gpio_en_usb_c0_cc2_vconn: en_usb_c0_cc2_vconn {
 			gpios = <&gpioh 6 GPIO_OUTPUT>;
 		};
-		gpio_usb_c0_int_odl: usb_c0_int_odl {
+		gpio_usb_c0_fault_l: usb_c0_fault_l {
 			gpios = <&gpiok 0 GPIO_INPUT_PULL_UP>;
 		};
 		gpio_sb_1: sb_1 {
@@ -31,12 +31,22 @@
 		};
 	};
 
+	gpio-interrupts {
+		compatible = "cros-ec,gpio-interrupts";
+
+		int_usb_c0: usb_c0 {
+			irq-pin = <&gpio_usb_c0_fault_l>;
+			flags = <GPIO_INT_EDGE_FALLING>;
+			handler = "syv682x_interrupt";
+		};
+	};
+
 	named-i2c-ports {
 		compatible = "named-i2c-ports";
 
-		i2c_ec_i2c_batt: ec_i2c_batt {
-			i2c-port = <&i2c0>;
-			enum-names = "I2C_PORT_BATTERY";
+		i2c_ec_i2c_usb_c0: ec_i2c_usb_c0 {
+			i2c-port = <&i2c2>;
+			enum-names = "I2C_PORT_USB_C0";
 		};
 	};
 
@@ -52,22 +62,8 @@
 				usb-muxes = <&virtual_mux_0>;
 			};
 		};
-		port1@1 {
-			compatible = "named-usbc-port";
-			reg = <1>;
-			tcpc = <&tcpci_emul_1>;
-			usb-mux-chain-1 {
-				compatible = "cros-ec,usb-mux-chain";
-				usb-muxes = <&virtual_mux_1>;
-			};
-		};
 		port0-muxes {
 			virtual_mux_0: virtual-mux-0 {
-				compatible = "cros-ec,usbc-mux-virtual";
-			};
-		};
-		port1-muxes {
-			virtual_mux_1: virtual-mux-1 {
 				compatible = "cros-ec,usbc-mux-virtual";
 			};
 		};
@@ -79,13 +75,5 @@
 		compatible = "cros,tcpci-generic-emul";
 		status = "okay";
 		reg = <0x82>;
-	};
-};
-
-&i2c4 {
-	tcpci_emul_1: tcpci_emul@84 {
-		compatible = "cros,tcpci-generic-emul";
-		status = "okay";
-		reg = <0x84>;
 	};
 };

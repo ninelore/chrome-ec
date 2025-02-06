@@ -167,11 +167,11 @@
 			gpios = <&gpiol 5 GPIO_OUTPUT>;
 			enum-name = "GPIO_USB1_ILIM_SEL";
 		};
-		gpio_usb_c0_frs: usb_c0_frs {
+		gpio_ec_usb_c0_frs_en: ec_usb_c0_frs_en {
 			gpios = <&gpioc 4 GPIO_OUTPUT>;
 		};
-		gpio_usb_c0_int_odl: usb_c0_int_odl {
-			gpios = <&gpiok 0 GPIO_INPUT_PULL_UP>;
+		gpio_usb_c0_fault_l: usb_c0_fault_l {
+			gpios = <&gpiok 0 (GPIO_INPUT | GPIO_ACTIVE_LOW)>;
 		};
 		gpio_vccin_aux_vid0: vccin_aux_vid0 {
 			gpios = <&gpiod 0 GPIO_INPUT>;
@@ -188,21 +188,9 @@
 			i2c-port = <&i2c0>;
 			enum-names = "I2C_PORT_EEPROM";
 		};
-		i2c_ec_i2c_batt: ec_i2c_batt {
-			i2c-port = <&i2c1>;
-			enum-names = "I2C_PORT_BATTERY";
-		};
-		i2c_ec_i2c_sensor: ec_i2c_sensor {
-			i2c-port = <&i2c2>;
-			enum-names = "I2C_PORT_SENSOR";
-		};
-		i2c_ec_i2c_sub_usb_c1: ec_i2c_sub_usb_c1 {
-			i2c-port = <&i2c4>;
-			enum-names = "I2C_PORT_USB_C1_TCPC";
-		};
 		i2c_ec_i2c_usb_c0: ec_i2c_usb_c0 {
 			i2c-port = <&i2c5>;
-			enum-names = "I2C_PORT_USB_C0_TCPC";
+			enum-names = "I2C_PORT_USB_C0";
 		};
 	};
 };
@@ -216,15 +204,15 @@
 };
 
 &i2c1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &i2c4 {
-	status = "okay";
+	status = "disabled";
 };
 
 &i2c5 {
