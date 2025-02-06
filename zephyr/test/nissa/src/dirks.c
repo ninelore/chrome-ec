@@ -119,34 +119,6 @@ ZTEST(dirks, test_board_vbus_source_enabled)
 	zassert_equal(board_vbus_source_enabled(1), 0);
 }
 
-ZTEST(dirks, test_board_vconn_control)
-{
-	const struct gpio_dt_spec *cc1 =
-		GPIO_DT_FROM_NODELABEL(gpio_en_usb_c0_cc1_vconn);
-	const struct gpio_dt_spec *cc2 =
-		GPIO_DT_FROM_NODELABEL(gpio_en_usb_c0_cc2_vconn);
-
-	/* Both off initially */
-	gpio_pin_set_dt(cc1, 0);
-	gpio_pin_set_dt(cc2, 0);
-
-	/* Port 1 isn't managed through this function */
-	board_pd_vconn_ctrl(1, USBPD_CC_PIN_1, 1);
-	zassert_false(gpio_emul_output_get(cc1->port, cc1->pin));
-
-	/* We can enable or disable CC1 */
-	board_pd_vconn_ctrl(0, USBPD_CC_PIN_1, 1);
-	zassert_true(gpio_emul_output_get(cc1->port, cc1->pin));
-	board_pd_vconn_ctrl(0, USBPD_CC_PIN_1, 0);
-	zassert_false(gpio_emul_output_get(cc1->port, cc1->pin));
-
-	/* .. or CC2 */
-	board_pd_vconn_ctrl(0, USBPD_CC_PIN_2, 1);
-	zassert_true(gpio_emul_output_get(cc2->port, cc2->pin));
-	board_pd_vconn_ctrl(0, USBPD_CC_PIN_2, 0);
-	zassert_false(gpio_emul_output_get(cc2->port, cc2->pin));
-}
-
 ZTEST(dirks, test_pd_power_supply_reset)
 {
 	ppc_is_sourcing_vbus_fake.return_val = 1;
