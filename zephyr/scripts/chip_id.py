@@ -660,8 +660,10 @@ DISAMBIGUATION_DICTIONARY = {
         CompatibleInfo(
             "realtek,rts5453p",
             {
-                "reg": "0x3A",  # chip has variable return information.
-                "bytes": 0,
+                "reg": "0x3A",
+                "mask": "0x00",  # chip has variable return information.
+                "value": "0x00",
+                "bytes": 1,
             },
             None,
             None,
