@@ -71,20 +71,26 @@ def main(argv: Optional[List[str]] = None) -> Optional[int]:
 
             for func, replacement in EC_FUNCTIONS.items():
                 if EC_FUNCTION_REGEXES[func].search(line):
+                    message = (
+                        f"Function '{func}' should not be used in Zephyr code."
+                    )
+                    if replacement:
+                        message += f" Use '{replacement}'."
                     print(
-                        f"error: Function '{func}' should not be used. "
-                        f"Use '{replacement}' in Zephyr code.\n"
-                        f"{filename}:{linenum}: {line}",
+                        f"error: {message}\n" f"{filename}:{linenum}: {line}",
                         file=sys.stderr,
                     )
                     return_code = 1
 
             for macro, replacement in EC_MACROS.items():
                 if EC_MACRO_REGEXES[macro].search(line):
+                    message = (
+                        f"Macro '{macro}' should not be used in Zephyr code."
+                    )
+                    if replacement:
+                        message += f" Use '{replacement}'."
                     print(
-                        f"error: Macro '{macro}' should not be used. "
-                        f"Use '{replacement}' in Zephyr code.\n"
-                        f"{filename}:{linenum}: {line}",
+                        f"error: {message}\n" f"{filename}:{linenum}: {line}",
                         file=sys.stderr,
                     )
                     return_code = 1
