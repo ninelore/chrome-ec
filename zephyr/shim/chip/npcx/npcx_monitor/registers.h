@@ -313,6 +313,7 @@
 #define SPI_FLASH_SR2_LB3 BIT(5)
 #define SPI_FLASH_SR2_LB2 BIT(4)
 #define SPI_FLASH_SR2_LB1 BIT(3)
+#define SPI_FLASH_SR2_R BIT(2)
 #define SPI_FLASH_SR2_QE BIT(1)
 #define SPI_FLASH_SR2_SRP1 BIT(0)
 #define SPI_FLASH_SR1_SRP0 BIT(7)
@@ -323,6 +324,19 @@
 #define SPI_FLASH_SR1_BP0 BIT(2)
 #define SPI_FLASH_SR1_WEL BIT(1)
 #define SPI_FLASH_SR1_BUSY BIT(0)
+
+/* The security register lock bits are one-time programmable and cannot be
+ * cleared.  If these bits are set, flash erase and program to the main SPI
+ * flash memory is still allowed.  It's safe to ignore the status of these
+ * bits during flash operations.
+ *
+ * b/393659367 - We have once seen a device set the reserved bit 2 in the
+ * status register 2. This bit is also OTP, but doesn't affect the main
+ * flash memory.
+ */
+#define SPI_FLASH_SR2_OTP_MASK                                       \
+	(SPI_FLASH_SR2_LB3 | SPI_FLASH_SR2_LB2 | SPI_FLASH_SR2_LB1 | \
+	 SPI_FLASH_SR2_R)
 
 /* 0: F_CS0 1: F_CS1_1(GPIO86) 2:F_CS1_2(GPIOA6) */
 #define FIU_CHIP_SELECT 0
