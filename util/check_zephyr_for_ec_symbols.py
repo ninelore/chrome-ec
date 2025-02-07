@@ -14,6 +14,9 @@ import preupload.lib
 
 
 EC_FUNCTIONS: Dict[str, str] = {
+    "force_time": "",
+    "time_after": "",
+    "time_until": "",
     "udelay": "k_busy_wait",
     "sec_to_date": "gmtime_r",
     "date_to_sec": "timeutil_timegm or timeutil_timegm64",
