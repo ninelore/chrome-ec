@@ -655,11 +655,11 @@ void rtc_set(uint32_t sec)
 
 void clock_init(void)
 {
-#ifdef CONFIG_STM32_CLOCK_HSE_HZ
-	clock_set_osc(OSC_PLL, OSC_HSE);
-#else
 #ifdef STM32_USE_PLL
-	clock_set_osc(OSC_PLL, OSC_INIT);
+	clock_set_osc(OSC_PLL, STM32_INITIAL_PLL_INPUT);
+#else
+#ifdef CONFIG_STM32_CLOCK_HSE_HZ
+	clock_set_osc(OSC_HSE, OSC_INIT);
 #else
 	clock_set_osc(OSC_HSI, OSC_INIT);
 #endif

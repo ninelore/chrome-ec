@@ -59,6 +59,8 @@
 #define CONFIG_STM32_CLOCK_HSE_HZ 8000000
 
 /* PLL configuration. Freq = CONFIG_STM32_CLOCK_HSE_HZ * n/m/r */
+#define STM32_USE_PLL
+#define STM32_INITIAL_PLL_INPUT OSC_HSE
 #undef STM32_PLLM
 #define STM32_PLLM 1
 #undef STM32_PLLN

@@ -54,6 +54,7 @@
 #define STM32_PLLR stm32_pllr
 
 #define STM32_USE_PLL
+#define STM32_INITIAL_PLL_INPUT OSC_INIT
 #define CPU_CLOCK 110000000
 
 #define CONFIG_ADC
