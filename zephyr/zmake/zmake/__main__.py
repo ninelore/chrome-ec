@@ -9,18 +9,13 @@ import inspect
 import logging
 import os
 import pathlib
+import re
+import subprocess
 import sys
 
 from zmake import jobserver
 from zmake import multiproc
 import zmake.zmake as zm
-
-
-# Add the util directory to the search path
-sys.path.append(str("/mnt/host/source/src/platform/ec/util"))
-
-# pylint: disable=import-error, wrong-import-position
-from coreboot_sdk import init_toolchain
 
 
 def maybe_reexec(argv):
@@ -368,6 +363,42 @@ def add_common_configure_args(sub_parser: argparse.ArgumentParser):
     )
 
 
+def find_toolchains():
+    """Attempts to load toolchain paths.
+
+    Args: None
+
+    Returns:
+        None: Modifies the os environment if found
+    """
+    env = dict(os.environ)
+    if "COREBOOT_SDK_ROOT" not in env:
+        logging.info("Iterating over syspaths to find the util directory")
+        for sys_path in sys.path:
+            ec_util_path = (
+                pathlib.Path(sys_path) / ".." / ".." / "util"
+            ).resolve()
+            if ec_util_path.is_dir():
+                logging.info("Found EC Util directory: %s", ec_util_path)
+
+                run_result = subprocess.run(
+                    ["./coreboot_sdk.py"],
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    cwd=str(ec_util_path),
+                )
+                # Convert bash associative array to python dict
+                env_vars = dict(
+                    re.findall(
+                        r'\["([^"]*)"\]="([^"]*)"',
+                        run_result.stdout.decode("utf-8"),
+                    )
+                )
+                if env_vars:
+                    os.environ.update(env_vars.items())
+                break
+
+
 def main(argv=None):
     """The main function.
 
@@ -385,9 +416,7 @@ def main(argv=None):
     parser, _ = get_argparser()
     opts = parser.parse_args(argv)
 
-    env_vars = init_toolchain()
-    if env_vars:
-        os.environ.update({k: v.decode("utf-8") for k, v in env_vars.items()})
+    find_toolchains()
 
     # Default logging
     log_label = False

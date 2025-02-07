@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # Return a formatted string which can be declared as an associative array in bash
     print(
         " ".join(
-            f"[{key}]={value.decode('utf-8')}"
+            f"[\"{key}\"]=\"{value.decode('utf-8')}\""
             for key, value in env_vars.items()
         )
     )
