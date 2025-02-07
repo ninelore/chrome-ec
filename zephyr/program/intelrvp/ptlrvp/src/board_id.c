@@ -35,7 +35,7 @@ __override int board_get_version(void)
 	if (ptl_board_id)
 		return ptl_board_id;
 
-#if DT_NODE_EXISTS(pca95xx_0)
+#if DT_NODE_EXISTS(DT_NODELABEL(pca95xx_0))
 	const struct device *pca95xx_dev;
 
 	/* Init PCA95XX device if it has not been initialized */
