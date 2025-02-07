@@ -61,6 +61,7 @@ register_it8xxx2_project(
     project_name="fatcat_it82002aw",
     extra_kconfig_files=[
         here / ".." / "intelrvp" / "zephyr_ap_pwrseq.conf",
+        here / ".." / "intelrvp" / "ptlrvp" / "pd.conf",
     ],
 )
 

@@ -19,6 +19,8 @@ i2c3ALT: &i2c3 {
 #include "generated.dtsi"
 #include "include/board.h"
 
+#define PD_POW_IRQ_GPIO &gpiof 5
+
 / {
 	named-gpios {
 		/*
@@ -56,6 +58,9 @@ i2c3ALT: &i2c3 {
 
 #include "../../intelrvp/ptlrvp/ioex_gpio.dtsi"
 #include "../../intelrvp/ptlrvp/power_signals.dtsi"
+#include "../../intelrvp/ptlrvp/battery.dtsi"
+#include "../../intelrvp/ptlrvp/pd.dtsi"
+#include "../../intelrvp/ptlrvp/usbc.dtsi"
 
 /* these need to be promoted to program.conf */
 
