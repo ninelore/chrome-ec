@@ -44,6 +44,10 @@ add_custom_target(generate_npcx_monitor
   BYPRODUCTS ${npcx_monitor_bin}
   DEPENDS npcx_monitor
   )
+add_custom_target(check_monitor_hash
+  COMMAND ${CMAKE_COMMAND} -DINPUT_FILE=${npcx_monitor_bin} -P ${CMAKE_CURRENT_SOURCE_DIR}/check_hash.cmake
+  DEPENDS ${npcx_monitor_bin}
+  )
 
-add_dependencies(zephyr generate_npcx_monitor)
+add_dependencies(zephyr check_monitor_hash)
 endif()
