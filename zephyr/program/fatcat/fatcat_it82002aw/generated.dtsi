@@ -35,6 +35,7 @@
 		};
 		gpio_bat_det_r: bat_det_r {
 			gpios = <&gpioe 5 (GPIO_INPUT)>;
+			enum-name = "GPIO_BATT_PRES_ODL";
 		};
 		gpio_bga_pina10: bga_pina10 {
 			gpios = <&gpiof 2 (GPIO_INPUT)>;
