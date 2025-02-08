@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "clock_chip.h"
 #include "common.h"
+#include "dfu_bootmanager_shared.h"
 #include "ec_version.h"
 #include "queue_policies.h"
 #include "registers.h"
@@ -378,6 +379,13 @@ static int command_reinit(int argc, const char **argv)
 
 	/* Let every module know to re-initialize to power-on state. */
 	hook_notify(HOOK_REINIT);
+
+	/*
+	 * Since we apparently have some communication with OpenTitanTool,
+	 * rewind "repeating reset" counter, which would otherwise trigger DFU
+	 * mode after a certain number of resets.
+	 */
+	dfu_bootmanager_clear();
 	return EC_SUCCESS;
 }
 
