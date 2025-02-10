@@ -139,7 +139,7 @@ main() {
         dir_list+=( ../fingerprint/fpc )
       fi
       ;;
-    buccaneer*)
+    buccaneer*|rosalia*)
       dir_list+=( "${fp_common_dir_list[@]}" )
       if [[ -d ../fingerprint/elan ]]; then
         dir_list+=( ../fingerprint/elan )
