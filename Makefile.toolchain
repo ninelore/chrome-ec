@@ -48,6 +48,7 @@ CLANG_BOARDS:= \
 	nucleo-dartmonkey \
 	nucleo-h743zi \
 	nucleo-f412zg \
+	rosalia \
 
 ifeq ($(filter $(BOARD), $(CLANG_BOARDS)), $(BOARD))
 CROSS_COMPILE_CC_NAME=clang
