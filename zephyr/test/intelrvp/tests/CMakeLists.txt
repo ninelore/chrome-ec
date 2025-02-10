@@ -36,7 +36,7 @@ endif()
 
 if(CONFIG_TEST_PROJECT_PTLRVP_MCHP)
 target_sources(app PRIVATE ${PLATFORM_EC_PROGRAM_DIR}/intelrvp/ptlrvp/src/board_id.c)
-target_sources(app PRIVATE ${PLATFORM_EC_PROGRAM_DIR}/intelrvp/ptlrvp/src/board_power.c)
+target_sources_ifdef(CONFIG_TEST_PROJECT_MTL_BOARD_POWER app PRIVATE ${PLATFORM_EC_PROGRAM_DIR}/intelrvp/ptlrvp/src/board_power.c)
 target_sources(app PRIVATE ${PLATFORM_EC_PROGRAM_DIR}/intelrvp/ptlrvp/src/board_kbd.c)
 target_sources(app PRIVATE intelrvp/src/fakes.c)
 endif()

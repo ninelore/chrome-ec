@@ -11,7 +11,13 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/gpio/gpio_emul.h>
 #include <zephyr/fff.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/ztest.h>
+
+#ifdef CONFIG_TEST_PROJECT_PTLRVP_MCHP
+#include <ap_power/ap_pwrseq.h>
+#include <ap_power/ap_pwrseq_sm.h>
+#endif
 
 #define NUM_BOM_GPIOS DT_PROP_LEN(DT_INST(0, intel_rvp_board_id), bom_gpios)
 #define NUM_FAB_GPIOS DT_PROP_LEN(DT_INST(0, intel_rvp_board_id), fab_gpios)
@@ -58,9 +64,6 @@ static void test_set_board_id_gpios(void)
 	return;
 }
 
-/* Board ID gpios need to be initialized before other applications */
-SYS_INIT(test_set_board_id_gpios, POST_KERNEL, 99);
-
 ZTEST(board_version_tests, test_board_get_version)
 {
 	/* Set up fake return values for successful GPIO pin reading */
@@ -74,6 +77,41 @@ ZTEST(board_version_tests, test_board_get_version)
 		"Expected version didn't match actual version. Expected: %d, Actual: %d",
 		expected_board_id, version);
 }
+
+/* Board ID gpios need to be initialized before other applications */
+SYS_INIT(test_set_board_id_gpios, POST_KERNEL, 99);
+
+#ifdef CONFIG_TEST_PROJECT_PTLRVP_MCHP
+static int board_ap_power_action_g3_run(void *data)
+{
+	return ap_pwrseq_sm_set_state(data, AP_POWER_STATE_S5);
+}
+AP_POWER_CHIPSET_STATE_DEFINE(AP_POWER_STATE_G3, NULL,
+			      board_ap_power_action_g3_run, NULL);
+
+static void ap_change_state_to_s5(void)
+{
+	const struct device *dev = ap_pwrseq_get_instance();
+
+	ap_pwrseq_start(dev, AP_POWER_STATE_G3);
+
+	ap_pwrseq_post_event(dev, AP_PWRSEQ_EVENT_POWER_STARTUP);
+	k_msleep(50);
+}
+
+ZTEST(board_version_tests, test_board_1_pca95xx_not_init)
+{
+	int expected_board_id = CONFIG_TEST_PROJECT_INTELRVP_BOARD_ID_VAL;
+	int version = board_get_version();
+
+	zassert_not_equal(
+		expected_board_id, version,
+		"Expected versions match PCA95XX shouldn't be initialized");
+
+	/* Change to S5 to send AP Callback to initialize PCA95XX */
+	ap_change_state_to_s5();
+}
+#endif
 
 /* Test Suite Setup */
 ZTEST_SUITE(board_version_tests, NULL, NULL, NULL, NULL, NULL);

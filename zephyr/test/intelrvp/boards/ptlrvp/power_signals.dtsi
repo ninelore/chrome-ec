@@ -100,10 +100,6 @@
 		dbg-label = "SYS_RESET# output to PCH";
 		enum-name = "PWR_SYS_RST";
 	};
-	ap-power {
-		compatible = "ap-pwrseq-sub-states";
-		chipset = "AP_POWER_STATE_S0IX";
-	};
 };
 
 /*
