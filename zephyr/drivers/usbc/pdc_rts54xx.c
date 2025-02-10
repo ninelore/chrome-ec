@@ -375,6 +375,8 @@ struct pdc_config_t {
 	void (*create_thread)(const struct device *dev);
 	/** If true, do not apply PDC FW updates to this port */
 	bool no_fw_update;
+	/** Pointer to the device-specific callback function */
+	gpio_callback_handler_t callback_handler;
 };
 
 /**
@@ -507,9 +509,8 @@ static const char *const state_names[] = {
 	[ST_SUSPENDED] = "PDC_SUSPENDED",
 };
 
-static const struct device *irq_shared_port;
-static int irq_share_pin;
-static bool irq_init_done;
+static struct gpio_dt_spec
+	rts54xx_irq_list[DT_NUM_INST_STATUS_OKAY(DT_DRV_COMPAT)];
 static const struct smf_state states[];
 static int rts54_enable(const struct device *dev);
 static int rts54_reset(const struct device *dev);
@@ -525,11 +526,6 @@ static int rts54_get_error_status(const struct device *dev,
  * @brief PDC port data used in interrupt handler
  */
 static struct pdc_data_t *pdc_data[CONFIG_USB_PD_PORT_MAX_COUNT];
-
-/**
- * @brief Pointer to thread specific k_event that handles interrupts.
- */
-static struct k_event *irq_event;
 
 static enum state_t get_state(struct pdc_data_t *data)
 {
@@ -2736,17 +2732,12 @@ static DEVICE_API(pdc, pdc_driver_api) = {
 	.get_attention_vdo = rts54_get_attention_vdo,
 };
 
-static void pdc_interrupt_callback(const struct device *dev,
-				   struct gpio_callback *cb, uint32_t pins)
-{
-	k_event_post(irq_event, RTS54XX_IRQ_EVENT);
-}
-
 static int pdc_init(const struct device *dev)
 {
 	const struct pdc_config_t *cfg = dev->config;
 	struct pdc_data_t *data = dev->data;
 	int rv;
+	bool irq_init_done = false;
 
 	rv = i2c_is_ready_dt(&cfg->i2c);
 	if (rv < 0) {
@@ -2762,19 +2753,27 @@ static int pdc_init(const struct device *dev)
 
 	k_event_init(&data->driver_event);
 
+	for (int i = 0; i < ARRAY_SIZE(rts54xx_irq_list); i++) {
+		if (rts54xx_irq_list[i].port == cfg->irq_gpios.port &&
+		    rts54xx_irq_list[i].pin == cfg->irq_gpios.pin) {
+			irq_init_done = true;
+			break;
+		}
+
+		if (rts54xx_irq_list[i].port == NULL) {
+			rts54xx_irq_list[i] = cfg->irq_gpios;
+			break;
+		}
+	}
+
 	if (!irq_init_done) {
-		irq_shared_port = cfg->irq_gpios.port;
-		irq_share_pin = cfg->irq_gpios.pin;
-
-		irq_event = &data->driver_event;
-
 		rv = gpio_pin_configure_dt(&cfg->irq_gpios, GPIO_INPUT);
 		if (rv < 0) {
 			LOG_ERR("Unable to configure GPIO");
 			return rv;
 		}
 
-		gpio_init_callback(&data->gpio_cb, pdc_interrupt_callback,
+		gpio_init_callback(&data->gpio_cb, cfg->callback_handler,
 				   BIT(cfg->irq_gpios.pin));
 
 		rv = gpio_add_callback(cfg->irq_gpios.port, &data->gpio_cb);
@@ -2791,14 +2790,7 @@ static int pdc_init(const struct device *dev)
 		}
 
 		/* Trigger IRQ on startup to read any pending interrupts */
-		k_event_post(irq_event, RTS54XX_IRQ_EVENT);
-		irq_init_done = true;
-	} else {
-		if (irq_shared_port != cfg->irq_gpios.port ||
-		    irq_share_pin != cfg->irq_gpios.pin) {
-			LOG_ERR("All rts54xx ports must use the same interrupt");
-			return -EINVAL;
-		}
+		k_event_post(&data->driver_event, RTS54XX_IRQ_EVENT);
 	}
 
 	k_mutex_init(&data->mtx);
@@ -2876,6 +2868,14 @@ static void rts54xx_thread(void *dev, void *unused1, void *unused2)
                                                                               \
 	static struct pdc_data_t pdc_data_##inst;                             \
                                                                               \
+	static void pdc_interrupt_callback##inst(const struct device *dev,    \
+						 struct gpio_callback *cb,    \
+						 uint32_t pins)               \
+	{                                                                     \
+		k_event_post(&pdc_data_##inst.driver_event,                   \
+			     RTS54XX_IRQ_EVENT);                              \
+	}                                                                     \
+                                                                              \
 	static const struct pdc_config_t pdc_config##inst = {                 \
 		.i2c = I2C_DT_SPEC_INST_GET(inst),                            \
 		.irq_gpios = GPIO_DT_SPEC_INST_GET(inst, irq_gpios),          \
@@ -2900,6 +2900,7 @@ static void rts54xx_thread(void *dev, void *unused1, void *unused2)
 		.bits.sink_path_status_change = 1,                            \
 		.create_thread = create_thread_##inst,                        \
 		.no_fw_update = DT_INST_PROP(inst, no_fw_update),             \
+		.callback_handler = pdc_interrupt_callback##inst,             \
 	};                                                                    \
                                                                               \
 	DEVICE_DT_INST_DEFINE(inst, pdc_init, NULL, &pdc_data_##inst,         \
