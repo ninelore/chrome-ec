@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 from typing import Dict, Optional
 
 from zmake import build_config
@@ -231,11 +232,12 @@ class BinmanPacker(BasePacker):
         env = {
             "CC": cpp,
             "DTC": str(util.get_tool_path("dtc")),
+            "PYTHONPATH": ":".join(sys.path),
         }
 
         proc = jobclient.popen(
             [
-                util.get_tool_path("python3.8"),
+                sys.executable,
                 util.get_tool_path("binman"),
                 "-v",
                 "5",
