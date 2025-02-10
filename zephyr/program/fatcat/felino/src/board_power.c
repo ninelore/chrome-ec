@@ -67,15 +67,15 @@ static int board_ap_power_action_g3_run(void *data)
 
 		/* TODO: enable all control gpio here, optimize these later */
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_v1p8a_en), 1);
-		crec_msleep(20);
+		k_msleep(20);
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_ec_vddq_en), 1);
-		crec_msleep(20);
+		k_msleep(20);
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_ec_slp_sx_n), 1);
-		crec_msleep(20);
+		k_msleep(20);
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_ec_cpu_vr_en), 1);
-		crec_msleep(20);
+		k_msleep(20);
 		gpio_pin_set_dt(GPIO_DT_FROM_NODELABEL(gpio_ec_edp_bklt_en), 1);
-		crec_msleep(20);
+		k_msleep(20);
 
 		/* Indication to soc on recovery boot */
 		if (system_is_manual_recovery()) {
