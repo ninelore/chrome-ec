@@ -39,21 +39,24 @@ ZTEST(fpsensor_debug, test_console_fpinfo)
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
  * entire handlers.
  */
-ZTEST(fpsensor_debug, test_command_fpupload)
+ZTEST(fpsensor_debug, test_command_fpupload_success)
 {
 	/* System is unlocked. */
 	is_locked = 0;
 
-	char console_input1[] = "fpupload 52 image";
-	int rv = shell_execute_cmd(get_ec_shell(), console_input1);
+	char console_input[] = "fpupload 52 image";
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_SUCCESS);
+}
 
+ZTEST(fpsensor_debug, test_command_fpupload_system_is_locked)
+{
 	/* System is locked. */
 	is_locked = 1;
 
 	/* Test for the case when access is denied. */
-	char console_input2[] = "fpupload 52 image";
-	rv = shell_execute_cmd(get_ec_shell(), console_input2);
+	char console_input[] = "fpupload 52 image";
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_ERROR_ACCESS_DENIED);
 }
 
