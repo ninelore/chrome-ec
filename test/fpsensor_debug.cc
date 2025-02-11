@@ -23,21 +23,26 @@ test_static int test_console_fpinfo()
 	return EC_SUCCESS;
 }
 
-test_static int test_command_fpupload(void)
+test_static int test_command_fpupload_success(void)
 {
 	/* System is unlocked. */
 	is_locked = 0;
 
-	char console_input1[] = "fpupload 52 image";
-	enum ec_error_list res = test_send_console_command(console_input1);
+	char console_input[] = "fpupload 52 image";
+	enum ec_error_list res = test_send_console_command(console_input);
 	TEST_EQ(res, EC_SUCCESS, "%d");
 
+	return EC_SUCCESS;
+}
+
+test_static int test_command_fpupload_system_is_locked(void)
+{
 	/* System is locked. */
 	is_locked = 1;
 
 	/* Test for the case when access is denied. */
-	char console_input2[] = "fpupload 52 image";
-	res = test_send_console_command(console_input2);
+	char console_input[] = "fpupload 52 image";
+	enum ec_error_list res = test_send_console_command(console_input);
 	TEST_EQ(res, EC_ERROR_ACCESS_DENIED, "%d");
 
 	return EC_SUCCESS;
@@ -150,7 +155,8 @@ void run_test(int argc, const char **argv)
 
 	RUN_TEST(test_console_fpinfo);
 	if (!IS_ENABLED(BOARD_HOST)) {
-		RUN_TEST(test_command_fpupload);
+		RUN_TEST(test_command_fpupload_success);
+		RUN_TEST(test_command_fpupload_system_is_locked);
 		RUN_TEST(test_command_fpdownload);
 		RUN_TEST(test_command_fpmatch);
 		RUN_TEST(test_command_fpcapture_system_is_locked);
