@@ -45,7 +45,8 @@ add_custom_target(generate_npcx_monitor
   DEPENDS npcx_monitor
   )
 add_custom_target(check_monitor_hash
-  COMMAND ${CMAKE_COMMAND} -DINPUT_FILE=${npcx_monitor_bin} -P ${CMAKE_CURRENT_SOURCE_DIR}/check_hash.cmake
+  COMMAND ${CMAKE_COMMAND} -DZEPHYR_TOOLCHAIN_VARIANT=${ZEPHYR_TOOLCHAIN_VARIANT}
+  -DINPUT_FILE=${npcx_monitor_bin} -P ${CMAKE_CURRENT_SOURCE_DIR}/check_hash.cmake
   DEPENDS ${npcx_monitor_bin}
   )
 
