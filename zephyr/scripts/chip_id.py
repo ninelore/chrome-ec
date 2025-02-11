@@ -459,36 +459,38 @@ DISAMBIGUATION_DICTIONARY = {
             None,
         ),
     ],
+    # TODO(b/394715973): rt1715 and rt1716 use the same DID.
+    # Figure out how to differentiate between the 2
+    #    "richtek,rt1715": [
+    #        CompatibleInfo(
+    #            "richtek,rt1715",
+    #            {
+    #                "reg": "0x02",
+    #                "mask": "0xff",
+    #                "value": "0x11",
+    #                "bytes": 1,
+    #            },
+    #            {
+    #                "reg": "0x03",
+    #                "mask": "0xff",
+    #                "value": "0x17",
+    #                "bytes": 1,
+    #            },
+    #            {
+    #                "reg": "0x04",
+    #                "mask": "0xff",
+    #                "value": "0x73",
+    #                "bytes": 1,
+    #            },
+    #            {
+    #                "reg": "0x05",
+    #                "mask": "0xff",
+    #                "value": "0x21",
+    #                "bytes": 1,
+    #            },
+    #        ),
+    #    ],
     "richtek,rt1715": [
-        CompatibleInfo(
-            "richtek,rt1715",
-            {
-                "reg": "0x02",
-                "mask": "0xff",
-                "value": "0x11",
-                "bytes": 1,
-            },
-            {
-                "reg": "0x03",
-                "mask": "0xff",
-                "value": "0x17",
-                "bytes": 1,
-            },
-            {
-                "reg": "0x04",
-                "mask": "0xff",
-                "value": "0x73",
-                "bytes": 1,
-            },
-            {
-                "reg": "0x05",
-                "mask": "0xff",
-                "value": "0x21",
-                "bytes": 1,
-            },
-        ),
-    ],
-    "richtek,rt1716": [
         CompatibleInfo(
             "richtek,rt1716",
             {
