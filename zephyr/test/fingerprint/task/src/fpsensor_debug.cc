@@ -83,6 +83,16 @@ ZTEST(fpsensor_debug, test_command_fpupload_three_arguments)
 	zassert_equal(rv, EC_ERROR_PARAM_COUNT);
 }
 
+ZTEST(fpsensor_debug, test_command_fpupload_negative_offset)
+{
+	/* System is unlocked. */
+	is_locked = 0;
+
+	char console_input[] = "fpupload -1 image";
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
+	zassert_equal(rv, EC_ERROR_PARAM1);
+}
+
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
  * entire handlers.
  */
