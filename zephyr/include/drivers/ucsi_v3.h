@@ -1303,6 +1303,34 @@ union get_pdos_t {
 };
 
 /**
+ * @brief SET_PDOS command format
+ */
+union ucsi_set_pdos_t {
+	struct {
+		/** Connector number */
+		uint32_t connector_number : 7;
+		/** Reserved and shall be set to 0 */
+		uint32_t reserved0 : 3;
+		/**
+		 * This field is set to 1 to retrieve Source PDOs, otherwise
+		 * retrieve the Sink PDOs.
+		 */
+		enum pdo_type_t pdo_type : 1;
+		/** Number of PDOs to write in this command */
+		uint32_t number_of_pdos : 4;
+		/** Index of SET_PDOS command chunk */
+		uint32_t data_index : 7;
+		/** End of command series */
+		uint32_t end_of_message : 1;
+		/** Reserved and shall be set to 0 */
+		uint32_t reserved1 : 9;
+		/** Reserved and shall be set to 0 */
+		uint16_t reserved2;
+	} __packed;
+	uint8_t raw_value[6];
+};
+
+/**
  * @brief PDOs received from source
  */
 struct pdo_t {

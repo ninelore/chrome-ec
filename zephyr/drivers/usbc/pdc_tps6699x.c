@@ -315,8 +315,6 @@ static void cmd_set_tpc_rp(struct pdc_data_t *data);
 static void cmd_set_frs(struct pdc_data_t *data);
 static void cmd_get_rdo(struct pdc_data_t *data);
 static void cmd_set_rdo(struct pdc_data_t *data);
-static void cmd_set_src_pdos(struct pdc_data_t *data);
-static void cmd_set_snk_pdos(struct pdc_data_t *data);
 static void cmd_get_ic_status(struct pdc_data_t *data);
 static int cmd_get_ic_status_sync_internal(struct pdc_config_t const *cfg,
 					   struct pdc_info_t *info);
@@ -703,10 +701,7 @@ static void st_idle_run(void *o)
 			task_ucsi(data, UCSI_GET_PDOS);
 			break;
 		case CMD_SET_PDOS:
-			if (data->pdo_type == SOURCE_PDO)
-				cmd_set_src_pdos(data);
-			else
-				cmd_set_snk_pdos(data);
+			task_ucsi(data, UCSI_SET_PDOS);
 			break;
 		case CMD_GET_CONNECTOR_STATUS:
 		case CMD_GET_VBUS_VOLTAGE:
@@ -973,92 +968,6 @@ static void cmd_set_frs(struct pdc_data_t *data)
 	rv = tps_rw_port_control(&cfg->i2c, &pdc_port_control, I2C_MSG_WRITE);
 	if (rv) {
 		LOG_ERR("Write port control failed");
-		goto error_recovery;
-	}
-
-	/* Command has completed */
-	data->cci_event.command_completed = 1;
-	/* Inform the system of the event */
-	call_cci_event_cb(data);
-
-	/* Transition to idle state */
-	set_state(data, ST_IDLE);
-	return;
-
-error_recovery:
-	set_state(data, ST_ERROR_RECOVERY);
-}
-
-static void cmd_set_src_pdos(struct pdc_data_t *data)
-{
-	struct pdc_config_t const *cfg = data->dev->config;
-	union reg_transmit_source_capabilities pdc_tx_src_capabilities;
-	int rv;
-
-	/* Support SPR only */
-	if (data->num_pdos == 0 || data->num_pdos > 7)
-		goto error_recovery;
-
-	/* Read PDC Transmit Source Capabilities */
-	rv = tps_rw_transmit_source_capabilities(
-		&cfg->i2c, &pdc_tx_src_capabilities, I2C_MSG_READ);
-	if (rv) {
-		LOG_ERR("Read transmit source capabilities failed");
-		goto error_recovery;
-	}
-
-	pdc_tx_src_capabilities.number_of_valid_pdos = data->num_pdos;
-	memcpy(pdc_tx_src_capabilities.spr_tx_source_pdo, data->pdos,
-	       sizeof(uint32_t) * data->num_pdos);
-
-	/* Write PDC Transmit Source Capabilities */
-	rv = tps_rw_transmit_source_capabilities(
-		&cfg->i2c, &pdc_tx_src_capabilities, I2C_MSG_WRITE);
-	if (rv) {
-		LOG_ERR("Write transmit source capabilities failed");
-		goto error_recovery;
-	}
-
-	/* Command has completed */
-	data->cci_event.command_completed = 1;
-	/* Inform the system of the event */
-	call_cci_event_cb(data);
-
-	/* Transition to idle state */
-	set_state(data, ST_IDLE);
-	return;
-
-error_recovery:
-	set_state(data, ST_ERROR_RECOVERY);
-}
-
-static void cmd_set_snk_pdos(struct pdc_data_t *data)
-{
-	struct pdc_config_t const *cfg = data->dev->config;
-	union reg_transmit_sink_capabilities pdc_tx_snk_capabilities;
-	int rv;
-
-	/* Support SPR only */
-	if (data->num_pdos == 0 || data->num_pdos > 7)
-		goto error_recovery;
-
-	/* Read PDC Transmit Sink Capabilities */
-	rv = tps_rw_transmit_sink_capabilities(
-		&cfg->i2c, &pdc_tx_snk_capabilities, I2C_MSG_READ);
-	if (rv) {
-		LOG_ERR("Read transmit sink capabilities failed");
-		goto error_recovery;
-	}
-
-	pdc_tx_snk_capabilities.number_of_valid_pdos = data->num_pdos;
-	memcpy(pdc_tx_snk_capabilities.spr_tx_sink_pdo, data->pdos,
-	       sizeof(uint32_t) * data->num_pdos);
-
-	/* Write PDC Transmit Sink Capabilities */
-	rv = tps_rw_transmit_sink_capabilities(
-		&cfg->i2c, &pdc_tx_snk_capabilities, I2C_MSG_WRITE);
-	if (rv) {
-		LOG_ERR("Write transmit sink capabilities failed");
 		goto error_recovery;
 	}
 
@@ -1662,6 +1571,7 @@ static void task_ucsi(struct pdc_data_t *data, enum ucsi_command_t ucsi_command)
 {
 	struct pdc_config_t const *cfg = data->dev->config;
 	union reg_data cmd_data;
+	union ucsi_set_pdos_t *ucsi_pdos;
 	int rv;
 
 	/* Set the currently running UCSI command. */
@@ -1712,6 +1622,23 @@ static void task_ucsi(struct pdc_data_t *data, enum ucsi_command_t ucsi_command)
 		cmd_data.data[2] |= (data->uor.swap_to_dfp << 7);
 		cmd_data.data[3] = (data->uor.swap_to_ufp |
 				    (data->uor.accept_dr_swap << 1));
+		break;
+	case CMD_SET_PDOS:
+		/* ucsi_set_pdos starts with connector number */
+		ucsi_pdos = (union ucsi_set_pdos_t *)&cmd_data.data[2];
+		/* SRC or SNK PDO */
+		ucsi_pdos->pdo_type = data->pdo_type;
+		/* Number of PDOs being set */
+		ucsi_pdos->number_of_pdos = data->num_pdos;
+		/* No chunking, so index is always 0 */
+		ucsi_pdos->data_index = 0;
+		/* No chunking, so always end of message */
+		ucsi_pdos->end_of_message = 1;
+		/* PDOs to send start at cmd_data[8] */
+		memcpy(&cmd_data.data[8], data->pdos,
+		       data->num_pdos * sizeof(uint32_t));
+		/* Update Data Length to reflect number of PDOs */
+		cmd_data.data[1] = data->num_pdos * sizeof(uint32_t);
 		break;
 	case CMD_SET_PDR:
 		cmd_data.data[2] |= (data->pdr.swap_to_src << 7);

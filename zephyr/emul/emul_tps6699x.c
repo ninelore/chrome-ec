@@ -223,12 +223,45 @@ static void tps699x_emul_get_cable_property(struct tps6699x_emul_pdc_data *data)
 	memcpy(&data->reg_val[REG_DATA_FOR_CMD1], &data->response, 5 + 1);
 }
 
+static void tps6699x_emul_ucsi_set_pdos(struct tps6699x_emul_pdc_data *data,
+					uint8_t *data_reg)
+{
+	enum pdo_type_t pdo_type;
+	enum pdo_offset_t pdo_offset;
+	enum pdo_source_t source;
+	const uint32_t *pdos;
+	uint8_t num_pdos;
+	union ucsi_set_pdos_t *ucsi_pdos;
+
+	/* ucsi_set_pdos starts with connector number */
+	ucsi_pdos = (union ucsi_set_pdos_t *)&data_reg[2];
+	/* SRC or SNK PDO */
+	pdo_type = ucsi_pdos->pdo_type;
+	/* Number of PDOs being set */
+	num_pdos = ucsi_pdos->number_of_pdos;
+	/* UCSI_SET_PDOS uses index value */
+	pdo_offset = ucsi_pdos->data_index;
+	/* SET_PDOS is only used to update the lpm PDOs */
+	source = LPM_PDO;
+
+	/* pdo data starts at bit 64 of the message */
+	pdos = (const uint32_t *)&data_reg[8];
+
+	/* Verifiy that length byte is set to number of pdos * 4 */
+	zassert_equal(data_reg[1], num_pdos * sizeof(uint32_t));
+
+	if (emul_pdc_pdo_set_direct(&data->pdo, pdo_type, pdo_offset, num_pdos,
+				    source, pdos)) {
+		LOG_ERR("pdc_pdo_set_direct failed");
+	}
+}
+
 static void tps6699x_emul_handle_ucsi(struct tps6699x_emul_pdc_data *data,
 				      uint8_t *data_reg)
 {
 	/* For all UCSI commands, the first 3 data fields are
 	 * the UCSI command (8 bits),
-	 * the data length (8 bits, always 0), and
+	 * the data length (8 bits, always 0),except for SET_PDOS, and
 	 * the connector number (7 bits, must correspond to the same port as
 	 * this data register.
 	 * Subsequent fields vary depending on the command.
@@ -236,7 +269,9 @@ static void tps6699x_emul_handle_ucsi(struct tps6699x_emul_pdc_data *data,
 	enum ucsi_command_t cmd = data_reg[0];
 	uint8_t data_len = data_reg[1];
 
-	zassert_equal(data_len, 0);
+	if (cmd != UCSI_SET_PDOS) {
+		zassert_equal(data_len, 0);
+	}
 	/* TODO(b/345292002): Validate connector number field. */
 
 	LOG_INF("UCSI command 0x%X", cmd);
@@ -273,6 +308,9 @@ static void tps6699x_emul_handle_ucsi(struct tps6699x_emul_pdc_data *data,
 		tps699x_emul_get_cable_property(data);
 		break;
 	case UCSI_READ_POWER_LEVEL:
+		break;
+	case UCSI_SET_PDOS:
+		tps6699x_emul_ucsi_set_pdos(data, data_reg);
 		break;
 	default:
 		LOG_WRN("tps6699x_emul: Unimplemented UCSI command %#04x", cmd);
