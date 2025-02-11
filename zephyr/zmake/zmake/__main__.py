@@ -373,14 +373,11 @@ def find_toolchains():
     """
     env = dict(os.environ)
     if "COREBOOT_SDK_ROOT" not in env:
-        logging.info("Iterating over syspaths to find the util directory")
         for sys_path in sys.path:
             ec_util_path = (
                 pathlib.Path(sys_path) / ".." / ".." / "util"
             ).resolve()
             if ec_util_path.is_dir():
-                logging.info("Found EC Util directory: %s", ec_util_path)
-
                 run_result = subprocess.run(
                     ["./coreboot_sdk.py"],
                     check=True,
