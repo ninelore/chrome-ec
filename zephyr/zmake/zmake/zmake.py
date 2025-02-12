@@ -560,16 +560,8 @@ class Zmake:
                         ),
                         "ZEPHYR_BASE": str(self.zephyr_base),
                         "ZMAKE_INCLUDE_DIR": str(generated_include_dir),
-                        "PW_ROOT": str(
-                            self.checkout / "src" / "third_party" / "pigweed"
-                        ),
-                        "NANOPB_DIR": str(
-                            self.checkout
-                            / "src"
-                            / "third_party"
-                            / "zephyr"
-                            / "nanopb"
-                        ),
+                        "PW_ROOT": str(self.module_paths["pigweed"]),
+                        "NANOPB_DIR": str(self.module_paths["nanopb"]),
                         "Python3_EXECUTABLE": sys.executable,
                         **(
                             {
