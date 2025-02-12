@@ -18,6 +18,9 @@ int system_is_locked(void)
 // Smoke test the "fpinfo" console command and its underlying version retrieval.
 test_static int test_console_fpinfo()
 {
+	/* System is unlocked. */
+	is_locked = 0;
+
 	char console_input[] = "fpinfo";
 	TEST_EQ(test_send_console_command(console_input), EC_SUCCESS, "%d");
 	return EC_SUCCESS;
