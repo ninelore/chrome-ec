@@ -13,6 +13,7 @@
 
 #include <ec_commands.h>
 #include <fpsensor/fpsensor_utils.h>
+#include <fpsensor_driver.h>
 #include <mkbp_event.h>
 #include <rollback.h>
 
@@ -89,6 +90,21 @@ ZTEST(fpsensor_debug, test_command_fpupload_negative_offset)
 	is_locked = 0;
 
 	char console_input[] = "fpupload -1 image";
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
+	zassert_equal(rv, EC_ERROR_PARAM1);
+}
+
+ZTEST(fpsensor_debug,
+      test_command_fpupload_offset_equal_image_size_minus_image_offset)
+
+{
+	/* System is unlocked. */
+	is_locked = 0;
+
+	char console_input[] = "fpupload " STRINGIFY(UINT32_MAX) " image";
+	snprintf(console_input, sizeof(console_input),
+		 "fpupload %" PRIu32 " image",
+		 FP_SENSOR_IMAGE_SIZE - FP_SENSOR_IMAGE_OFFSET);
 	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_ERROR_PARAM1);
 }
