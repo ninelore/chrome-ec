@@ -430,15 +430,17 @@ static int command_crash(int argc, const char **argv)
 	if (!strcasecmp(argv[1], "assert")) {
 		ASSERT(0);
 	} else if (!strcasecmp(argv[1], "divzero")) {
+		volatile int one = 1;
 		volatile int zero = 0;
 
 		cflush();
-		ccprintf("%08x", 1 / zero);
+		ccprintf("%08x", one / zero);
 	} else if (!strcasecmp(argv[1], "udivzero")) {
+		volatile unsigned int one = 1;
 		volatile int zero = 0;
 
 		cflush();
-		ccprintf("%08x", 1U / zero);
+		ccprintf("%08x", one / zero);
 	} else if (!strcasecmp(argv[1], "stack")) {
 		stack_overflow_recurse(1);
 #ifndef CONFIG_ALLOW_UNALIGNED_ACCESS
