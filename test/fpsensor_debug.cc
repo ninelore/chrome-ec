@@ -6,6 +6,10 @@
 #include "system.h"
 #include "test_util.h"
 
+#if defined(SECTION_IS_RW)
+#include "fpsensor_driver.h"
+#endif
+
 #include <stdio.h>
 
 static int is_locked;
@@ -83,6 +87,24 @@ test_static int test_command_fpupload_negative_offset(void)
 	char console_input[] = "fpupload -1 image";
 	enum ec_error_list res = test_send_console_command(console_input);
 	TEST_EQ(res, EC_ERROR_PARAM1, "%d");
+
+	return EC_SUCCESS;
+}
+
+test_static int
+test_command_fpupload_offset_equal_image_size_minus_image_offset(void)
+{
+	/* System is unlocked. */
+	is_locked = 0;
+
+#if defined(SECTION_IS_RW)
+	char console_input[] = "fpupload " STRINGIFY(UINT32_MAX) " image";
+	snprintf(console_input, sizeof(console_input),
+		 "fpupload %" PRIu32 " image",
+		 FP_SENSOR_IMAGE_SIZE - FP_SENSOR_IMAGE_OFFSET);
+	enum ec_error_list res = test_send_console_command(console_input);
+	TEST_EQ(res, EC_ERROR_PARAM1, "%d");
+#endif
 
 	return EC_SUCCESS;
 }
@@ -199,6 +221,8 @@ void run_test(int argc, const char **argv)
 		RUN_TEST(test_command_fpupload_one_argument);
 		RUN_TEST(test_command_fpupload_three_arguments);
 		RUN_TEST(test_command_fpupload_negative_offset);
+		RUN_TEST(
+			test_command_fpupload_offset_equal_image_size_minus_image_offset);
 		RUN_TEST(test_command_fpdownload);
 		RUN_TEST(test_command_fpmatch);
 		RUN_TEST(test_command_fpcapture_system_is_locked);
