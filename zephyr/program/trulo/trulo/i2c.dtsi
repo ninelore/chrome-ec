@@ -41,9 +41,6 @@
 };
 /delete-node/ &i2c_ec_i2c_charger;
 
-&i2c1_0 {
-    status = "disabled";
-};
 /delete-node/ &i2c_ec_i2c_sensor_r;
 
 &i2c2_0 {
