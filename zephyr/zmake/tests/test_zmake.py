@@ -204,6 +204,7 @@ class TestFilters:
         )
 
         dt_errs = [rec for rec in recs if "adc" in rec]
+        assert dt_errs
         assert (
             "devicetree error: 'adc' is marked as required" in list(dt_errs)[0]
         )

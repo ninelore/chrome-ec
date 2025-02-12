@@ -172,21 +172,20 @@ class Zmake:
     ):
         zmake.multiproc.LogWriter.reset()
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._checkout = checkout
+        if not checkout and (not zephyr_base or not modules_dir):
+            checkout = util.locate_cros_checkout().resolve()
         if zephyr_base:
             self.zephyr_base = zephyr_base
         else:
             self.zephyr_base = (
-                self.checkout / "src" / "third_party" / "zephyr" / "main"
+                checkout / "src" / "third_party" / "zephyr" / "main"
             )
         self.zephyr_base = self.zephyr_base.resolve()
 
         if modules_dir:
             self.module_paths = zmake.modules.locate_from_directory(modules_dir)
         else:
-            self.module_paths = zmake.modules.locate_from_checkout(
-                self.checkout
-            )
+            self.module_paths = zmake.modules.locate_from_checkout(checkout)
 
         if projects_dirs:
             self.projects_dirs = []
@@ -206,13 +205,6 @@ class Zmake:
         self._sequential = self.jobserver.is_sequential()
         self.cmp_failed_projects = {}
         self.failed_projects = []
-
-    @property
-    def checkout(self):
-        """Returns the location of the cros checkout."""
-        if not self._checkout:
-            self._checkout = util.locate_cros_checkout()
-        return self._checkout.resolve()
 
     def _filter_projects(
         self,
