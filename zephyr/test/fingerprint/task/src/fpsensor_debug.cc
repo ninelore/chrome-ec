@@ -31,6 +31,9 @@ ZTEST_SUITE(fpsensor_debug, NULL, NULL, NULL, NULL, NULL);
 
 ZTEST(fpsensor_debug, test_console_fpinfo)
 {
+	/* System is unlocked. */
+	is_locked = 0;
+
 	char console_input[] = "fpinfo";
 	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_SUCCESS);
