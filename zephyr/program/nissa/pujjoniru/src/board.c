@@ -31,50 +31,50 @@ LOG_MODULE_REGISTER(board_init, LOG_LEVEL_INF);
 #define CPRINTS(format, args...) cprints(CC_SYSTEM, format, ##args)
 
 /* thermal table control for 15W CPU */
-#define TEMP_VR TEMP_SENSOR_ID(DT_NODELABEL(temp_sensor_vr))
+#define TEMP_5V TEMP_SENSOR_ID(DT_NODELABEL(temp_sensor_5v))
 #define TEMP_CPU TEMP_SENSOR_ID(DT_NODELABEL(temp_sensor_cpu))
 #define TEMP_AMBIENT TEMP_SENSOR_ID(DT_NODELABEL(temp_sensor_ambient))
 #define TEMP_CHARGER TEMP_SENSOR_ID(DT_NODELABEL(temp_sensor_charger))
 
-const static struct ec_thermal_config thermal_vr = {
+const static struct ec_thermal_config thermal_5v = {
 	.temp_host = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(93),
-		[EC_TEMP_THRESH_HALT] = C_TO_K(95),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(85),
+		[EC_TEMP_THRESH_HALT] = C_TO_K(88),
 	},
 	.temp_host_release = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(88),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(83),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(51),
-	.temp_fan_max = C_TO_K(67),
+	.temp_fan_off = C_TO_K(50),
+	.temp_fan_max = C_TO_K(65),
 };
 
 const static struct ec_thermal_config thermal_cpu = {
 	.temp_host = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(93),
-		[EC_TEMP_THRESH_HALT] = C_TO_K(95),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(87),
+		[EC_TEMP_THRESH_HALT] = C_TO_K(90),
 	},
 	.temp_host_release = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(88),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(85),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
-	.temp_fan_off = C_TO_K(50),
-	.temp_fan_max = C_TO_K(70),
+	.temp_fan_off = C_TO_K(40),
+	.temp_fan_max = C_TO_K(51),
 };
 
 const static struct ec_thermal_config thermal_ambient = {
 	.temp_host = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(77),
-		[EC_TEMP_THRESH_HALT] = C_TO_K(80),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(72),
+		[EC_TEMP_THRESH_HALT] = C_TO_K(75),
 	},
 	.temp_host_release = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(75),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(70),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
 	.temp_fan_off = C_TO_K(40),
@@ -84,12 +84,12 @@ const static struct ec_thermal_config thermal_ambient = {
 const static struct ec_thermal_config thermal_charger = {
 	.temp_host = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(93),
-		[EC_TEMP_THRESH_HALT] = C_TO_K(95),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(87),
+		[EC_TEMP_THRESH_HALT] = C_TO_K(90),
 	},
 	.temp_host_release = {
 		[EC_TEMP_THRESH_WARN] = 0,
-		[EC_TEMP_THRESH_HIGH] = C_TO_K(90),
+		[EC_TEMP_THRESH_HIGH] = C_TO_K(85),
 		[EC_TEMP_THRESH_HALT] = 0,
 	},
 	.temp_fan_off = C_TO_K(55),
@@ -109,7 +109,7 @@ test_export_static void thermal_init(void)
 		return;
 	}
 	if (val != FW_THERMAL_6W) {
-		thermal_params[TEMP_VR] = thermal_vr;
+		thermal_params[TEMP_5V] = thermal_5v;
 		thermal_params[TEMP_CPU] = thermal_cpu;
 		thermal_params[TEMP_AMBIENT] = thermal_ambient;
 		thermal_params[TEMP_CHARGER] = thermal_charger;
