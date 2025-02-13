@@ -17,43 +17,43 @@ def _ec_deps_impl(module_ctx):
 
     _coreboot_sdk_subtool(
         "nds32le-elf",
-        "14.2.0-r3/dcf960a7d85793abe1b27aef46a1e5e79e8b995e",
-        "1c8c5b206bd13a40761fff9cd104b2dae32790eea1688f3ec98d3975aa26ee07",
+        "14.2.0-r3/a42da0080cd482f22b35afff7878a62b63b7f978",
+        "fabb9604216a0a9c5b5602b9655b6cac2dbfd3d70a412daaafc90219158bfb56",
     )
     _coreboot_sdk_subtool(
         "i386-elf",
-        "14.2.0-r3/b55705844741bee0577171f53edd14dac5df0e43",
-        "8967be6a0022e41569a367c4ed31d31284fec36070d5bafb3e0ec472805154b2",
+        "14.2.0-r3/5a612e612191e8fc1dcb246b31279c4fa6da2da8",
+        "5400530a396891db1b9c9f3016aa2d51ff5d4bc7b1b2d08056aec2e06090f957",
     )
     _coreboot_sdk_subtool(
         "picolibc-i386-elf",
-        "14.2.0-r1/d0c4b73b623a8df5c00cecfa0b6ad11a67765075",
-        "1477392d1bdaa8de5ae7bfb469803f335333c6fa46fccf4a34d7e7a5beca3c43",
+        "14.2.0-r1/432177501fd9307fd8d2a42cad50f5a391431342",
+        "a11105e6b95e941a77abe7df0b70aee76acf18004747031128fe976be99408c6",
     )
     _coreboot_sdk_subtool(
         "libstdcxx-i386-elf",
-        "14.2.0-r1/995394d19979448598c258a1c9ee5e4a8e9595c2",
-        "d60b3b4eb92d0015ea937cc56adfdf4f1a1deb862b2432ae967408cf96fe2b40",
+        "14.2.0-r1/7669d6b5d20c58db775ae136aa17e46e74b2765d",
+        "1901d9bef995685bef0293d099b55b90fb694fa3af180c74e91acf539c94647a",
     )
     _coreboot_sdk_subtool(
         "arm-eabi",
-        "14.2.0-r3/d1512baac52606aa45d0bdd38040e67df2e17d7c",
-        "d2e4f86a37f8674bb172ccb52a0fe8d1364564f9e37e1464fc7303fb50adb0f3",
+        "14.2.0-r3/a9e789245bfa4b88b07da734c4bcdcf8eb5348eb",
+        "e86687e8e0bd3910912b4bcef5802047a141b4b1ed986499f69cfcf9bc4b6682",
     )
     _coreboot_sdk_subtool(
         "picolibc-arm-eabi",
-        "14.2.0-r1/c32e56a1f505e22a4233680329e8a13ac999a1f3",
-        "82d99348a576a5f81a383cdc239ace7a2f82e61b0e56903e271c4bbdcc9c1e04",
+        "14.2.0-r1/26d1f34f1bd1aff76f67bb17137e4cf13127d2d3",
+        "cafd06b93427c3780db2020dbdad27521c394c20e933e201ace9ca7bb84cb140",
     )
     _coreboot_sdk_subtool(
         "libstdcxx-arm-eabi",
-        "14.2.0-r1/cc19d2614d096f58cd5c2483a2b1d313e0d23625",
-        "1c0a1a050be72363ccc07d41e9a96e4e46121874c859869f968076671e302926",
+        "14.2.0-r1/8ef4441e966344160ccb6cca55a110928c9ff2b1",
+        "b1cd7fa25f6dcd1bdccb5b87bffb1f87512bad09d9f7d41f6ad8014fdbdeb4dc",
     )
     _coreboot_sdk_subtool(
         "riscv-elf",
-        "14.2.0-r3/f86d8c0ebc8e5d03f4193a7c6b9732a52a2778c1",
-        "4fcde5976454537569dd07e62c47f35fc2f4db745a4ad269cfb153d27da8d0b1",
+        "14.2.0-r3/bff64f5dcae286565fe425e79acd2d1e6e911d21",
+        "a73ebcf2f049291b7e919da5e66a67b0c1f1cb3263c2183335763d15b5983251",
     )
 
     return module_ctx.extension_metadata(
