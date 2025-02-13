@@ -4,10 +4,13 @@
  */
 
 #include "charger.h"
+#include "gpio.h"
 #include "gpio/gpio_int.h"
 #include "hooks.h"
 #include "i2c.h"
 #include "usb_charge.h"
+#include "usb_pd.h"
+#include "usbc/pdc_power_mgmt.h"
 
 #include <zephyr/drivers/gpio.h>
 
@@ -36,14 +39,29 @@ DECLARE_HOOK(HOOK_INIT, skywalker_common_init, HOOK_PRIO_PRE_DEFAULT);
 /* USB-A */
 void xhci_interrupt(enum gpio_signal signal)
 {
+	int xhci_stat = gpio_get_level(signal);
+
 #ifdef USB_PORT_ENABLE_COUNT
-	enum usb_charge_mode mode = gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(
-					    gpio_ap_xhci_init_done_r)) ?
-					    USB_CHARGE_MODE_ENABLED :
-					    USB_CHARGE_MODE_DISABLED;
+	enum usb_charge_mode usba_mode = xhci_stat ? USB_CHARGE_MODE_ENABLED :
+						     USB_CHARGE_MODE_DISABLED;
 
 	for (int i = 0; i < USB_PORT_ENABLE_COUNT; i++) {
-		usb_charge_set_mode(i, mode, USB_ALLOW_SUSPEND_CHARGE);
+		usb_charge_set_mode(i, usba_mode, USB_ALLOW_SUSPEND_CHARGE);
 	}
 #endif
+
+	for (int i = 0; i < CONFIG_USB_PD_PORT_MAX_COUNT; i++) {
+		if (xhci_stat) {
+			pdc_power_mgmt_set_dual_role(i, PD_DRP_TOGGLE_ON);
+		}
+	}
+}
+
+__override enum pd_dual_role_states pd_get_drp_state_in_s0(void)
+{
+	if (gpio_pin_get_dt(GPIO_DT_FROM_NODELABEL(gpio_ap_xhci_init_done_r))) {
+		return PD_DRP_TOGGLE_ON;
+	} else {
+		return PD_DRP_FORCE_SINK;
+	}
 }
