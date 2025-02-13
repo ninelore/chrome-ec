@@ -11,7 +11,9 @@
 #include <zephyr/fff.h>
 #include <zephyr/ztest.h>
 
+#include <algorithm>
 #include <ec_commands.h>
+#include <fpsensor/fpsensor_state_driver.h>
 #include <fpsensor/fpsensor_utils.h>
 #include <fpsensor_driver.h>
 #include <mkbp_event.h>
@@ -107,6 +109,20 @@ ZTEST(fpsensor_debug,
 		 FP_SENSOR_IMAGE_SIZE - FP_SENSOR_IMAGE_OFFSET);
 	int rv = shell_execute_cmd(get_ec_shell(), console_input);
 	zassert_equal(rv, EC_ERROR_PARAM1);
+}
+
+ZTEST(fpsensor_debug, test_command_fpupload_correct_uploaded_values)
+{
+	/* System is unlocked. */
+	is_locked = 0;
+
+	std::ranges::fill(fp_buffer, fp_buffer + FP_SENSOR_IMAGE_SIZE, 0);
+	char console_input[] = "fpupload 0 f16e38";
+	int rv = shell_execute_cmd(get_ec_shell(), console_input);
+	zassert_equal(rv, EC_SUCCESS);
+	zassert_equal(fp_buffer[FP_SENSOR_IMAGE_OFFSET], 241);
+	zassert_equal(fp_buffer[FP_SENSOR_IMAGE_OFFSET + 1], 110);
+	zassert_equal(fp_buffer[FP_SENSOR_IMAGE_OFFSET + 2], 56);
 }
 
 /* TODO(b/371647536): Add other tests of commands in fpsensor_debug to verify
