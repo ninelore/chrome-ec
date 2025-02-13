@@ -33,6 +33,10 @@ void lpc_keyboard_resume_irq(void)
 {
 }
 
+void pd_ufp_set_enter_mode(int port, uint32_t *payload)
+{
+}
+
 int mock_cros_cbi_get_fw_config_hb(enum cbi_fw_config_field_id field_id,
 				   uint32_t *value)
 {
