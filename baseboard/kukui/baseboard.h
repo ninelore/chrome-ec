@@ -94,6 +94,7 @@
 
 /* define this if the board is jacuzzi family */
 #ifdef VARIANT_KUKUI_JACUZZI
+#define CONFIG_USB_PD_TRY_SRC
 #define CONFIG_HOSTCMD_AP_SET_SKUID
 /*
  * IT81202 based boards are variant of jacuzzi and I/O expander isn't required
