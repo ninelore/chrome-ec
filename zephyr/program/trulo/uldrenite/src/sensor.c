@@ -23,11 +23,14 @@
 LOG_MODULE_DECLARE(trulo, LOG_LEVEL_INF);
 
 static int sensor_fwconfig;
+static int base_use_alt_sensor;
 
 void motion_interrupt(enum gpio_signal signal)
 {
-	if (sensor_fwconfig == FORM_FACTOR_CONVERTIBLE)
+	if (base_use_alt_sensor)
 		lsm6dsm_interrupt(signal);
+	else
+		lis2dw12_interrupt(signal);
 }
 
 void lid_accel_interrupt(enum gpio_signal signal)
@@ -47,13 +50,22 @@ static void motionsense_init(void)
 	}
 
 	if (sensor_fwconfig == FORM_FACTOR_CLAMSHELL) {
-		ccprints("Board is Clamshell");
 		gmr_tablet_switch_disable();
-		gpio_disable_dt_interrupt(GPIO_INT_FROM_NODELABEL(int_imu));
-		gpio_pin_configure_dt(GPIO_DT_FROM_NODELABEL(gpio_imu_int_l),
+		gpio_disable_dt_interrupt(GPIO_INT_FROM_NODELABEL(int_lid_imu));
+		gpio_pin_configure_dt(GPIO_DT_FROM_NODELABEL(gpio_acc_int_l),
 				      GPIO_INPUT | GPIO_PULL_UP);
-
-	} else if (sensor_fwconfig == FORM_FACTOR_CONVERTIBLE)
+		ccprints("Board is Clamshell");
+	} else if (sensor_fwconfig == FORM_FACTOR_CONVERTIBLE) {
 		ccprints("Board is Convertible");
+	}
 }
 DECLARE_HOOK(HOOK_INIT, motionsense_init, HOOK_PRIO_DEFAULT);
+
+static void alt_sensor_init(void)
+{
+	base_use_alt_sensor = cros_cbi_ssfc_check_match(
+		CBI_SSFC_VALUE_ID(DT_NODELABEL(base_sensor_lsm6dsm)));
+
+	motion_sensors_check_ssfc();
+}
+DECLARE_HOOK(HOOK_INIT, alt_sensor_init, HOOK_PRIO_POST_I2C);
