@@ -534,45 +534,42 @@ class Zmake:
                 if static_version:
                     ec_version_flags.append("--static")
 
+                # Prune the module paths to just those required by the project.
+                module_paths = project.prune_modules(self.module_paths)
+
+                default_cmake_defs = {
+                    "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                    "ZEPHYR_BASE": str(self.zephyr_base),
+                    "ZMAKE_INCLUDE_DIR": str(generated_include_dir),
+                    "Python3_EXECUTABLE": sys.executable,
+                }
+                if "ec" in module_paths:
+                    default_cmake_defs["DTS_ROOT"] = str(
+                        module_paths["ec"] / "zephyr"
+                    )
+                    default_cmake_defs["SYSCALL_INCLUDE_DIRS"] = str(
+                        module_paths["ec"] / "zephyr" / "include" / "drivers"
+                    )
+                    default_cmake_defs["USER_CACHE_DIR"] = str(
+                        module_paths["ec"] / "build" / "zephyr" / "user-cache"
+                    )
+                if "pigweed" in module_paths:
+                    default_cmake_defs["PW_ROOT"] = str(module_paths["pigweed"])
+                if "nanopb" in module_paths:
+                    default_cmake_defs["NANOPB_DIR"] = str(
+                        module_paths["nanopb"]
+                    )
+                if ec_version_flags:
+                    default_cmake_defs[
+                        "EXTRA_EC_VERSION_FLAGS"
+                    ] = util.repr_command(ec_version_flags)
                 base_config = zmake.build_config.BuildConfig(
-                    cmake_defs={
-                        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                        "DTS_ROOT": str(self.module_paths["ec"] / "zephyr"),
-                        "SYSCALL_INCLUDE_DIRS": str(
-                            self.module_paths["ec"]
-                            / "zephyr"
-                            / "include"
-                            / "drivers"
-                        ),
-                        "USER_CACHE_DIR": str(
-                            self.module_paths["ec"]
-                            / "build"
-                            / "zephyr"
-                            / "user-cache"
-                        ),
-                        "ZEPHYR_BASE": str(self.zephyr_base),
-                        "ZMAKE_INCLUDE_DIR": str(generated_include_dir),
-                        "PW_ROOT": str(self.module_paths["pigweed"]),
-                        "NANOPB_DIR": str(self.module_paths["nanopb"]),
-                        "Python3_EXECUTABLE": sys.executable,
-                        **(
-                            {
-                                "EXTRA_EC_VERSION_FLAGS": util.repr_command(
-                                    ec_version_flags
-                                )
-                            }
-                            if ec_version_flags
-                            else {}
-                        ),
-                    },
+                    cmake_defs=default_cmake_defs
                 )
                 if cmake_defs:
                     base_config |= zmake.build_config.BuildConfig.from_args(
                         cmake_defs
                     )
-
-                # Prune the module paths to just those required by the project.
-                module_paths = project.prune_modules(self.module_paths)
 
                 module_config = zmake.modules.setup_module_symlinks(
                     build_dir / "modules", module_paths
