@@ -615,6 +615,18 @@ DISAMBIGUATION_DICTIONARY = {
             },
             None,
         ),
+        CompatibleInfo(
+            "ti,bq25720",
+            None,
+            None,
+            {
+                "reg": "0xff",
+                "mask": "0xff",
+                "value": "0xe1",
+                "bytes": 1,
+            },
+            None,
+        ),
     ],
     "renesas,raa489000": [
         CompatibleInfo(
