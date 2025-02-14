@@ -1169,8 +1169,22 @@ config_fatcat() {
   # gpiochip512 and gpiochip560.
   local gpiobase512=512
   local gpiobase560=560
+  local gpiobase626=626
 
   case "${model}" in
+    (francka)
+      # FPMCU FPS_RST_N(RST_ODL) is on GPP_H17 = 626 + 17
+      local gpionrst=17
+      readonly GPIO_NRST=$(( gpionrst + gpiobase626))
+
+      # FPMCU FPMCU_FW_UPDATE(BOOT0) is on GPP_F20 = 560 + 20
+      local gpioboot=20
+      readonly GPIO_BOOT0=$(( gpioboot + gpiobase560))
+
+      # FPMCU_PWREN(FP_PWR_EN) is on GPP_H03 = 626 + 3
+      local gpiopwren=3
+      readonly GPIO_PWREN=$(( gpiopwren + gpiobase626))
+      ;;
     *)
       # FPMCU FPS_RST_N(RST_ODL) is on GPP_C15 = 24 + (39 - 24) = 39
       local gpionrst=39
