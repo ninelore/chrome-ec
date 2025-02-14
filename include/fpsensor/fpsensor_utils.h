@@ -34,14 +34,13 @@ bool is_finger_needed(uint32_t mode);
 
 /**
  * @param mode sensor mode
- * @return true if the mode is one that yields a frame in which all bytes should
- * be returned over EC_CMD_FRAME.
- * Other captures modes (simple, pattern0, pattern1, and reset_test) are
- * only interested in the height*width*bpp image bytes that are offset inside
- * the frame.
- * These modes correspond to using the ectool fpframe "raw" modifier.
+ * @return true if the mode is the one where we only care about the
+ * embedded/offset image bytes to be returned over EC_CMD_FRAME.
+ * Some capture modes (simple, pattern0, pattern1, and reset_test) are only
+ * interested in the height*width*bpp image bytes that are offset inside the
+ * frame. Other modes require the full frame.
  */
-bool is_raw_capture(uint32_t mode);
+bool skip_image_offset(uint32_t mode);
 
 /**
  * Format an unsigned int FOURCC value as a printable string.
