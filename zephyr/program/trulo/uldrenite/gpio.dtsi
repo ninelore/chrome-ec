@@ -69,10 +69,6 @@
 		gpio_en_slp_z: en_slp_z {
 			gpios = <&gpioe 1 GPIO_OUTPUT>;
 		};
-		gpio_ec_batt_pres_odl: ec_batt_pres_odl {
-			gpios = <&gpioa 3 GPIO_INPUT>;
-			enum-name = "GPIO_BATT_PRES_ODL";
-		};
 		gpio_tchpad_lid_close: tchpad_lid_close {
 			gpios = <&gpio6 3 GPIO_OUTPUT>;
 		};
@@ -117,6 +113,7 @@
 			<&gpio9 6 0>,
 			<&gpioa 0 0>,
 			<&gpioa 2 0>,
+			<&gpioa 3 0>,
 			<&gpiob 7 0>,
 			<&gpioc 0 0>,
 			<&gpioc 6 0>,
