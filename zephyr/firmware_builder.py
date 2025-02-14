@@ -60,6 +60,10 @@ SPECIAL_BOARDS = [
     "nivviks",
     "orisa",
     "orisa-ish",
+    # Trulo variants
+    "trulo",
+    "trulo-ti",
+    "trulo-ish",
     # Skyrim variants
     "winterhold",
     "frostflow",
