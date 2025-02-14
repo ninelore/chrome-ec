@@ -17,7 +17,7 @@
 / {
 	batteries {
 		default_battery: placeholder {
-			compatible = "cosmx,ap20cbl-3", "battery-smart";
+			compatible = "smp,c31n2005", "battery-smart";
 		};
 	};
 
