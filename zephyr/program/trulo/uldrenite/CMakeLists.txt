@@ -10,3 +10,4 @@ zephyr_library_sources("src/sensor.c")
 zephyr_library_sources_ifdef(CONFIG_PLATFORM_EC_KEYBOARD_CUSTOMIZATION
 	"src/keyboard_customization.c"
 )
+zephyr_library_sources("src/mp2964_update.c")
