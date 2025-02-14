@@ -132,13 +132,6 @@
 #undef CONFIG_CODE_RAM_SIZE
 #define CONFIG_CODE_RAM_SIZE NPCX_PROGRAM_MEMORY_SIZE
 
-#define CONFIG_RO_PUBKEY_READ_ADDR                                      \
-	(CONFIG_MAPPED_STORAGE_BASE + CONFIG_EC_PROTECTED_STORAGE_OFF + \
-	 CONFIG_RO_PUBKEY_STORAGE_OFF)
-
-#define CONFIG_RWSIG_READ_ADDR                                          \
-	((CONFIG_MAPPED_STORAGE_BASE + CONFIG_EC_WRITABLE_STORAGE_OFF + \
-	  CONFIG_RW_STORAGE_OFF + RW_SIG_OFFSET))
 /*
  * Since NPCX9 executes out of SRAM and only one image (RO/RW) is loaded
  * from flash at a time, we don't apply an offset to program memory

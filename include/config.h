@@ -4097,12 +4097,10 @@
  * half of the total flash, and take up the minimum space possible. You can
  * override those defaults with these.
  */
-#undef CONFIG_RO_PUBKEY_ADDR
-#undef CONFIG_RO_PUBKEY_READ_ADDR
+#undef CONFIG_RO_PUBKEY_OFF
 #undef CONFIG_RO_PUBKEY_SIZE
-#undef CONFIG_RW_SIG_ADDR
+#undef CONFIG_RW_SIG_OFF
 #undef CONFIG_RW_SIG_SIZE
-#undef CONFIG_RWSIG_READ_ADDR
 
 /* Size of the serial number if needed */
 #undef CONFIG_SERIALNO_LEN
