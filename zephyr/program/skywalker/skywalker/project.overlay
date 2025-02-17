@@ -12,6 +12,8 @@
 #include "../npcx_usbc.dtsi"
 #include "../power_signal.dtsi"
 #include "../usba.dtsi"
+#include "led_pins.dtsi"
+#include "led_policy.dtsi"
 #include "motionsense.dtsi"
 
 / {
