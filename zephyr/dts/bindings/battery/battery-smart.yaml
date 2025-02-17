@@ -12,6 +12,7 @@ properties:
     type: string
     enum:
       - "aec,5477109"
+      - "atl,ap24cal"
       - "atl,cfd72"
       - "atl,gb-s20-4473a9"
       - "bms-gf,cr50"
