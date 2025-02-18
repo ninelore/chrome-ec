@@ -230,7 +230,7 @@
 	status = "okay";
 	pinctrl-0 = <&pwm2_gpa2_default>;
 	pinctrl-names = "default";
-	prescaler-cx = <PWM_PRESCALER_C4>;
+	prescaler-cx = <PWM_PRESCALER_C6>;
 };
 
 &pwm3 {
