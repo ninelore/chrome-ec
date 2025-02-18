@@ -26,6 +26,7 @@
 #include "usb_pd_dpm_sm.h"
 #include "usb_pd_tcpm.h"
 #include "util.h"
+#include "zephyr/include/usbc/pdc_dpm.h"
 #ifdef CONFIG_ZEPHYR
 #include "zephyr/include/usbc/pdc_power_mgmt.h"
 #endif
@@ -302,10 +303,20 @@ int charge_manager_get_pd_current_uncapped(void)
  * @param port	Charge port.
  * @return	Charge current (mA).
  */
-__maybe_unused static int charge_manager_get_source_current(int port)
+static int charge_manager_get_source_current(int port)
 {
 	if (!is_pd_port(port))
 		return 0;
+
+	if (IS_ENABLED(CONFIG_USB_PD_TCPMV2)) {
+		/* TCPMv2 policy manager tracks sourcing levels. */
+		return dpm_get_source_current(port);
+	}
+
+	if (IS_ENABLED(CONFIG_USB_PDC_POWER_MGMT)) {
+		/* PDC policy manager tracks sourcing levels. */
+		return pdc_dpm_get_source_current(port);
+	}
 
 	switch (source_port_rp[port]) {
 	case TYPEC_RP_3A0:
@@ -482,13 +493,8 @@ charge_manager_fill_power_info(int port,
 			r->meas.voltage_max = 0;
 			r->meas.voltage_now =
 				r->role == USB_PD_PORT_POWER_SOURCE ? 5000 : 0;
-			/* TCPMv2 tracks source-out current in the DPM */
-			if (IS_ENABLED(CONFIG_USB_PD_TCPMV2))
-				r->meas.current_max =
-					dpm_get_source_current(port);
-			else
-				r->meas.current_max =
-					charge_manager_get_source_current(port);
+			r->meas.current_max =
+				charge_manager_get_source_current(port);
 			r->max_power = 0;
 		} else {
 			r->type = USB_CHG_TYPE_NONE;

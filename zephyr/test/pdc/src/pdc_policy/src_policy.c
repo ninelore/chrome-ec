@@ -10,6 +10,7 @@
 #include "emul/emul_pdc.h"
 #include "test/util.h"
 #include "timer.h"
+#include "usbc/pdc_dpm.h"
 #include "usbc/pdc_power_mgmt.h"
 #include "usbc/utils.h"
 
@@ -97,6 +98,16 @@ static void src_policy_before(void *f)
 
 ZTEST_SUITE(src_policy, NULL, src_policy_setup, src_policy_before, NULL, NULL);
 
+static inline struct ec_response_usb_pd_power_info host_cmd_power_info(int port)
+{
+	struct ec_params_usb_pd_power_info params = { .port = port };
+	struct ec_response_usb_pd_power_info response;
+
+	zassert_ok(ec_cmd_usb_pd_power_info(NULL, &params, &response),
+		   "Failed to get power info for port %d", port);
+	return response;
+}
+
 /* Verify first port connected is offered 3A contract. */
 ZTEST_USER_F(src_policy, test_src_policy_one_3a)
 {
@@ -167,6 +178,32 @@ ZTEST_USER_F(src_policy, test_src_policy_one_3a)
 	zassert_equal(PDO_FIXED_CURRENT(lpm_src_pdo_actual_port1), 1500,
 		      "LPM SOURCE_PDO current %d, but expected %d",
 		      PDO_FIXED_CURRENT(lpm_src_pdo_actual_port1), 1500);
+
+	/* Verify the correct voltages are reported to the host. */
+	struct ec_response_usb_pd_power_info response;
+	response = host_cmd_power_info(TEST_USBC_PORT0);
+	zassert_equal(
+		response.role, USB_PD_PORT_POWER_SOURCE,
+		"EC_CMD_USB_PD_POWER_INFO - Port %d Expected power role %d, "
+		"but EC reports role %d",
+		TEST_USBC_PORT0, USB_PD_PORT_POWER_DISCONNECTED, response.role);
+	zassert_equal(
+		response.meas.current_max, 3000,
+		"EC_CMD_USB_PD_POWER_INFO - Port %d: expected current %d mA, "
+		"actual current %d mA",
+		TEST_USBC_PORT0, 3000, response.meas.current_max);
+
+	response = host_cmd_power_info(TEST_USBC_PORT1);
+	zassert_equal(
+		response.role, USB_PD_PORT_POWER_SOURCE,
+		"EC_CMD_USB_PD_POWER_INFO - Port %d Expected power role %d, "
+		"but EC reports role %d",
+		TEST_USBC_PORT1, USB_PD_PORT_POWER_DISCONNECTED, response.role);
+	zassert_equal(
+		response.meas.current_max, 1500,
+		"EC_CMD_USB_PD_POWER_INFO - Port %d: expected current %d mA, "
+		"actual current %d mA",
+		TEST_USBC_PORT1, 3000, response.meas.current_max);
 }
 
 /* Verify 3A contract switches port when first port disconnected. */
@@ -227,7 +264,8 @@ ZTEST_USER_F(src_policy, test_src_policy_disconnect_3a)
 		      "LPM SOURCE_PDO current %d, but expected %d",
 		      PDO_FIXED_CURRENT(lpm_src_pdo_actual_port1), 3000);
 
-	/* Port 0 should also be setup to only offer 1.5A for next connection */
+	/* Port 0 should also be setup to only offer 1.5A for next
+	 * connection */
 	zassert_ok(emul_pdc_get_pdos(fixture->emul_pdc[TEST_USBC_PORT0],
 				     SOURCE_PDO, PDO_OFFSET_0, 1, LPM_PDO,
 				     &lpm_src_pdo_actual_port0));
@@ -269,8 +307,8 @@ ZTEST_USER_F(src_policy, test_src_policy_pr_swap)
 		      "LPM SOURCE_PDO current %d, but expected %d",
 		      PDO_FIXED_CURRENT(lpm_src_pdo_actual_port0), 5000);
 
-	/* Following a PR swap, the LPM PDO should be configured for only
-	 * 1.5A.
+	/* Following a PR swap, the LPM PDO should be configured for
+	 * only 1.5A.
 	 */
 	change_bits.raw_value = connector_status.raw_conn_status_change_bits;
 	change_bits.pwr_direction = 1;
@@ -292,6 +330,11 @@ ZTEST_USER_F(src_policy, test_src_policy_pr_swap)
 	zassert_equal(PDO_FIXED_CURRENT(lpm_src_pdo_actual_port0), 1500,
 		      "LPM SOURCE_PDO current %d, but expected %d",
 		      PDO_FIXED_CURRENT(lpm_src_pdo_actual_port0), 1500);
+
+	/* Verify that the DPM reports the port supplies no current when
+	 * operating as a sink.
+	 */
+	zassert_equal(pdc_dpm_get_source_current(TEST_USBC_PORT0), 0);
 }
 
 ZTEST_USER_F(src_policy, test_src_policy_non_pd)
@@ -346,7 +389,8 @@ ZTEST_USER_F(src_policy, test_src_policy_non_pd)
 		fixture->emul_pdc[TEST_USBC_PORT1], &typec_current));
 	zassert_equal(typec_current, TC_CURRENT_3_0A);
 
-	/* Connecting a PD sink causes a downgrade of the non-PD sink. */
+	/* Connecting a PD sink causes a downgrade of the non-PD sink.
+	 */
 	emul_pdc_configure_src(fixture->emul_pdc[TEST_USBC_PORT0],
 			       &connector_status);
 	zassert_ok(emul_pdc_set_pdos(fixture->emul_pdc[TEST_USBC_PORT0],
@@ -424,7 +468,8 @@ ZTEST_USER_F(src_policy, test_src_policy_frs_1a5)
 					    &frs_partner_connector_status));
 	zassert_ok(pdc_power_mgmt_wait_for_sync(TEST_USBC_PORT1, -1));
 
-	/* FRS should be enabled, even while providing 3A on another port. */
+	/* FRS should be enabled, even while providing 3A on another
+	 * port. */
 	zassert_ok(emul_pdc_get_frs(fixture->emul_pdc[TEST_USBC_PORT1],
 				    &frs_enabled));
 	zassert_true(frs_enabled);
@@ -466,9 +511,9 @@ ZTEST_USER_F(src_policy, test_src_policy_frs_3a)
 		ztest_test_skip();
 	}
 
-	/* When FRS partners connect as a source, and the FRS partner indicates
-	 * it needs 3.0A, the EC should enable FRS only if no other PD sinks
-	 * are connected and need 3.0A.
+	/* When FRS partners connect as a source, and the FRS partner
+	 * indicates it needs 3.0A, the EC should enable FRS only if no
+	 * other PD sinks are connected and need 3.0A.
 	 */
 
 	/* Connect a PD sink at 1.5A */
@@ -584,8 +629,8 @@ ZTEST_USER_F(src_policy, test_src_policy_fsr_downgrade_for_pd)
 		      PDO_FIXED_CURRENT(lpm_src_pdo_actual_port1), 3000);
 
 	/* Connecting a PD sink that needs 3.0A on port 0.
-	 * This should downgrade the FRS source, disabling FRS and changing
-	 * the current limit.
+	 * This should downgrade the FRS source, disabling FRS and
+	 * changing the current limit.
 	 */
 	emul_pdc_configure_src(fixture->emul_pdc[TEST_USBC_PORT0],
 			       &snk_partner_connector_status);
@@ -608,7 +653,8 @@ ZTEST_USER_F(src_policy, test_src_policy_fsr_downgrade_for_pd)
 				    &frs_enabled));
 	zassert_false(frs_enabled);
 
-	/* LPM source PDO offered should only be 1.5A to the FRS port. */
+	/* LPM source PDO offered should only be 1.5A to the FRS port.
+	 */
 	zassert_ok(emul_pdc_get_pdos(fixture->emul_pdc[TEST_USBC_PORT1],
 				     SOURCE_PDO, PDO_OFFSET_0, 1, LPM_PDO,
 				     &lpm_src_pdo_actual_port1));

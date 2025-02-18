@@ -283,3 +283,19 @@ void pdc_dpm_remove_source(int port)
 	pdc_power_mgmt_set_current_limit(port, rp);
 	pdc_dpm_balance_source_ports(&dpm_work.work);
 }
+
+int pdc_dpm_get_source_current(const int port)
+{
+	if (pd_get_power_role(port) == PD_ROLE_SINK) {
+		return 0;
+	}
+
+	if (max_current_claimed & BIT(port)) {
+		return 3000;
+	}
+
+	/* PDC implementations default to sourcing 1.5A unless this
+	 * module allocates 3A to the port via max_current_claimed.
+	 */
+	return 1500;
+}
