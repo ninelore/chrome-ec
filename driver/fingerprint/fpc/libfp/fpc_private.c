@@ -20,6 +20,7 @@
 #include "timer.h"
 #include "util.h"
 
+#include <errno.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -76,6 +77,26 @@ enum fpc_cmd {
 	FPC_CMD_SOFT_RESET = 0xF8,
 	FPC_CMD_HW_ID = 0xFC,
 };
+
+static int convert_fp_capture_mode_to_fpc_get_image_type(int mode)
+{
+	switch (mode) {
+	case FP_CAPTURE_VENDOR_FORMAT:
+		return FPC_CAPTURE_VENDOR_FORMAT;
+	case FP_CAPTURE_SIMPLE_IMAGE:
+		return FPC_CAPTURE_SIMPLE_IMAGE;
+	case FP_CAPTURE_PATTERN0:
+		return FPC_CAPTURE_PATTERN0;
+	case FP_CAPTURE_PATTERN1:
+		return FPC_CAPTURE_PATTERN1;
+	case FP_CAPTURE_QUALITY_TEST:
+		return FPC_CAPTURE_QUALITY_TEST;
+	case FP_CAPTURE_RESET_TEST:
+		return FPC_CAPTURE_RESET_TEST;
+	default:
+		return -EINVAL;
+	}
+}
 
 /* Maximum size of a sensor command SPI transfer */
 #define MAX_CMD_SPI_TRANSFER_SIZE 3
@@ -342,7 +363,13 @@ int fp_maintenance(void)
 
 int fp_acquire_image_with_mode(uint8_t *image_data, int mode)
 {
-	return fp_sensor_acquire_image_with_mode(image_data, mode);
+	int rc = convert_fp_capture_mode_to_fpc_get_image_type(mode);
+
+	if (rc < 0) {
+		CPRINTS("Unsupported mode %d provided", mode);
+		return rc;
+	}
+	return fp_sensor_acquire_image_with_mode(image_data, rc);
 }
 
 int fp_acquire_image(uint8_t *image_data)
