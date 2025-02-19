@@ -95,6 +95,16 @@ config PDC_POWER_MGMT_USB_MUX
 	  enabled if the USB3/DP mux control is managed by the EC rather than
 	  the SoC.
 
+if PDC_POWER_MGMT_USB_MUX
+config USB_MUX_SYS_INIT_PRIORITY
+	int "USB mux module init priority"
+	default 89
+	help
+	  Initialization priority of the usb mux module when using the PDC
+	  power management subsystem.  This must be higher priority than the
+	  PDC power management initialization priority.
+endif
+
 module = USB_PDC
 module-str = USB PDC
 source "subsys/logging/Kconfig.template.log_config"
