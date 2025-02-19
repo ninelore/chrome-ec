@@ -114,7 +114,6 @@ config PLATFORM_EC_LOG_TOKENIZED
 	depends on PIGWEED_LOG_TOKENIZED_LIB
 	depends on CPP
 	depends on STD_CPP17 || STD_CPP20
-	depends on EXTERNAL_MODULE_LIBCPP
 	depends on PICOLIBC
 	help
 	  Enable tokenized logging in EC.  Log format strings are converted to
