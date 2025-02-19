@@ -21,6 +21,16 @@ struct fpc_sensor_info {
 	uint32_t image_buffer_size;
 };
 
+/* External capture types from FPC's sensor library */
+enum fpc_capture_type {
+	FPC_CAPTURE_VENDOR_FORMAT = 0,
+	FPC_CAPTURE_SIMPLE_IMAGE = 1,
+	FPC_CAPTURE_PATTERN0 = 2,
+	FPC_CAPTURE_PATTERN1 = 3,
+	FPC_CAPTURE_QUALITY_TEST = 4,
+	FPC_CAPTURE_RESET_TEST = 5,
+};
+
 /** @brief Common results returned by BEP functions.
  *
  * BEP config/usage errors:
