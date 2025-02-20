@@ -9,6 +9,7 @@
 #include "gpio.h"
 #include "gpio/gpio_int.h"
 #include "hooks.h"
+#include "keyboard_scan.h"
 #include "math_util.h"
 #include "util.h"
 
@@ -17,7 +18,16 @@
 
 #include <dt-bindings/battery.h>
 
+#define VOL_UP_KEY_ROW 0
+#define VOL_UP_KEY_COL 11
+
 LOG_MODULE_REGISTER(board_init, LOG_LEVEL_ERR);
+
+static void board_setup_init(void)
+{
+	set_vol_up_key(VOL_UP_KEY_ROW, VOL_UP_KEY_COL);
+}
+DECLARE_HOOK(HOOK_INIT, board_setup_init, HOOK_PRIO_PRE_DEFAULT);
 
 enum battery_present battery_is_present(void)
 {
