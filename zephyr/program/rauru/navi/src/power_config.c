@@ -31,7 +31,7 @@ bool navi_is_more_efficient(int curr_mv, int prev_mv, int batt_mv, int batt_mw,
 	    (prev_mv < 15000 || curr_mv <= prev_mv)) {
 		return true;
 	} else {
-		return ABS(curr_mv - batt_mv) < ABS(prev_mv - batt_mv);
+		return false;
 	}
 }
 
