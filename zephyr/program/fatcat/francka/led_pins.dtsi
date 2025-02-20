@@ -6,10 +6,12 @@
 / {
 	pwmleds {
 		compatible = "pwm-leds";
-		pwm_a: pwm_a {
+		/* Power LED, GPIOC4, PWM_LED_1_ODL */
+		pwm_power: pwm-power {
 			pwms = <&pwm2 0 PWM_HZ(100) PWM_POLARITY_INVERTED>;
 		};
-		pwm_b: pwm_b {
+		/* Battery Charge LED, GPIOC3, PWM_LED_2_ODL */
+		pwm_battery: pwm-battery {
 			pwms = <&pwm0 0 PWM_HZ(100) PWM_POLARITY_INVERTED>;
 		};
 	};
@@ -19,27 +21,37 @@
 
 		battery_led: battery-led {
 			led-id = "EC_LED_ID_BATTERY_LED";
-			led-pwms = <&pwm_a &pwm_b>;
+			led-pwms = <&pwm_battery>;
 
-			color_off: color-off {
+			color_battery_off: color-off {
 				led-color = "LED_OFF";
-				led-values = <0 0>;
+				led-values = <0>;
 			};
 
-			color_amber: color-amber {
-				led-color = "LED_AMBER";
-				led-values = <100 0>;
+			color_battery_white: color-white {
+				led-color = "LED_WHITE";
+				led-values = <100>;
+			};
+		};
+
+		power_led: power-led {
+			led-id = "EC_LED_ID_POWER_LED";
+			led-pwms = <&pwm_power>;
+
+			color_power_off: color-off {
+				led-color = "LED_OFF";
+				led-values = <0>;
 			};
 
-			color_blue: color-blue {
-				led-color = "LED_BLUE";
-				led-values = <0 100>;
+			color_power_white: color-white {
+				led-color = "LED_WHITE";
+				led-values = <100>;
 			};
 		};
 	};
 };
 
-/* Amber "battery charging" LED */
+/* White Power LED */
 &pwm2 {
 	status = "okay";
 	clock-bus = "NPCX_CLOCK_BUS_LFCLK";
@@ -47,7 +59,7 @@
 	pinctrl-names = "default";
 };
 
-/* Blue "battery full" LED */
+/* White Battery Charge LED */
 &pwm0 {
 	status = "okay";
 	clock-bus = "NPCX_CLOCK_BUS_LFCLK";
