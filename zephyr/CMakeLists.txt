@@ -194,19 +194,6 @@ endif()
 
 add_subdirectory("subsys")
 
-# Creates a phony target all.libraries in case you only want to build the
-# libraries and not the binaries. For example for creating the initial zero
-# coverage files.
-get_property(ZEPHYR_LIBS_PROPERTY GLOBAL PROPERTY ZEPHYR_LIBS)
-add_custom_target(
-  all.libraries
-  DEPENDS
-  ${ZEPHYR_LIBS_PROPERTY}
-  kernel
-  ${CMAKE_BINARY_DIR}/gcov.sh
-  )
-configure_file(gcov.tmpl.sh ${CMAKE_BINARY_DIR}/gcov.sh)
-
 # CONFIG_PLATFORM_EC files that don't relate to something below should be
 # included here, sorted by filename. This is common functionality which is
 # supported by all boards and emulators (including unit tests) using the shim
@@ -753,6 +740,22 @@ add_subdirectory("fake")
 add_subdirectory("mock")
 add_subdirectory_ifdef(CONFIG_PLATFORM_EC "shim")
 add_subdirectory_ifdef(CONFIG_HW_TEST_ON "test/hwtest")
+
+# Creates a phony target all.libraries in case you only want to build the
+# libraries and not the binaries. For example for creating the initial zero
+# coverage files.
+#
+# NOTE: This target MUST come after all subdirectories were added otherwise
+# some ZEPHYR_LIBS might be missed.
+get_property(ZEPHYR_LIBS_PROPERTY GLOBAL PROPERTY ZEPHYR_LIBS)
+add_custom_target(
+  all.libraries
+  DEPENDS
+  ${ZEPHYR_LIBS_PROPERTY}
+  kernel
+  ${CMAKE_BINARY_DIR}/gcov.sh
+  )
+configure_file(gcov.tmpl.sh ${CMAKE_BINARY_DIR}/gcov.sh)
 
 # Use external script to generate the ec_version.h header and add as
 # a dependency to the EC application library.
