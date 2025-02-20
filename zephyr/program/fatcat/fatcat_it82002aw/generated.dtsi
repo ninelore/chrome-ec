@@ -149,7 +149,7 @@
 			gpios = <&gpiof 0 (GPIO_INPUT)>;
 		};
 		gpio_rst_push_n_d_r: rst_push_n_d_r {
-			gpios = <&gpioj 7 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW)>;
+			gpios = <&gpioj 7 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW | GPIO_OUTPUT_INIT_HIGH)>;
 		};
 		gpio_smc_extsmi_n_c_ec_pch_int_odl_r: smc_extsmi_n_c_ec_pch_int_odl_r {
 			gpios = <&gpioj 4 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW)>;
