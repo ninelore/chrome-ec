@@ -42,9 +42,9 @@ ZTEST_SUITE(tps6699x, NULL, NULL, tps6699x_before_test, NULL, NULL);
  */
 ZTEST_USER(tps6699x, test_connector_status_caching)
 {
-	union connector_status_t in, out;
-	union conn_status_change_bits_t in_status_change_bits,
-		out_status_change_bits;
+	union connector_status_t in = { 0 }, out = { 0 };
+	union conn_status_change_bits_t in_status_change_bits = { 0 },
+					out_status_change_bits = { 0 };
 
 	in_status_change_bits.raw_value = 0;
 	out_status_change_bits.raw_value = 0;

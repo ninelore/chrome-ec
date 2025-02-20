@@ -35,7 +35,7 @@ ZTEST_SUITE(pdc_pmc_usb_mux, NULL, pdc_pmc_usb_mux_setup, NULL, NULL, NULL);
 
 ZTEST_USER(pdc_pmc_usb_mux, test_usb_mux_data_connection)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	struct ec_params_usb_pd_mux_info param;
 	struct ec_response_usb_pd_mux_info resp;
 

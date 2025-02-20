@@ -43,7 +43,7 @@ ZTEST_USER(ucsi, test_ucsi_command_names)
 ZTEST_USER(ucsi, test_notification_bit_mapping)
 {
 	union notification_enable_t notify;
-	union conn_status_change_bits_t status;
+	union conn_status_change_bits_t status = { 0 };
 
 	struct notify_status_map {
 		uint32_t notify;

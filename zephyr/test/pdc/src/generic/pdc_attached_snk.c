@@ -50,7 +50,7 @@ ZTEST_SUITE(pdc_attached_snk, NULL, pdc_attached_snk_setup, NULL, NULL, NULL);
 ZTEST_USER_F(pdc_attached_snk, test_new_pd_sink_contract)
 {
 	union connector_status_t in = { 0 };
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 	bool sink_path_en;
 
 	const uint32_t pdos[] = {
@@ -95,7 +95,7 @@ int connect_default_charger_then_0w(struct pdc_attached_snk_fixture *fixture,
 				    int delay_ms, bool *done)
 {
 	union connector_status_t in = { 0 };
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 	bool sink_path_en;
 	const uint32_t pdo_0_amp[PDO_OFFSET_MAX] = {
 		PDO_FIXED(5000, 0, PDO_FIXED_DUAL_ROLE),

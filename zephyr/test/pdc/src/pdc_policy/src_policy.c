@@ -111,8 +111,8 @@ static inline struct ec_response_usb_pd_power_info host_cmd_power_info(int port)
 /* Verify first port connected is offered 3A contract. */
 ZTEST_USER_F(src_policy, test_src_policy_one_3a)
 {
-	union connector_status_t connector_status_port0;
-	union connector_status_t connector_status_port1;
+	union connector_status_t connector_status_port0 = { 0 };
+	union connector_status_t connector_status_port1 = { 0 };
 	uint32_t partner_snk_pdo = PDO_FIXED(5000, 3000, 0);
 	uint32_t lpm_src_pdo_actual_port0;
 	uint32_t lpm_src_pdo_actual_port1;
@@ -209,7 +209,7 @@ ZTEST_USER_F(src_policy, test_src_policy_one_3a)
 /* Verify 3A contract switches port when first port disconnected. */
 ZTEST_USER_F(src_policy, test_src_policy_disconnect_3a)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	uint32_t partner_snk_pdo = PDO_FIXED(5000, 3000, 0);
 	uint32_t lpm_src_pdo_actual_port0;
 	uint32_t lpm_src_pdo_actual_port1;
@@ -279,8 +279,8 @@ ZTEST_USER_F(src_policy, test_src_policy_disconnect_3a)
 
 ZTEST_USER_F(src_policy, test_src_policy_pr_swap)
 {
-	union connector_status_t connector_status;
-	union conn_status_change_bits_t change_bits;
+	union connector_status_t connector_status = { 0 };
+	union conn_status_change_bits_t change_bits = { 0 };
 	uint32_t partner_snk_pdo = PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t lpm_src_pdo_actual_port0;
 
@@ -339,7 +339,7 @@ ZTEST_USER_F(src_policy, test_src_policy_pr_swap)
 
 ZTEST_USER_F(src_policy, test_src_policy_non_pd)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	uint32_t partner_snk_pdo = PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t lpm_src_pdo_actual_port0;
 	enum usb_typec_current_t typec_current;
@@ -411,8 +411,8 @@ ZTEST_USER_F(src_policy, test_src_policy_non_pd)
 /* Verify operation with an FRS partner that requires 1.5A. */
 ZTEST_USER_F(src_policy, test_src_policy_frs_1a5)
 {
-	union connector_status_t snk_partner_connector_status;
-	union connector_status_t frs_partner_connector_status;
+	union connector_status_t snk_partner_connector_status = { 0 };
+	union connector_status_t frs_partner_connector_status = { 0 };
 	uint32_t snk_partner_snk_pdo =
 		PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t frs_partner_src_pdo =
@@ -491,8 +491,8 @@ ZTEST_USER_F(src_policy, test_src_policy_frs_1a5)
 /* Verify operation with an FRS partner that requires 3A. */
 ZTEST_USER_F(src_policy, test_src_policy_frs_3a)
 {
-	union connector_status_t snk_partner_connector_status;
-	union connector_status_t frs_partner_connector_status;
+	union connector_status_t snk_partner_connector_status = { 0 };
+	union connector_status_t frs_partner_connector_status = { 0 };
 	uint32_t snk_partner_snk_pdo =
 		PDO_FIXED(5000, 1500, PDO_FIXED_DUAL_ROLE);
 	uint32_t frs_partner_src_pdo =
@@ -575,8 +575,8 @@ ZTEST_USER_F(src_policy, test_src_policy_frs_3a)
 /* Verify inserting a PD sink downgrades an FRS partner. */
 ZTEST_USER_F(src_policy, test_src_policy_fsr_downgrade_for_pd)
 {
-	union connector_status_t snk_partner_connector_status;
-	union connector_status_t frs_partner_connector_status;
+	union connector_status_t snk_partner_connector_status = { 0 };
+	union connector_status_t frs_partner_connector_status = { 0 };
 	uint32_t snk_partner_snk_pdo =
 		PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t frs_partner_src_pdo =
@@ -705,8 +705,8 @@ ZTEST_USER_F(src_policy, test_src_policy_fsr_downgrade_for_pd)
 /* Verify inserting and FRS partner downgrades non PD partners. */
 ZTEST_USER_F(src_policy, test_src_policy_non_pd_downgrade_for_frs)
 {
-	union connector_status_t snk_partner_connector_status;
-	union connector_status_t frs_partner_connector_status;
+	union connector_status_t snk_partner_connector_status = { 0 };
+	union connector_status_t frs_partner_connector_status = { 0 };
 	uint32_t frs_partner_src_pdo =
 		PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t frs_partner_snk_pdo = PDO_FIXED(
@@ -777,7 +777,7 @@ ZTEST_USER_F(src_policy, test_src_policy_non_pd_downgrade_for_frs)
  */
 ZTEST_USER_F(src_policy, test_src_policy_sink_pdo_errors)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	uint32_t partner_snk_pdo;
 	uint32_t lpm_src_pdo_actual;
 
@@ -811,7 +811,7 @@ ZTEST_USER_F(src_policy, test_src_policy_sink_pdo_errors)
 /* Verify error paths related to handling of FRS partner sink PDOs. */
 ZTEST_USER_F(src_policy, test_src_policy_frs_sink_pdo_errors)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	uint32_t frs_partner_src_pdo =
 		PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE);
 	uint32_t frs_partner_snk_pdo;

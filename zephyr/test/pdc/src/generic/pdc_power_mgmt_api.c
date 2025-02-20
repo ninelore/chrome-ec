@@ -782,7 +782,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_request_power_swap)
 				  .accept_pr_swap = 1 } } },
 	};
 
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	union pdr_t pdr;
 	uint32_t timeout = k_ms_to_cyc_ceil32(PDC_TEST_TIMEOUT);
 	uint32_t start;
@@ -878,7 +878,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_request_data_swap)
 				  .accept_dr_swap = 1 } } },
 	};
 
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	union uor_t uor;
 	uint32_t timeout = k_ms_to_cyc_ceil32(PDC_TEST_TIMEOUT);
 	uint32_t start;
@@ -967,7 +967,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_partner_unconstr_power_snk_no_up)
 
 ZTEST_USER(pdc_power_mgmt_api, test_get_partner_unconstr_power_snk_up)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	const uint32_t pdos_up[] = {
 		PDO_FIXED(5000, 3000,
 			  PDO_FIXED_DUAL_ROLE |
@@ -992,7 +992,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_vbus_voltage)
 #define VBUS_READ_CACHE_MS 500
 
 	union connector_status_t connector_status = {};
-	union conn_status_change_bits_t change_bits;
+	union conn_status_change_bits_t change_bits = { 0 };
 	uint32_t mv_units = 50;
 	const uint32_t expected_voltage_mv = 5000;
 	uint32_t next_expected_voltage_mv = 6000;
@@ -1166,7 +1166,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_set_dual_role)
 				  .accept_pr_swap = 0 } } },
 	};
 
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 	enum ccom_t ccom;
 	union pdr_t pdr;
 	uint32_t timeout = k_ms_to_cyc_ceil32(4000);
@@ -1462,7 +1462,7 @@ static bool wait_state_name(int port, const uint8_t target_state,
 
 ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_snk_attached)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 
 	zassert_true(wait_state_name(TEST_PORT, PDC_UNATTACHED, "Unattached"));
 
@@ -1481,7 +1481,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_snk_attached)
 
 ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_src_attached)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 
 	zassert_true(wait_state_name(TEST_PORT, PDC_UNATTACHED, "Unattached"));
 
@@ -1500,7 +1500,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_typec_src_attached)
 
 ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_attached_snk)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 
 	zassert_true(wait_state_name(TEST_PORT, PDC_UNATTACHED, "Unattached"));
 
@@ -1515,7 +1515,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_attached_snk)
 
 ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_attached_src)
 {
-	union connector_status_t connector_status;
+	union connector_status_t connector_status = { 0 };
 
 	zassert_true(wait_state_name(TEST_PORT, PDC_UNATTACHED, "Unattached"));
 
@@ -1531,8 +1531,8 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_task_state_name_attached_src)
 ZTEST_USER(pdc_power_mgmt_api, test_get_connector_status)
 {
 	union connector_status_t in = {}, out = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
-	union conn_status_change_bits_t out_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
+	union conn_status_change_bits_t out_conn_status_change_bits = { 0 };
 
 	zassert_equal(-ERANGE, pdc_power_mgmt_get_connector_status(
 				       CONFIG_USB_PD_PORT_MAX_COUNT, &out));
@@ -1580,7 +1580,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_cable_prop)
 {
 	union cable_property_t in, out, exp;
 	union connector_status_t in_conn_status = {}, out_conn_status = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 
 	zassert_equal(-ERANGE, pdc_power_mgmt_get_cable_prop(
 				       CONFIG_USB_PD_PORT_MAX_COUNT, &out));
@@ -1689,7 +1689,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_identity_discovery)
 
 	union cable_property_t in;
 	union connector_status_t in_conn_status = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 	enum pd_discovery_state actual_state;
 
 	in_conn_status_change_bits.external_supply_change = 1;
@@ -1772,7 +1772,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_get_identity_pid)
 		/* modal operation */ true, USB_VID_GOOGLE);
 	uint32_t product = VDO_PRODUCT(0xBEAD, 0x1001);
 	uint32_t vdo[] = { vid, product };
-	union connector_status_t conn_status;
+	union connector_status_t conn_status = { 0 };
 
 	zassert_equal(0, pdc_power_mgmt_get_identity_pid(
 				 CONFIG_USB_PD_PORT_MAX_COUNT));
@@ -2108,7 +2108,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_hpd_wake)
 {
 	union get_attention_vdo_t attention_vdo;
 	union connector_status_t in_conn_status = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 
 	/* Connect (DP) alternate mode partner. */
 	in_conn_status_change_bits.connect_change = 1;
@@ -2170,7 +2170,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_dp_mode)
 {
 	union get_attention_vdo_t attention_vdo;
 	union connector_status_t in_conn_status = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 	uint32_t vdo[] = { 0x05 | (MODE_DP_PIN_D << 8) };
 
 	zassert_ok(pdc_power_mgmt_wait_for_sync(TEST_PORT, -1));
@@ -2218,7 +2218,7 @@ ZTEST_USER(pdc_power_mgmt_api, test_dp_mode)
 ZTEST_USER(pdc_power_mgmt_api, test_board_callback)
 {
 	union connector_status_t in_conn_status = {};
-	union conn_status_change_bits_t in_conn_status_change_bits;
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
 	union get_attention_vdo_t attention_vdo;
 
 	/* Register board callbacks. */

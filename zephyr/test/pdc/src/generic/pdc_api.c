@@ -154,9 +154,9 @@ ZTEST_USER(pdc_api, test_get_error_status)
 
 ZTEST_USER(pdc_api, test_get_connector_status)
 {
-	union connector_status_t in, out;
-	union conn_status_change_bits_t in_conn_status_change_bits;
-	union conn_status_change_bits_t out_conn_status_change_bits;
+	union connector_status_t in = { 0 }, out = { 0 };
+	union conn_status_change_bits_t in_conn_status_change_bits = { 0 };
+	union conn_status_change_bits_t out_conn_status_change_bits = { 0 };
 
 	in_conn_status_change_bits.external_supply_change = 1;
 	in_conn_status_change_bits.connector_partner = 1;
@@ -279,7 +279,7 @@ ZTEST_USER(pdc_api, test_get_bus_voltage)
 	uint32_t mv_units = 50;
 	uint32_t expected_voltage_mv = 5000;
 	uint16_t out = 0;
-	union connector_status_t in;
+	union connector_status_t in = { 0 };
 
 	in.voltage_scale = 10; /* 50 mv units*/
 	in.voltage_reading = expected_voltage_mv / mv_units;

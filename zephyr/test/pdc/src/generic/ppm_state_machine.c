@@ -1174,7 +1174,7 @@ ZTEST_USER_F(ppm_test, test_simultaneous_lpm_alerts)
 {
 	initialize_fake_to_idle_notify(fixture);
 
-	union conn_status_change_bits_t status_bits;
+	union conn_status_change_bits_t status_bits = { 0 };
 
 	int notified_count = 0;
 	fixture->notified_count = 0;
