@@ -13,6 +13,16 @@
 /* Opaque FPC context */
 #define FP_SENSOR_CONTEXT_SIZE 4944
 
+/* External capture types from FPC's sensor library */
+enum fpc_capture_type {
+	FPC_CAPTURE_VENDOR_FORMAT = 0,
+	FPC_CAPTURE_SIMPLE_IMAGE = 1,
+	FPC_CAPTURE_PATTERN0 = 2,
+	FPC_CAPTURE_PATTERN1 = 3,
+	FPC_CAPTURE_QUALITY_TEST = 4,
+	FPC_CAPTURE_RESET_TEST = 5,
+};
+
 /* External error codes from FPC's sensor library */
 enum fpc_error_code_external {
 	FPC_ERROR_NONE = 0,
