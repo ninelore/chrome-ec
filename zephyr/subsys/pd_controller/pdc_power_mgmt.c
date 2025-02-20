@@ -1972,6 +1972,72 @@ static void pdc_snk_attached_entry(void *obj)
 	}
 }
 
+static void pdc_snk_attached_evaluate_pdos(struct pdc_port_t *port)
+{
+	const struct pdc_config_t *const config = port->dev->config;
+	uint32_t max_ma, max_mv, max_mw, max_mw_pdo, unused;
+	uint32_t flags;
+	int pdo_index = 0;
+	uint32_t selected_pdo;
+
+	flags = RDO_COMM_CAP;
+
+	for (int i = 0; i < PDO_NUM; i++) {
+		pd_extract_pdo_power_unclamped(port->snk_policy.src.pdos[i],
+					       &max_ma, &max_mv, &unused);
+		max_mw = max_ma * max_mv / 1000;
+		LOG_INF("PDO%d: %08x, %d %d %d", i + 1,
+			port->snk_policy.src.pdos[i], max_mv, max_ma, max_mw);
+	}
+
+	pdo_index = pd_select_best_pdo(PDO_NUM, port->snk_policy.src.pdos,
+				       pdc_max_request_mv, &selected_pdo);
+
+	if (port->snk_policy.pdo == selected_pdo &&
+	    port->snk_policy.pdo_index == (pdo_index + 1)) {
+		/* Selected PDO didn't change - no need to send RDO */
+		LOG_INF("C%d: Retaining PDO[%d]=0x%08X", config->connector_num,
+			pdo_index, selected_pdo);
+		return;
+	}
+
+	/* Store the selected PDO. Convert the PDO number to 1-based
+	 * indexing.
+	 */
+	port->snk_policy.pdo = port->snk_policy.src.pdos[pdo_index];
+	port->snk_policy.pdo_index = pdo_index + 1;
+
+	/* Get the unclamped PDO voltage and current to determine
+	 * whether we need to set the capability mismatch bit if
+	 * less power is offered than our operating requirement.
+	 */
+	pd_extract_pdo_power_unclamped(selected_pdo, &max_ma, &max_mv, &unused);
+	max_mw_pdo = max_ma * max_mv / 1000;
+	if (max_mw_pdo < pdc_max_operating_power) {
+		flags |= RDO_CAP_MISMATCH;
+	}
+
+	/* Extract Current, Voltage, and calculate Power. Current is
+	 * clamped to the board maximum here so that the RDO and charge
+	 * manager are given the correct board operating current.
+	 */
+	pd_extract_pdo_power(selected_pdo, &max_ma, &max_mv, &unused);
+	max_mw = max_ma * max_mv / 1000;
+
+	/* Set RDO to send */
+	if ((port->snk_policy.pdo & PDO_TYPE_MASK) == PDO_TYPE_BATTERY) {
+		port->snk_policy.rdo_to_send = RDO_BATT(
+			port->snk_policy.pdo_index, max_mw, max_mw, flags);
+	} else {
+		/* Fixed or variable RDO. */
+		port->snk_policy.rdo_to_send = RDO_FIXED(
+			port->snk_policy.pdo_index, max_ma, max_ma, flags);
+	}
+
+	LOG_INF("Send RDO: %d", RDO_POS(port->snk_policy.rdo_to_send));
+	queue_internal_cmd(port, CMD_PDC_SET_RDO);
+}
+
 /**
  * @brief Run sink attached state.
  */
@@ -1979,10 +2045,7 @@ static void pdc_snk_attached_run(void *obj)
 {
 	struct pdc_port_t *port = (struct pdc_port_t *)obj;
 	const struct pdc_config_t *const config = port->dev->config;
-	uint32_t max_ma, max_mv, max_mw, max_mw_pdo, unused;
-	uint32_t flags;
-	int pdo_index = 0;
-	uint32_t selected_pdo;
+	uint32_t max_ma, max_mv, max_mw;
 
 	/* The CCI_EVENT is set to re-query connector status, so check the
 	 * connector status and take the appropriate action.
@@ -2097,70 +2160,8 @@ static void pdc_snk_attached_run(void *obj)
 		queue_internal_cmd(port, CMD_PDC_GET_PDOS);
 		return;
 	case SNK_ATTACHED_EVALUATE_PDOS:
+		pdc_snk_attached_evaluate_pdos(port);
 		port->snk_attached_local_state = SNK_ATTACHED_START_CHARGING;
-		flags = RDO_COMM_CAP;
-
-		for (int i = 0; i < PDO_NUM; i++) {
-			pd_extract_pdo_power_unclamped(
-				port->snk_policy.src.pdos[i], &max_ma, &max_mv,
-				&unused);
-			max_mw = max_ma * max_mv / 1000;
-			LOG_INF("PDO%d: %08x, %d %d %d", i + 1,
-				port->snk_policy.src.pdos[i], max_mv, max_ma,
-				max_mw);
-		}
-
-		pdo_index =
-			pd_select_best_pdo(PDO_NUM, port->snk_policy.src.pdos,
-					   pdc_max_request_mv, &selected_pdo);
-
-		if (port->snk_policy.pdo == selected_pdo &&
-		    port->snk_policy.pdo_index == (pdo_index + 1)) {
-			/* Selected PDO didn't change - no need to send RDO */
-			LOG_INF("C%d: Retaining PDO[%d]=0x%08X",
-				config->connector_num, pdo_index, selected_pdo);
-			return;
-		}
-
-		/* Store the selected PDO. Convert the PDO number to 1-based
-		 * indexing.
-		 */
-		port->snk_policy.pdo = port->snk_policy.src.pdos[pdo_index];
-		port->snk_policy.pdo_index = pdo_index + 1;
-
-		/* Get the unclamped PDO voltage and current to determine
-		 * whether we need to set the capability mismatch bit if
-		 * less power is offered than our operating requirement.
-		 */
-		pd_extract_pdo_power_unclamped(selected_pdo, &max_ma, &max_mv,
-					       &unused);
-		max_mw_pdo = max_ma * max_mv / 1000;
-		if (max_mw_pdo < pdc_max_operating_power) {
-			flags |= RDO_CAP_MISMATCH;
-		}
-
-		/* Extract Current, Voltage, and calculate Power. Current is
-		 * clamped to the board maximum here so that the RDO and charge
-		 * manager are given the correct board operating current.
-		 */
-		pd_extract_pdo_power(selected_pdo, &max_ma, &max_mv, &unused);
-		max_mw = max_ma * max_mv / 1000;
-
-		/* Set RDO to send */
-		if ((port->snk_policy.pdo & PDO_TYPE_MASK) ==
-		    PDO_TYPE_BATTERY) {
-			port->snk_policy.rdo_to_send =
-				RDO_BATT(port->snk_policy.pdo_index, max_mw,
-					 max_mw, flags);
-		} else {
-			/* Fixed or variable RDO. */
-			port->snk_policy.rdo_to_send =
-				RDO_FIXED(port->snk_policy.pdo_index, max_ma,
-					  max_ma, flags);
-		}
-
-		LOG_INF("Send RDO: %d", RDO_POS(port->snk_policy.rdo_to_send));
-		queue_internal_cmd(port, CMD_PDC_SET_RDO);
 		return;
 	case SNK_ATTACHED_START_CHARGING:
 		max_ma = MIN(PDO_FIXED_CURRENT(port->snk_policy.pdo),
