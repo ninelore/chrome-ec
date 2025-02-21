@@ -17,8 +17,6 @@
 #define CPRINTS(format, args...) cprints(CC_SYSTEM, format, ##args)
 #define CPRINTF(format, args...) cprintf(CC_SYSTEM, format, ##args)
 
-#define CHARGING_CURRENT_MA_SAFE 5000
-
 static int thermals[6];
 static int thermal_cyc;
 
@@ -132,7 +130,7 @@ int charger_profile_override(struct charge_state_data *curr)
 
 	switch (temp_zone) {
 	case TEMP_ZONE_0:
-		current = CHARGING_CURRENT_MA_SAFE;
+		/* Don't change anything in zone0*/
 		break;
 	case TEMP_ZONE_1:
 		current = 2500;
