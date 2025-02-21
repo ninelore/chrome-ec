@@ -18,6 +18,7 @@
 #include <drivers/fingerprint.h>
 #include <emul/emul_fpc1025.h>
 #include <fingerprint/v4l2_types.h>
+#include <fingerprint_fpc1025_private.h>
 
 DEFINE_FFF_GLOBALS;
 
@@ -37,6 +38,9 @@ static void *fpc1025_setup(void)
 	zassert_not_null(fixture.target);
 	return &fixture;
 }
+
+/* Converts capture type modes from the ec domain to the fpc domain. */
+int convert_fp_capture_mode_to_fpc_get_image_type(int mode);
 
 ZTEST_SUITE(fpc1025, NULL, fpc1025_setup, NULL, NULL, NULL);
 
@@ -283,4 +287,29 @@ ZTEST_F(fpc1025, test_pal_oops_on_memory_alloc_fail)
 	fpc1025_pal_malloc(CONFIG_FINGERPRINT_SENSOR_FPC1025_HEAP_SIZE);
 
 	ztest_test_fail();
+}
+
+ZTEST_F(fpc1025, test_convert_fp_capture_mode_to_fpc_get_image_type)
+{
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_VENDOR_FORMAT),
+		      FPC_CAPTURE_VENDOR_FORMAT);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_SIMPLE_IMAGE),
+		      FPC_CAPTURE_SIMPLE_IMAGE);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_PATTERN0),
+		      FPC_CAPTURE_PATTERN0);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_PATTERN1),
+		      FPC_CAPTURE_PATTERN1);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_QUALITY_TEST),
+		      FPC_CAPTURE_QUALITY_TEST);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_RESET_TEST),
+		      FPC_CAPTURE_RESET_TEST);
+	zassert_equal(convert_fp_capture_mode_to_fpc_get_image_type(
+			      FINGERPRINT_CAPTURE_TYPE_MAX),
+		      -EINVAL);
 }
