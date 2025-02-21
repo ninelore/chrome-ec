@@ -819,7 +819,6 @@ int rt9490_get_thermistor_val(const struct temp_sensor_t *sensor, int *temp_ptr)
 	/* Check ADC is enable before read temps */
 	RETURN_ERROR(rt9490_read8(idx, RT9490_REG_ADC_CTRL, &val));
 	if ((val & RT9490_ADC_EN) != RT9490_ADC_EN) {
-		CPRINTS(" RT9490 ADC do not enable yet ");
 		return EC_ERROR_UNAVAILABLE;
 	}
 
