@@ -365,3 +365,18 @@ if(CONFIG_TEST_NISSA_DIRKS)
             ${PLATFORM_EC_PROGRAM_DIR}/nissa/dirks/src/usbc.c
     )
 endif()
+
+if(CONFIG_TEST_NISSA_GUREN)
+    target_compile_definitions(app PRIVATE CHARGER_PRIMARY=0 CHARGER_SECONDARY=1)
+    target_sources(
+            app PRIVATE
+            src/guren.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/fan.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/sub_board.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/usbc.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/charger.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/board.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/usb_mux_config.c
+            ${PLATFORM_EC_PROGRAM_DIR}/nissa/guren/src/keyboard.c
+    )
+endif()

@@ -157,6 +157,12 @@ choice TEST_TARGET
 	  select TEST_DISABLE_INLINE_CHIPSET_IN_STATE
 	  help
 		The test target that exercises nissa/dirks/*.c
+
+	config TEST_NISSA_GUREN
+	  bool "Tests for Guren-specific"
+	  select TEST_DISABLE_INLINE_CHIPSET_IN_STATE
+	  help
+	    The test target that exercises nissa/guren/*.c
 endchoice
 
 config TEST_DISABLE_INLINE_CHIPSET_IN_STATE
