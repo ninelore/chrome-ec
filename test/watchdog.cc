@@ -56,7 +56,7 @@ test_static int test_panic_data()
 	 * udelay().
 	 */
 	uint32_t udelay_start_addr = reinterpret_cast<uint32_t>(udelay);
-	if (IS_ENABLED(BOARD_HELIPILOT)) {
+	if (IS_ENABLED(BASEBOARD_HELIPILOT)) {
 		udelay_start_addr =
 			reinterpret_cast<uint32_t>(__hw_clock_source_read);
 	}
