@@ -2685,8 +2685,8 @@ static void tps_thread(void *dev, void *unused1, void *unused2)
 	}
 }
 
-#define PDC_DEFINE(inst)                                                       \
-	K_THREAD_STACK_DEFINE(thread_stack_area_##inst,                        \
+#define TPS6699X_PDC_DEFINE(inst)                                              \
+	K_THREAD_STACK_DEFINE(tps6699x_thread_stack_area_##inst,               \
 			      CONFIG_USBC_PDC_TPS6699X_STACK_SIZE);            \
                                                                                \
 	static void create_thread_##inst(const struct device *dev)             \
@@ -2694,8 +2694,9 @@ static void tps_thread(void *dev, void *unused1, void *unused2)
 		struct pdc_data_t *data = dev->data;                           \
                                                                                \
 		data->thread = k_thread_create(                                \
-			&data->thread_data, thread_stack_area_##inst,          \
-			K_THREAD_STACK_SIZEOF(thread_stack_area_##inst),       \
+			&data->thread_data, tps6699x_thread_stack_area_##inst, \
+			K_THREAD_STACK_SIZEOF(                                 \
+				tps6699x_thread_stack_area_##inst),            \
 			tps_thread, (void *)dev, 0, 0,                         \
 			CONFIG_USBC_PDC_TPS6699X_THREAD_PRIORITY, K_ESSENTIAL, \
 			K_NO_WAIT);                                            \
@@ -2738,7 +2739,7 @@ static void tps_thread(void *dev, void *unused1, void *unused2)
 			      CONFIG_APPLICATION_INIT_PRIORITY,                \
 			      &pdc_driver_api);
 
-DT_INST_FOREACH_STATUS_OKAY(PDC_DEFINE)
+DT_INST_FOREACH_STATUS_OKAY(TPS6699X_PDC_DEFINE)
 
 #ifdef CONFIG_ZTEST
 
