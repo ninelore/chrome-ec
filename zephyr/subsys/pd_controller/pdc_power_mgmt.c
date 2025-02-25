@@ -71,6 +71,11 @@ LOG_MODULE_REGISTER(pdc_power_mgmt, CONFIG_USB_PDC_LOG_LEVEL);
 #define PDC_CMD_TIMEOUT_MS 2000
 
 /**
+ * @brief Time to wait for typec only devices (Non PD) to settle
+ */
+#define TYPEC_ONLY_SINK_DEBOUNCE_TIME_US (1000 * USEC_PER_MSEC)
+
+/**
  * @brief maximum number of times to try and send a command, or wait for a
  * public API command to execute (Time is 2s)
  *
@@ -2671,7 +2676,8 @@ static void pdc_src_typec_only_entry(void *obj)
 		 * k_timer_start call always resets the timer status.
 		 */
 		k_timer_start(&port->typec_only_timer,
-			      K_USEC(PD_T_SINK_WAIT_CAP), K_NO_WAIT);
+			      K_USEC(TYPEC_ONLY_SINK_DEBOUNCE_TIME_US),
+			      K_NO_WAIT);
 
 		if (IS_ENABLED(CONFIG_PDC_POWER_MGMT_USB_MUX)) {
 			usb_mux_set(
