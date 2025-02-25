@@ -428,10 +428,6 @@ static int fpc1145_acquire_image(const struct device *dev, int mode,
 {
 	int rc;
 
-	if (!IS_ENABLED(CONFIG_HAVE_FPC1145_PRIVATE_DRIVER)) {
-		return -ENOTSUP;
-	}
-
 	if (image_buf_size < CONFIG_FINGERPRINT_SENSOR_IMAGE_SIZE)
 		return -EINVAL;
 
@@ -440,6 +436,10 @@ static int fpc1145_acquire_image(const struct device *dev, int mode,
 	if (rc < 0) {
 		LOG_ERR("Unsupported mode %d provided", mode);
 		return rc;
+	}
+
+	if (!IS_ENABLED(CONFIG_HAVE_FPC1145_PRIVATE_DRIVER)) {
+		return -ENOTSUP;
 	}
 
 	rc = fp_sensor_acquire_image_with_mode(image_buf, rc);
