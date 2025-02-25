@@ -148,5 +148,6 @@ tests:
     - CONFIG_PLATFORM_EC_ACCEL_BMA4XX=y
     - CONFIG_PLATFORM_EC_GMR_TABLET_MODE=y
     - CONFIG_PLATFORM_EC_TABLET_MODE=y
+    - CONFIG_PLATFORM_EC_EXTPOWER_GPIO=y
     extra_dtc_overlay_files:
     - krabby.veluza.overlay

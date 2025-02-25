@@ -357,6 +357,10 @@
 			gpios = <&gpiof 0 GPIO_OUTPUT_LOW>;
 			enum-name = "GPIO_USB_C0_FRS_EN";
 		};
+		ac_present: ac_present {
+			gpios = <&gpioe 5 GPIO_INPUT>;
+			enum-name = "GPIO_AC_PRESENT";
+		};
 	};
 
 	named-i2c-ports {
@@ -400,6 +404,11 @@
 			 * int_x_ec_gpio2 to ppc_interrupt directly.
 			 */
 			handler = "ppc_interrupt";
+		};
+		int_ac_present: ac_present {
+			irq-pin = <&ac_present>;
+			flags = <GPIO_INT_EDGE_BOTH>;
+			handler = "extpower_interrupt";
 		};
 	};
 

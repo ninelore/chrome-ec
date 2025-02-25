@@ -5,7 +5,9 @@
 #include "charge_state.h"
 #include "common.h"
 #include "driver/charger/rt9490.h"
+#include "extpower.h"
 #include "hooks.h"
+#include "ite_hooks.h"
 #include "temp_sensor/temp_sensor.h"
 
 #define TEMP_BUFF_SIZE 60
@@ -128,4 +130,23 @@ enum ec_status charger_profile_override_set_param(uint32_t param,
 						  uint32_t value)
 {
 	return EC_RES_INVALID_PARAM;
+}
+
+void board_rt9490_adc_enalbe(void)
+{
+	rt9490_enable_adc(CHARGER_SOLO, 1);
+}
+DECLARE_HOOK(HOOK_CHIPSET_STARTUP, board_rt9490_adc_enalbe, HOOK_PRIO_DEFAULT);
+
+void board_rt9490_adc_disable(void)
+{
+	rt9490_enable_adc(CHARGER_SOLO, extpower_is_present());
+}
+DECLARE_HOOK(HOOK_CHIPSET_SHUTDOWN, board_rt9490_adc_disable,
+	     HOOK_PRIO_DEFAULT);
+
+__override void board_rt9490_adc_control(void)
+{
+	if (chipset_in_state(CHIPSET_STATE_ANY_OFF))
+		rt9490_enable_adc(CHARGER_SOLO, extpower_is_present());
 }

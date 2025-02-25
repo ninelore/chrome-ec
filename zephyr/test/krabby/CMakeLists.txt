@@ -87,7 +87,7 @@ target_sources_ifdef(CONFIG_TEST_SKITTY
 
 target_sources_ifdef(CONFIG_TEST_VELUZA
 	app PRIVATE
-	src/fake.c
+	src/fake_veluza.c
 	src/ppc_veluza.c
 	src/temp_veluza.c
 	src/sensor_veluza.c
