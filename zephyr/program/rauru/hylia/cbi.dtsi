@@ -4,7 +4,7 @@
  */
 
 / {
-    hylia-fw-config {
+	hylia-fw-config {
 		compatible = "cros-ec,cbi-fw-config";
 
 		pdc {
@@ -98,7 +98,7 @@
 				value = <1>;
 			};
 		};
-        kb_bl {
+		kb_bl {
 			enum-name = "FW_KB_BL";
 			start = <22>;
 			size = <1>;
@@ -111,7 +111,7 @@
 				compatible = "cros-ec,cbi-fw-config-value";
 				enum-name = "FW_KB_BL_PRESENT";
 				value = <1>;
-                default;
+				default;
 			};
 		};
 		fan {
