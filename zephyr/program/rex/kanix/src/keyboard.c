@@ -34,10 +34,10 @@ test_export_static void kb_init(void)
 		 *   \|:     0x0061->0x61->0x56
 		 *   r-ctrl: 0xe014->0x14->0x1d
 		 */
-		uint16_t tmp = get_scancode_set2(4, 0);
+		uint16_t tmp = get_scancode_set2(14, 3);
 
-		set_scancode_set2(4, 0, get_scancode_set2(2, 7));
-		set_scancode_set2(2, 7, tmp);
+		set_scancode_set2(14, 3, get_scancode_set2(17, 7));
+		set_scancode_set2(17, 7, tmp);
 	}
 }
 DECLARE_HOOK(HOOK_INIT, kb_init, HOOK_PRIO_POST_FIRST);
