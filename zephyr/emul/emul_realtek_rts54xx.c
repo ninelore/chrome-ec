@@ -76,8 +76,7 @@ static int unsupported(struct rts5453p_emul_pdc_data *data,
 	LOG_ERR("cmd=0x%X, subcmd=0x%X is not supported",
 		req->req_subcmd.command_code, req->req_subcmd.sub_cmd);
 
-	set_ping_status(data, CMD_ERROR, 0);
-	return -EIO;
+	return -EINVAL;
 }
 
 static int vendor_cmd_enable(struct rts5453p_emul_pdc_data *data,
@@ -448,8 +447,7 @@ static int set_rdo(struct rts5453p_emul_pdc_data *data,
 	 */
 	if (data->connector_status.power_direction == 1) {
 		/* We are a provider. Generate an error. */
-		set_ping_status(data, CMD_ERROR, 0);
-		return -EIO;
+		return -EINVAL;
 	}
 
 	data->pdo.rdo = req->set_rdo.rdo;
@@ -898,6 +896,7 @@ int process_request(struct rts5453p_emul_pdc_data *data,
 			if (cmds[i].type == HANDLER) {
 				return cmds[i].fn(data, req);
 			} else {
+				/* Recurse through subcommands */
 				return process_request(data, req,
 						       req->req_subcmd.sub_cmd,
 						       cmds[i].sub_cmd,
@@ -906,6 +905,7 @@ int process_request(struct rts5453p_emul_pdc_data *data,
 		}
 	}
 
+	/* Unsupported command. Call the stub handler */
 	return unsupported(data, req);
 }
 
@@ -967,12 +967,26 @@ static int rts5453p_emul_finish_write(const struct emul *emul, int reg,
 				      int bytes)
 {
 	struct rts5453p_emul_pdc_data *data = rts5453p_emul_get_pdc_data(emul);
+	int ret;
 
 	LOG_DBG("finish_write reg=%d, bytes=%d", reg, bytes);
 
-	return process_request(data, &data->request,
-			       data->request.request.command_code,
-			       rts54_commands, num_rts54_commands);
+	ret = process_request(data, &data->request,
+			      data->request.request.command_code,
+			      rts54_commands, num_rts54_commands);
+
+	if (ret) {
+		LOG_ERR("process_request (command_code=0x%02x) failed: %d",
+			data->request.request.command_code, ret);
+
+		set_ping_status(data, CMD_ERROR, 0);
+	}
+
+	/* Always return zero, because the I2C write transaction did complete
+	 * successfully. If the command was invalid or an error occurred while
+	 * while processing it, this will be communicated by setting the ping
+	 * status code to CMD_ERROR (see above). */
+	return 0;
 }
 
 /**
