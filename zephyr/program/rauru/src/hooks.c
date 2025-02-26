@@ -105,3 +105,16 @@ static void fan_low_rpm(void)
 DECLARE_HOOK(HOOK_CHIPSET_RESUME, fan_low_rpm, HOOK_PRIO_LAST);
 DECLARE_HOOK(HOOK_INIT, fan_low_rpm, HOOK_PRIO_LAST);
 #endif
+
+#ifdef CONFIG_PLATFORM_EC_CHARGER_BQ25720
+void update_bq25720_input_voltage(void)
+{
+	/* b:397587463 set input voltage to 3.2V to prevent charger entering
+	 * VINDPM mode */
+	i2c_write16(chg_chips[CHARGER_SOLO].i2c_port,
+		    chg_chips[CHARGER_SOLO].i2c_addr_flags,
+		    BQ25710_REG_INPUT_VOLTAGE, 0);
+}
+DECLARE_HOOK(HOOK_AC_CHANGE, update_bq25720_input_voltage, HOOK_PRIO_DEFAULT);
+DECLARE_HOOK(HOOK_INIT, update_bq25720_input_voltage, HOOK_PRIO_DEFAULT);
+#endif
