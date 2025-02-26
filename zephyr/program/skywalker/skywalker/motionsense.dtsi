@@ -8,7 +8,7 @@
 
 / {
 	aliases {
-		bma4xx-int = &lid_accel;
+		lis2dw12-int = &lid_accel;
 		bmi3xx-int = &base_accel;
 	};
 
@@ -37,7 +37,7 @@
 
 	motionsense-mutex {
 		compatible = "cros-ec,motionsense-mutex";
-		mutex_bma4xx_lid: mutex-bma4xx-lid {
+		mutex_lis2dw12_lid: mutex-lis2dw12-lid {
 		};
 		mutex_bma3xx_base: mutex-bmi3xx-base {
 		};
@@ -45,8 +45,8 @@
 
 	/* Driver specific data */
 	motionsense-sensor-data {
-		lid_data: bma422-drv-lid-data {
-			compatible = "cros-ec,drvdata-bma4xx";
+		lid_data: lis2dw12-drv-lid-data {
+			compatible = "cros-ec,drvdata-lis2dw12";
 			status = "okay";
 		};
 		base_data: bmi3xx-drv-base-data {
@@ -58,17 +58,17 @@
 	/* List of motion sensors that create motion_sensors array. */
 	motionsense-sensor {
 		lid_accel: lid-accel {
-			compatible = "cros-ec,bma4xx";
+			compatible = "cros-ec,lis2dw12";
 			status = "okay";
 
 			active-mask = "SENSOR_ACTIVE_S0_S3";
 			location = "MOTIONSENSE_LOC_LID";
-			mutex = <&mutex_bma4xx_lid>;
+			mutex = <&mutex_lis2dw12_lid>;
 			port = <&i2c_ec_i2c_sensor_scl_1v8>;
 			rot-standard-ref = <&lid_rot_ref>;
 			default-range = <4>; /* to meet CDD 7.3.1/C-1-4 reqs. */
 			drv-data = <&lid_data>;
-			i2c-spi-addr-flags = "BMA4_I2C_ADDR_SECONDARY";
+			i2c-spi-addr-flags = "LIS2DWL_ADDR0_FLAGS";
 			configs {
 				compatible =
 					"cros-ec,motionsense-sensor-config";
