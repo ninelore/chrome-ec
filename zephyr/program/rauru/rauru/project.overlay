@@ -8,7 +8,7 @@
 
 #include "../arbitrage.dtsi"
 #include "../common.dtsi"
-#include "../usbc.dtsi"
+#include "../tcpc.dtsi"
 #include "../usba.dtsi"
 #include "../generated.dtsi"
 #include "../interrupts.dtsi"

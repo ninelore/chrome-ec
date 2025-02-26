@@ -20,7 +20,7 @@
 #include "led.dtsi"
 #include "motionsense.dtsi"
 #include "temp.dtsi"
-#include "usbc.dtsi"
+#include "../pdc.dtsi"
 
 / {
 	gpio-interrupts {
