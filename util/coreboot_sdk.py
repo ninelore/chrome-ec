@@ -11,10 +11,131 @@ to the caller to indicate the extracted location.
 """
 
 import os
+import shutil
 import subprocess
+import sys
+import tempfile
+from typing import Dict, Tuple, Union
+import urllib.request
 
 
-def init_toolchain():
+script_dir = os.path.dirname(os.path.abspath(__file__))
+if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+
+# pylint: disable=import-error, wrong-import-position
+from coreboot_sdk_portage_deps import get_portage_deps
+
+
+toolchain_name_map = {
+    "arm-eabi": "COREBOOT_SDK_ROOT_arm",
+    "picolibc-arm-eabi": "COREBOOT_SDK_ROOT_picolibc_arm",
+    "libstdcxx-arm-eabi": "COREBOOT_SDK_ROOT_libstdcxx_arm",
+    "i386-elf": "COREBOOT_SDK_ROOT_x86",
+    "picolibc-i386-elf": "COREBOOT_SDK_ROOT_picolibc_x86",
+    "libstdcxx-i386-elf": "COREBOOT_SDK_ROOT_libstdcxx_x86",
+    "riscv-elf": "COREBOOT_SDK_ROOT_riscv",
+    "nds32le-elf": "COREBOOT_SDK_ROOT_nds32",
+}
+
+
+def get_toolchains_shell(
+    portage_toolchains: Dict[str, Tuple],
+    local_filepath: Union[str, "os.PathLike[str]"] = os.path.expanduser(
+        "~/.cache/coreboot-sdk"
+    ),
+) -> Dict[str, str]:
+    """Download and extract the toolchains using the shell.
+
+    Args:
+        portage_toolchains: Dict of architectures to download
+        local_filepath: Path to download the toolchains to
+
+    Returns:
+        Dict of coreboot-sdk env variables and their respective paths
+    """
+    result = {}
+    success = True
+    for target, (version, toolchain_hash) in portage_toolchains.items():
+        # TODO JPM support overrides
+        output_path = local_filepath + "/" + target
+        output_toolchain = output_path + "/" + toolchain_hash
+        tempfile.tempdir = output_path
+        os.makedirs(output_path, exist_ok=True)
+        with tempfile.TemporaryDirectory(toolchain_hash) as tmp_dir:
+            downloaded_file = tmp_dir + ".tar.zst"
+            if os.path.exists(output_toolchain) and os.path.isdir(
+                output_toolchain
+            ):
+                print(
+                    f"Skipping {downloaded_file} because the output dir exists"
+                )
+                continue
+            src_uri = (
+                "https://storage.googleapis.com/chromiumos-sdk/toolchains/coreboot-sdk"
+                f"-{target}/{version}/{toolchain_hash}.tar.zst"
+            )
+
+            try:
+                with urllib.request.urlopen(src_uri) as source_file, open(
+                    downloaded_file, "wb"
+                ) as dest_file:
+                    shutil.copyfileobj(source_file, dest_file)
+            except urllib.error.HTTPError as e:
+                print(f"HTTP Error: {e.code} - {e.reason}")
+                success = False
+                continue
+            except TimeoutError as e:
+                print(f"Timeout Error: {e}")
+                success = False
+                continue
+            except ConnectionRefusedError as e:
+                print(f"Connection refused: {e}")
+                success = False
+                continue
+            except urllib.error.URLError as e:
+                print(f"URL Error: {e.reason}")
+                success = False
+                continue
+            except shutil.SameFileError:
+                print("The source and dest files are the same")
+                success = False
+                continue
+            except FileNotFoundError:
+                print(f"Error: File not found '{downloaded_file}'")
+                success = False
+                continue
+            except OSError as e:
+                print(f"OS Error: {e}")
+                success = False
+                continue
+
+            try:
+                subprocess.run(
+                    ["tar", "-xf", downloaded_file, "-C", tmp_dir],
+                    check=True,
+                )
+                shutil.move(tmp_dir, output_toolchain)
+                print(
+                    f"Successfully extracted '{downloaded_file}'"
+                    f" to '{output_toolchain}'"
+                )
+            except subprocess.CalledProcessError as e:
+                print(f"Error extracting with command-line tool: {e}")
+                success = False
+                continue
+
+            result[
+                toolchain_name_map.get(target) or f"COREBOOT_SDK_ROOT_{target}"
+            ] = output_toolchain
+    if not success:
+        raise FileNotFoundError(
+            "Failed to download the found toolchains.  Please check the log"
+        )
+    return result
+
+
+def init_toolchain() -> Dict[str, str]:
     """Initialize coreboot-sdk.
 
     Returns:
@@ -24,77 +145,20 @@ def init_toolchain():
         print("COREBOOT_SDK_ROOT already set by environment, returning")
         return {}
 
-    # (environment variable, bazel target)
-    toolchains = [
-        ("COREBOOT_SDK_ROOT_arm", "@ec-coreboot-sdk-arm-eabi//:get_path"),
-        (
-            "COREBOOT_SDK_ROOT_picolibc_arm",
-            "@ec-coreboot-sdk-picolibc-arm-eabi//:get_path",
-        ),
-        (
-            "COREBOOT_SDK_ROOT_libstdcxx_arm",
-            "@ec-coreboot-sdk-libstdcxx-arm-eabi//:get_path",
-        ),
-        ("COREBOOT_SDK_ROOT_x86", "@ec-coreboot-sdk-i386-elf//:get_path"),
-        (
-            "COREBOOT_SDK_ROOT_picolibc_x86",
-            "@ec-coreboot-sdk-picolibc-i386-elf//:get_path",
-        ),
-        (
-            "COREBOOT_SDK_ROOT_libstdcxx_x86",
-            "@ec-coreboot-sdk-libstdcxx-i386-elf//:get_path",
-        ),
-        ("COREBOOT_SDK_ROOT_riscv", "@ec-coreboot-sdk-riscv-elf//:get_path"),
-        ("COREBOOT_SDK_ROOT_nds32", "@ec-coreboot-sdk-nds32le-elf//:get_path"),
-    ]
-    try:
-        subprocess.run(
-            [
-                "bazel",
-                "--project",
-                "fwsdk",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT,
-            check=True,
-            cwd="/mnt/host/source/src/",
-        )
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print(
-            "bazel doesn't exist or is not the right version to download packages"
-            " for coreboot-sdk"
-        )
-        return {}
-    subprocess.run(
-        [
-            "bazel",
-            "--project",
-            "fwsdk",
-            "build",
-            *(target for _, target in toolchains),
-        ],
-        check=True,
-        cwd="/mnt/host/source/src/",
-    )
+    portage_toolchains = get_portage_deps()
 
-    result = {}
-    for name, target in toolchains:
-        run_result = subprocess.run(
-            ["bazel", "--project", "fwsdk", "run", target],
-            check=True,
-            stdout=subprocess.PIPE,
-            cwd="/mnt/host/source/src/",
+    return get_toolchains_shell(portage_toolchains)
+
+
+def main():
+    """Main calling function for the script"""
+    env_vars = init_toolchain()
+    # Return a formatted string which can be declared as an associative array in bash
+    if env_vars:
+        print(
+            " ".join(f'["{key}"]="{value}"' for key, value in env_vars.items())
         )
-        result[name] = run_result.stdout.strip()
-    return result
 
 
 if __name__ == "__main__":
-    env_vars = init_toolchain()
-    # Return a formatted string which can be declared as an associative array in bash
-    print(
-        " ".join(
-            f"[\"{key}\"]=\"{value.decode('utf-8')}\""
-            for key, value in env_vars.items()
-        )
-    )
+    main()
