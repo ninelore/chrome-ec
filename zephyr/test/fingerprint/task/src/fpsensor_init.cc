@@ -107,7 +107,7 @@ ZTEST_USER(fpsensor_init, test_set_fp_context)
 	zassert_true(status.status & FP_CONTEXT_USER_ID_SET);
 }
 
-ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_3)
+ZTEST_USER(fpsensor_init, test_maintenance_mode_dead_pixel_3)
 {
 	struct ec_params_fp_mode params = {
 		.mode = FP_MODE_SENSOR_MAINTENANCE,
@@ -151,7 +151,7 @@ ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_3)
 	zassert_false(response.mode & FP_MODE_SENSOR_MAINTENANCE);
 }
 
-ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_max_plus_2)
+ZTEST_USER(fpsensor_init, test_maintenance_mode_dead_pixel_max_plus_2)
 {
 	struct ec_params_fp_mode params = {
 		.mode = FP_MODE_SENSOR_MAINTENANCE,
@@ -189,7 +189,7 @@ ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_max_plus_2)
 	zassert_false(response.mode & FP_MODE_SENSOR_MAINTENANCE);
 }
 
-ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_max)
+ZTEST_USER(fpsensor_init, test_maintenance_mode_dead_pixel_max)
 {
 	struct ec_params_fp_mode params = {
 		.mode = FP_MODE_SENSOR_MAINTENANCE,
@@ -227,7 +227,7 @@ ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_max)
 	zassert_false(response.mode & FP_MODE_SENSOR_MAINTENANCE);
 }
 
-ZTEST_USER(fpsensor_init, test_maintenance_mode_deal_pixel_max_minus_1)
+ZTEST_USER(fpsensor_init, test_maintenance_mode_dead_pixel_max_minus_1)
 {
 	struct ec_params_fp_mode params = {
 		.mode = FP_MODE_SENSOR_MAINTENANCE,
