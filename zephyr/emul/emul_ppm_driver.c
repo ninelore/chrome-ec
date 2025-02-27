@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(ppm, LOG_LEVEL_INF);
 #define DT_DRV_COMPAT ucsi_ppm
 #define UCSI_7BIT_PORTMASK(p) ((p) & 0x7F)
 #define DT_PPM_DRV DT_INST(0, DT_DRV_COMPAT)
-#define NUM_PORTS DT_PROP_LEN(DT_PPM_DRV, lpm)
+#define NUM_PORTS DT_NUM_INST_STATUS_OKAY(named_usbc_port)
 
 BUILD_ASSERT(DT_NUM_INST_STATUS_OKAY(DT_DRV_COMPAT) == 1,
 	     "Exactly one instance of ucsi-ppm should be defined.");

@@ -25,8 +25,7 @@ LOG_MODULE_REGISTER(ppm, LOG_LEVEL_INF);
 
 #define DT_DRV_COMPAT ucsi_ppm
 #define UCSI_7BIT_PORTMASK(p) ((p) & 0x7F)
-#define DT_PPM_DRV DT_INST(0, DT_DRV_COMPAT)
-#define NUM_PORTS DT_PROP_LEN(DT_PPM_DRV, lpm)
+#define NUM_PORTS DT_NUM_INST_STATUS_OKAY(named_usbc_port)
 
 BUILD_ASSERT(DT_NUM_INST_STATUS_OKAY(DT_DRV_COMPAT) == 1,
 	     "Exactly one instance of ucsi-ppm should be defined.");
@@ -88,12 +87,15 @@ BUILD_ASSERT(ARRAY_SIZE(ucsi_commands) == UCSI_CMD_MAX,
 #define PHANDLE_TO_DEV(node_id, prop, idx) \
 	[idx] = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(node_id, prop, idx)),
 
+#define GET_PORT_PDC_DRIVER(node_id) \
+	[DT_REG_ADDR(node_id)] = DEVICE_DT_GET(DT_PROP_BY_IDX(node_id, pdc, 0)),
+
 struct ppm_config {
 	const struct device *lpm[NUM_PORTS];
 	uint8_t active_port_count;
 };
 static const struct ppm_config ppm_config = {
-	.lpm = { DT_FOREACH_PROP_ELEM(DT_PPM_DRV, lpm, PHANDLE_TO_DEV) },
+	.lpm = { DT_FOREACH_STATUS_OKAY(named_usbc_port, GET_PORT_PDC_DRIVER) },
 	.active_port_count = NUM_PORTS,
 };
 

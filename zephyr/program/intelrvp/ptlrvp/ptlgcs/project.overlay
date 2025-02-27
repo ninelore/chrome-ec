@@ -40,9 +40,6 @@
 /delete-node/ &pd_pow_port2;
 &usbc {
 	/delete-node/ port2@2;
-	ppm-driver {
-		lpm = <&pd_pow_port0 &pd_pow_port1>;
-	};
 };
 
 / {

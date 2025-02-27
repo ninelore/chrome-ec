@@ -16,7 +16,7 @@
 #include <usbc/ppm.h>
 
 #define DT_PPM_DRV DT_INST(0, ucsi_ppm)
-#define NUM_PORTS DT_PROP_LEN(DT_PPM_DRV, lpm)
+#define NUM_PORTS DT_NUM_INST_STATUS_OKAY(named_usbc_port)
 #define DT_PPM_DEV DEVICE_DT_GET(DT_NODELABEL(ppm_driver_nodelabel))
 
 struct ucsi_ppm_device {

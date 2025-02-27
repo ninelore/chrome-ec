@@ -19,7 +19,6 @@
 		};
 		ppm-driver {
 			compatible = "ucsi-ppm";
-			lpm = <&pdc_power_p0>;
 		};
 	};
 };
