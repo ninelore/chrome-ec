@@ -18,12 +18,11 @@ def _ec_deps_impl(module_ctx):
     script = module_ctx.path(Label("@@//platform/ec/util:coreboot_sdk_portage_deps.py"))
     script_output = module_ctx.execute([script])
 
-    deps = {}
     direct_deps = []
     for toolchain in script_output.stdout.splitlines():
-        arch, version, name = toolchain.split(" ")
-        _coreboot_sdk_subtool(arch, "%s/%s" % (version, name), "")
+        arch, bucket, version, name = toolchain.split(" ")
         direct_deps.append("ec-coreboot-sdk-" + arch)
+        _coreboot_sdk_subtool(arch, "%s/%s" % (version, name), "", bucket)
 
     return module_ctx.extension_metadata(
         root_module_direct_deps = direct_deps,

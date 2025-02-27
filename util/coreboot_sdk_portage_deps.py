@@ -34,7 +34,7 @@ def get_portage_deps(eclass_path=DEFAULT_ECLASS):
     Returns:
         Dict of architectures and the desired version/hash
     """
-    run_result = subprocess.run(
+    toolchain_results = subprocess.run(
         [
             "bash",
             "-c",
@@ -46,16 +46,43 @@ def get_portage_deps(eclass_path=DEFAULT_ECLASS):
         stdout=subprocess.PIPE,
         check=True,
     )
+    bucket_override_results = subprocess.run(
+        [
+            "bash",
+            "-c",
+            f"EAPI=7; source {eclass_path};"
+            ' for key in "${!COREBOOT_SDK_BUCKET_OVERRIDES[@]}"; do'
+            ' echo "${key}=${COREBOOT_SDK_BUCKET_OVERRIDES["${key}"]}";'
+            " done",
+        ],
+        stdout=subprocess.PIPE,
+        check=True,
+    )
     try:
+        overrides = dict(
+            [
+                line.split("=", 1)
+                for line in bucket_override_results.stdout.strip()
+                .decode()
+                .splitlines()
+            ]
+        )
         return {
-            key: tuple(value.split("/"))
+            key: (
+                overrides.get(value.split("/")[1]) or "chromiumos-sdk",
+                *value.split("/"),
+            )
             for key, value in [
                 line.split("=", 1)
-                for line in run_result.stdout.strip().decode().splitlines()
+                for line in toolchain_results.stdout.strip()
+                .decode()
+                .splitlines()
             ]
         }
     except UnicodeDecodeError:
-        print(f"Unable to decode the portage deps: {run_result}")
+        print(
+            f"Unable to decode the portage deps: {toolchain_results} {bucket_override_results}"
+        )
         return {}
 
 
@@ -70,8 +97,8 @@ def main(argv: Optional[List[str]] = None):
     opts = parser.parse_args(argv)
     toolchains = get_portage_deps(opts.eclass)
 
-    for arch, (version, name) in toolchains.items():
-        print(f"{arch} {version} {name}")
+    for arch, (bucket, version, name) in toolchains.items():
+        print(f"{arch} {bucket} {version} {name}")
 
 
 if __name__ == "__main__":
