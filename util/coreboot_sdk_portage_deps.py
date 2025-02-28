@@ -69,7 +69,7 @@ def get_portage_deps(eclass_path=DEFAULT_ECLASS):
         )
         return {
             key: (
-                overrides.get(value.split("/")[1]) or "chromiumos-sdk",
+                overrides.get(key) or "chromiumos-sdk",
                 *value.split("/"),
             )
             for key, value in [
