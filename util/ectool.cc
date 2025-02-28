@@ -7641,8 +7641,21 @@ static int cs_do_cmd(struct ec_params_charge_state *to_ec,
 }
 
 static const char *const base_params[] = {
-	"chg_voltage", "chg_current", "chg_input_current",
-	"chg_status",  "chg_option",  "limit_power",
+	"chg_voltage",
+	"chg_current",
+	"chg_input_current",
+	"chg_status",
+	"chg_option",
+	"limit_power",
+	"chg_voltage_min",
+	"chg_voltage_max",
+	"chg_voltage_step",
+	"chg_current_min",
+	"chg_current_max",
+	"chg_current_step",
+	"chg_input_current_min",
+	"chg_input_current_max",
+	"chg_input_current_step",
 };
 BUILD_ASSERT(ARRAY_SIZE(base_params) == CS_NUM_BASE_PARAMS);
 

@@ -4940,6 +4940,33 @@ enum charge_state_params {
 	 */
 	CS_PARAM_LIMIT_POWER,
 
+	/* min value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_MIN,
+
+	/* max value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_MAX,
+
+	/* step value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_STEP,
+
+	/* min value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_MIN,
+
+	/* max value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_MAX,
+
+	/* step value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_STEP,
+
+	/* min value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_MIN,
+
+	/* max value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_MAX,
+
+	/* step value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_STEP,
+
 	/* How many so far? */
 	CS_NUM_BASE_PARAMS,
 

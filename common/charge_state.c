@@ -2095,6 +2095,7 @@ charge_command_charge_state(struct host_cmd_handler_args *args)
 {
 	const struct ec_params_charge_state *in = args->params;
 	struct ec_response_charge_state *out = args->response;
+	const struct charger_info *info = charger_get_info();
 	uint32_t val;
 	int rv = EC_RES_SUCCESS;
 	int chgnum = 0;
@@ -2162,6 +2163,33 @@ charge_command_charge_state(struct host_cmd_handler_args *args)
 #endif
 					val = 0;
 				break;
+			case CS_PARAM_CHG_VOLTAGE_MIN:
+				val = info->voltage_min;
+				break;
+			case CS_PARAM_CHG_VOLTAGE_MAX:
+				val = info->voltage_max;
+				break;
+			case CS_PARAM_CHG_VOLTAGE_STEP:
+				val = info->voltage_step;
+				break;
+			case CS_PARAM_CHG_CURRENT_MIN:
+				val = info->current_min;
+				break;
+			case CS_PARAM_CHG_CURRENT_MAX:
+				val = info->current_max;
+				break;
+			case CS_PARAM_CHG_CURRENT_STEP:
+				val = info->current_step;
+				break;
+			case CS_PARAM_CHG_INPUT_CURRENT_MIN:
+				val = info->input_current_min;
+				break;
+			case CS_PARAM_CHG_INPUT_CURRENT_MAX:
+				val = info->input_current_max;
+				break;
+			case CS_PARAM_CHG_INPUT_CURRENT_STEP:
+				val = info->input_current_step;
+				break;
 			default:
 				rv = EC_RES_INVALID_PARAM;
 			}
@@ -2198,6 +2226,15 @@ charge_command_charge_state(struct host_cmd_handler_args *args)
 				break;
 			case CS_PARAM_CHG_STATUS:
 			case CS_PARAM_LIMIT_POWER:
+			case CS_PARAM_CHG_VOLTAGE_MIN:
+			case CS_PARAM_CHG_VOLTAGE_MAX:
+			case CS_PARAM_CHG_VOLTAGE_STEP:
+			case CS_PARAM_CHG_CURRENT_MIN:
+			case CS_PARAM_CHG_CURRENT_MAX:
+			case CS_PARAM_CHG_CURRENT_STEP:
+			case CS_PARAM_CHG_INPUT_CURRENT_MIN:
+			case CS_PARAM_CHG_INPUT_CURRENT_MAX:
+			case CS_PARAM_CHG_INPUT_CURRENT_STEP:
 				/* Can't set this */
 				rv = EC_RES_ACCESS_DENIED;
 				break;
