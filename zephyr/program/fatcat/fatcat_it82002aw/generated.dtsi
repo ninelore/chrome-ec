@@ -159,7 +159,7 @@
 			enum-name = "GPIO_LID_OPEN";
 		};
 		gpio_smc_wake_sci_n_r: smc_wake_sci_n_r {
-			gpios = <&gpiob 6 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_ACTIVE_LOW)>;
+			gpios = <&gpiob 6 (GPIO_OUTPUT | GPIO_OPEN_DRAIN | GPIO_ACTIVE_HIGH | GPIO_OUTPUT_INIT_HIGH)>;
 		};
 		gpio_std_adpt_cntrl_gpio_r: std_adpt_cntrl_gpio_r {
 			gpios = <&gpioa 7 (GPIO_OUTPUT | GPIO_ACTIVE_HIGH)>;
