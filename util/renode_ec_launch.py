@@ -25,6 +25,7 @@ CONSOLE_MAP: dict[str, str] = {
     "bloonchipper": "sysbus.usart2",
     "buccaneer": "sysbus.cr_uart1",
     "dartmonkey": DARTMONKEY_CONSOLE,
+    "gwendolin": "sysbus.cr_uart1",
     "helipilot": "sysbus.cr_uart1",
     "nami_fp": DARTMONKEY_CONSOLE,
     "nocturne_fp": DARTMONKEY_CONSOLE,
@@ -38,6 +39,7 @@ GPIO_WP_MAP: dict[str, str] = {
     "buccaneer": HELIPILOT_GPIO_WP,
     "dartmonkey": DARTMONKEY_GPIO_WP,
     "helipilot": HELIPILOT_GPIO_WP,
+    "gwendolin": HELIPILOT_GPIO_WP,
     "nami_fp": DARTMONKEY_GPIO_WP,
     "nocturne_fp": DARTMONKEY_GPIO_WP,
 }
