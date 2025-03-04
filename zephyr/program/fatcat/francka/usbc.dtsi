@@ -19,7 +19,7 @@
 			pdc = <&pdc_power_p0>;
 			policy = <&cros_policy>;
 		};
-		usbc_port1: port0@1 {
+		usbc_port1: port1@1 {
 			compatible = "named-usbc-port";
 			reg = <1>;
 			pdc = <&pdc_power_p1>;
