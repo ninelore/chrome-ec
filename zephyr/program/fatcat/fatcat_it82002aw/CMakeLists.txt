@@ -8,3 +8,5 @@ zephyr_library_sources("../../intelrvp/ptlrvp/src/board_power.c")
 
 zephyr_library_sources("../../intelrvp/src/dc_jack.c")
 zephyr_library_sources("../../intelrvp/src/kbd_strauss.c")
+
+zephyr_library_sources("src/hibernate.c")
