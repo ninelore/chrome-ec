@@ -3811,7 +3811,7 @@ struct ec_response_tmp006_get_calibration_v1 {
 	uint8_t algorithm;
 	uint8_t num_params;
 	uint8_t reserved[2];
-	float val[0];
+	float val[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 struct ec_params_tmp006_set_calibration_v1 {
@@ -3819,7 +3819,7 @@ struct ec_params_tmp006_set_calibration_v1 {
 	uint8_t algorithm;
 	uint8_t num_params;
 	uint8_t reserved;
-	float val[0];
+	float val[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Read raw TMP006 data */
@@ -4006,7 +4006,8 @@ struct ec_params_keyscan_seq_ctrl {
 			 * start of the sequence.
 			 */
 			uint32_t time_us;
-			uint8_t scan[0]; /* keyscan data */
+			/* keyscan data */
+			uint8_t scan[FLEXIBLE_ARRAY_MEMBER_SIZE];
 		} add;
 		struct __ec_align1 {
 			uint8_t start_item; /* First item to return */
@@ -4020,7 +4021,7 @@ struct ec_result_keyscan_seq_ctrl {
 		struct __ec_todo_unpacked {
 			uint8_t num_items; /* Number of items */
 			/* Data for each item */
-			struct ec_collect_item item[0];
+			struct ec_collect_item item[FLEXIBLE_ARRAY_MEMBER_SIZE];
 		} collect;
 	};
 } __ec_todo_packed;
@@ -4842,14 +4843,15 @@ struct ec_params_i2c_passthru_msg {
 struct ec_params_i2c_passthru {
 	uint8_t port; /* I2C port number */
 	uint8_t num_msgs; /* Number of messages */
-	struct ec_params_i2c_passthru_msg msg[];
+	struct ec_params_i2c_passthru_msg msg[FLEXIBLE_ARRAY_MEMBER_SIZE];
 	/* Data to write for all messages is concatenated here */
 } __ec_align2;
 
 struct ec_response_i2c_passthru {
 	uint8_t i2c_status; /* Status flags (EC_I2C_STATUS_...) */
 	uint8_t num_msgs; /* Number of messages processed */
-	uint8_t data[]; /* Data read by messages concatenated here */
+	/* Data read by messages concatenated here */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /*****************************************************************************/
@@ -6257,7 +6259,8 @@ struct ec_response_pd_log {
 	uint8_t type; /* event type : see PD_EVENT_xx below */
 	uint8_t size_port; /* [7:5] port number [4:0] payload size in bytes */
 	uint16_t data; /* type-defined data payload */
-	uint8_t payload[0]; /* optional additional data payload: 0..16 bytes */
+	/* optional additional data payload: 0..16 bytes */
+	uint8_t payload[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* The timestamp is the microsecond counter shifted to get about a ms. */
@@ -6619,7 +6622,7 @@ struct ec_params_set_cbi {
 	uint32_t tag; /* enum cbi_data_tag */
 	uint32_t flag; /* CBI_SET_* */
 	uint32_t size; /* Data size */
-	uint8_t data[]; /* For string and raw data */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* For string and raw data */
 } __ec_align1;
 
 /*
@@ -6651,7 +6654,7 @@ struct ec_params_set_cbi_bin {
 	uint32_t offset; /* Data offset */
 	uint32_t size; /* Data size */
 	uint8_t flags; /* bit field for EC_CBI_BIN_COMMIT_FLAG_* */
-	uint8_t data[]; /* For string and raw data */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* For string and raw data */
 } __ec_align1;
 
 /*
@@ -7266,7 +7269,7 @@ struct ec_response_typec_discovery {
 	uint8_t svid_count; /* Number of SVIDs partner sent */
 	uint16_t reserved;
 	uint32_t discovery_vdo[VDO_MAX_OBJECTS];
-	struct svid_mode_info svids[0];
+	struct svid_mode_info svids[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /* USB Type-C commands for AP-controlled device policy. */
@@ -7778,7 +7781,7 @@ struct ec_params_pchg_update {
 	/* Size of <data> */
 	uint32_t size;
 	/* Partial data of new firmware */
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 BUILD_ASSERT(EC_PCHG_UPDATE_CMD_COUNT <
@@ -7912,7 +7915,7 @@ struct ec_params_rgbkbd_set_color {
 	/* Specifies # of elements in <color>. */
 	uint8_t length;
 	/* RGB color data array of length up to MAX_KEY_COUNT. */
-	struct rgb_s color[];
+	struct rgb_s color[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /*
@@ -8129,7 +8132,7 @@ struct ec_params_ap_fw_state {
 /* The data size is stored in the host command protocol header. */
 struct ec_params_ucsi_ppm_set {
 	uint16_t offset;
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align2;
 
 #define EC_CMD_UCSI_PPM_GET 0x0141
@@ -8213,7 +8216,7 @@ struct pdc_trace_msg_entry {
 	/* Bytes in pdc_data. */
 	uint8_t pdc_data_size;
 	/* Captured PDC message. */
-	uint8_t pdc_data[0];
+	uint8_t pdc_data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /*****************************************************************************/
@@ -8241,7 +8244,7 @@ struct pdc_trace_msg_entry {
 struct ec_params_fp_passthru {
 	uint16_t len; /* Number of bytes to write then read */
 	uint16_t flags; /* EC_FP_FLAG_xxx */
-	uint8_t data[]; /* Data to send */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* Data to send */
 } __ec_align2;
 
 /* Configure the Fingerprint MCU behavior */
@@ -8432,7 +8435,7 @@ struct ec_params_fp_frame {
 struct ec_params_fp_template {
 	uint32_t offset;
 	uint32_t size;
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Clear the current fingerprint user context and set a new one */
@@ -8647,7 +8650,7 @@ struct ec_params_fp_migrate_template_to_nonce_context {
 
 struct ec_response_tp_frame_info {
 	uint32_t n_frames;
-	uint32_t frame_sizes[0];
+	uint32_t frame_sizes[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Create a snapshot of current frame readings */
